@@ -1,0 +1,38 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"lib": ["ESNext"],
+		"moduleResolution": "Bundler",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		"moduleDetection": "force",
+		"erasableSyntaxOnly": true,
+
+		"skipLibCheck": true,
+		"noErrorTruncation": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitOverride": true,
+		"noFallthroughCasesInSwitch": true,
+		"allowUnusedLabels": false,
+		"allowUnreachableCode": false,
+		"noUncheckedSideEffectImports": true,
+
+		// Handled by @typescript-eslint
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+
+		"rewriteRelativeImportExtensions": true,
+		"sourceMap": true,
+		"noEmit": true,
+		"composite": true,
+
+		"outDir": "./node_modules/.cache/tsc/",
+
+		"types": []
+	}
+}

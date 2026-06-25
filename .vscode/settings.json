@@ -1,0 +1,14 @@
+{
+	"svelte.plugin.svelte.defaultScriptLanguage": "ts",
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	},
+	"debug.javascript.terminalOptions": {
+		"resolveSourceMapLocations": [
+			"${workspaceFolder}/**",
+			"!**/node_modules/**",
+			"**/node_modules/.vite-temp/**"
+		]
+	},
+	"js/ts.experimental.useTsgo": false
+}

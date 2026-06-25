@@ -1,0 +1,19 @@
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - 'chokidar@4.0.3'
+onlyBuiltDependencies:
+  - workerd
+  - sharp
+  - esbuild
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
+overrides:
+  undici@>=7.0.0 <7.28.0: ^7.28.0
+  undici@>=7.23.0 <7.28.0: ^7.28.0
+  ws@>=8.0.0 <8.21.0: ^8.21.0
+minimumReleaseAgeExclude:
+  - ws@8.21.0
+  - undici@7.28.0

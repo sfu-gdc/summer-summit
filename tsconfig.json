@@ -1,0 +1,12 @@
+// Tools
+{
+	"extends": ["./.svelte-kit/tsconfig.json", "./tsconfig.base.json"],
+	"compilerOptions": {
+		"checkJs": true,
+		"types": ["node"]
+	},
+
+	"include": ["./*", "./.storybook/**/*", "./tools/**/*", "@types/**/*"],
+	"exclude": ["./.storybook/preview.ts"],
+	"references": [{ "path": "./tsconfig.app.json" }]
+}
