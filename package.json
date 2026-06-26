@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"prebuild": "node ./tools/clean-build.ts",
-		"build": "vite build",
+		"build": "node -e \"if (process.env.WRANGLER_COMMAND !== 'types'){process.exit(1)} \" || vite build",
 		"preview": "wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
 		"prepare": "pnpm run gen || echo ''",
 		"precheck:wrangler": "pnpm run /^gen:wrangler$/",
