@@ -4,6 +4,8 @@ import 'unfonts.css';
 import 'virtual:uno.css';
 
 const preview: Preview = {
+	tags: ['autodocs'],
+
 	parameters: {
 		controls: {
 			matchers: {
