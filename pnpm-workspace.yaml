@@ -17,3 +17,6 @@ overrides:
 minimumReleaseAgeExclude:
   - ws@8.21.0
   - undici@7.28.0
+peerDependencyRules:
+  allowedVersions:
+    'vite-plugin-devtools-json>vite': '8'
