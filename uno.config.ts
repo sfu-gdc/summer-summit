@@ -17,7 +17,9 @@ export default defineConfig({
 				reset: true,
 			},
 		}),
-		presetIcons(),
+		presetIcons({
+			warn: true,
+		}),
 		presetTypography(),
 		presetWebFonts({
 			provider: 'none', // handled by unplugin-font with vite
