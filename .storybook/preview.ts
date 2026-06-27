@@ -1,9 +1,14 @@
 import type { Preview } from '@storybook/sveltekit';
 
+import 'unfonts.css';
 import 'virtual:uno.css';
 
 const preview: Preview = {
+	tags: ['autodocs'],
+
 	parameters: {
+		layout: 'centered',
+
 		controls: {
 			matchers: {
 				color: /(background|color)$/i,
