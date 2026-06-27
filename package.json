@@ -61,6 +61,7 @@
 		"prettier": "^3.8.4",
 		"prettier-plugin-svelte": "^4.1.1",
 		"storybook": "^10.4.6",
+		"storybook-addon-pseudo-states": "^10.4.6",
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.1",
 		"type-fest": "^5.7.0",
