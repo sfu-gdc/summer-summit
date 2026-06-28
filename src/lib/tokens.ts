@@ -1,5 +1,6 @@
 // Design tokens
 
+import { theme } from '@unocss/preset-wind4/theme';
 import { interpolate, interpolatorSplineMonotone2, formatCss } from 'culori';
 
 const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -66,3 +67,7 @@ export const fonts = {
 	sans: 'Work Sans Variable',
 	hero: 'Syncopate',
 } as const;
+
+export type SizeName = string;
+export type TextScale = Record<SizeName, { fontSize: string; lineHeight: string }>;
+export const textScale: TextScale = theme.text;
