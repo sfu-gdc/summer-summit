@@ -30,7 +30,8 @@
 		"@fontsource-variable/work-sans": "^5.2.8",
 		"@fontsource/syncopate": "^5.2.8",
 		"@unocss/reset": "^66.7.2",
-		"bits-ui": "^2.18.1"
+		"bits-ui": "^2.18.1",
+		"culori": "^4.0.2"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^5.2.1",
@@ -44,6 +45,7 @@
 		"@sveltejs/enhanced-img": "^0.11.0",
 		"@sveltejs/kit": "^2.68.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@types/culori": "^4.0.1",
 		"@types/node": "^24",
 		"@unocss/eslint-config": "^66.7.2",
 		"@unocss/extractor-svelte": "^66.7.2",

@@ -10,7 +10,7 @@ import {
 } from 'unocss';
 import extractorSvelte from '@unocss/extractor-svelte';
 
-import { brand, fonts } from './src/lib/tokens';
+import { brandColors, fonts } from './src/lib/tokens';
 
 export default defineConfig({
 	presets: [
@@ -32,7 +32,7 @@ export default defineConfig({
 	extractors: [extractorSvelte()],
 	theme: {
 		colors: {
-			brand,
+			brand: brandColors,
 		},
 	},
 });

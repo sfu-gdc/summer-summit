@@ -1,7 +1,12 @@
 // Design tokens
 
+import { interpolate, interpolatorSplineMonotone2, formatCss } from 'culori';
+
+const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+
 export const brand = {
 	primary: {
+		50: 'oklch(95.20% 0.0250 283.50)',
 		100: 'oklch(90.03% 0.0551 283.77)',
 		225: 'oklch(75.03% 0.1465 285.63)',
 		375: 'oklch(63.78% 0.2218 286.67)',
@@ -11,6 +16,7 @@ export const brand = {
 		900: 'oklch(9.93% 0.0465 288.17)',
 	},
 	secondary: {
+		50: 'oklch(90.50% 0.1300 122.90)',
 		100: 'oklch(82.70% 0.2088 122.87)',
 		225: 'oklch(75.82% 0.2039 122.84)',
 		375: 'oklch(63.03% 0.1695 122.65)',
@@ -20,6 +26,7 @@ export const brand = {
 		900: 'oklch(10.12% 0.0181 122.88)',
 	},
 	shade: {
+		50: 'oklch(95.30% 0.0060 271.00)',
 		100: 'oklch(90.11% 0.0108 271.21)',
 		225: 'oklch(76.62% 0.0319 272.63)',
 		375: 'oklch(63.50% 0.0518 271.60)',
@@ -29,6 +36,31 @@ export const brand = {
 		900: 'oklch(10.12% 0.0157 283.23)',
 	},
 } as const;
+
+type ColorScale = Record<(typeof colorStops)[number], string>;
+
+// Expand a hand-picked ramp into a full 10-stop scale.
+function generateColors(colors: Record<number, string>): ColorScale {
+	const stops = Object.entries(colors).map(
+		([key, color]) => [color, Number(key) / 1000] as [string, number],
+	);
+	const interpolator = interpolate(
+		stops,
+		'oklch',
+		// @ts-expect-error - bad types
+		interpolatorSplineMonotone2,
+	);
+
+	return Object.fromEntries(
+		colorStops.map((stop) => [stop, formatCss(interpolator(stop / 1000))]),
+	) as ColorScale;
+}
+
+export const brandColors = {
+	primary: generateColors(brand.primary),
+	secondary: generateColors(brand.secondary),
+	shade: generateColors(brand.shade),
+};
 
 export const fonts = {
 	sans: 'Work Sans Variable',
