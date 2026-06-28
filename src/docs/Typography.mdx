@@ -1,0 +1,39 @@
+import { Meta, Typeset } from '@storybook/addon-docs/blocks';
+import { fonts, textScale } from '$lib/tokens';
+
+<Meta title="Design Tokens/Typography" />
+
+# Typography
+
+Two font families, sized with UnoCSS's `text-*` scale (Wind4). Use as utilities:
+`font-sans` / `font-hero` for family, and `text-xs … text-9xl` for size. The sizes below
+are read directly from that scale.
+
+export const sizes = Object.values(textScale).map((t) => t.fontSize);
+export const sample = 'The quick brown fox jumps over the lazy dog';
+
+## UI and Prose
+
+**Font:** {fonts.sans}
+
+**Weights:** Variable
+
+<Typeset
+	fontSizes={sizes}
+	fontWeight={400}
+	sampleText={sample}
+	fontFamily={`'${fonts.sans}', sans-serif`}
+/>
+
+## Hero
+
+**Font:** {fonts.hero}
+
+**Weights:** 700
+
+<Typeset
+	fontSizes={sizes}
+	fontWeight={700}
+	sampleText={sample}
+	fontFamily={`'${fonts.hero}', sans-serif`}
+/>
