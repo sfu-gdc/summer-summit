@@ -1,7 +1,7 @@
 // Design tokens
 
 import { theme } from '@unocss/preset-wind4/theme';
-import { interpolate, interpolatorSplineMonotone2, formatCss } from 'culori';
+import { interpolate, interpolatorSplineMonotone2, formatCss, oklch } from 'culori';
 
 const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 
@@ -71,3 +71,37 @@ export const fonts = {
 export type SizeName = string;
 export type TextScale = Record<SizeName, { fontSize: string; lineHeight: string }>;
 export const textScale: TextScale = theme.text;
+
+if (import.meta.vitest) {
+	const { describe, it, expect } = import.meta.vitest;
+
+	describe('generateColors', () => {
+		const ramps = Object.entries(brand) as [string, Record<number, string>][];
+		// Narrow away culori's `| undefined` so downstream reads are non-nullable.
+		const parse = (color: string) => {
+			const parsed = oklch(color);
+			if (!parsed) throw new Error(`unparseable color: ${color}`);
+			return parsed;
+		};
+
+		it.each(ramps)('preserves %s anchors that coincide with output stops', (_, ramp) => {
+			const scale = generateColors(ramp);
+			for (const stop of colorStops) {
+				const anchor = ramp[stop];
+				if (anchor === undefined) continue;
+				const got = parse(scale[stop]);
+				const want = parse(anchor);
+				expect(got.l).toBeCloseTo(want.l, 5);
+				expect(got.c).toBeCloseTo(want.c, 5);
+				expect(got.h ?? 0).toBeCloseTo(want.h ?? 0, 3);
+			}
+		});
+
+		it.each(ramps)('ramps %s from light to dark monotonically', (_, ramp) => {
+			const scale = generateColors(ramp);
+			const lightness = colorStops.map((stop) => parse(scale[stop]).l);
+			const descending = lightness.every((l, i) => i === 0 || l < (lightness[i - 1] ?? Infinity));
+			expect(descending).toBe(true);
+		});
+	});
+}
