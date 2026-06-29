@@ -11,6 +11,7 @@ import globals from 'globals';
 import ts from 'typescript-eslint';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
+const extraFileExtensions = ['.svelte'];
 
 export default defineConfig(
 	globalIgnores(['!.storybook'], 'Include Storybook Directory'),
@@ -30,6 +31,7 @@ export default defineConfig(
 			globals: { ...globals.browser, ...globals.node },
 			parserOptions: {
 				projectService: true,
+				extraFileExtensions,
 			},
 		},
 		linterOptions: {
@@ -48,6 +50,7 @@ export default defineConfig(
 			parserOptions: {
 				extraFileExtensions: ['.svelte'],
 				parser: ts.parser,
+				extraFileExtensions,
 			},
 		},
 	},
