@@ -57,7 +57,12 @@ export default defineConfig((env) => {
 				},
 			}),
 		],
+		define: {
+			// Allow vite to strip out tests in production
+			'import.meta.vitest': 'undefined',
+		},
 		test: {
+			includeSource: ['src/**/*.{js,ts}'],
 			expect: {
 				requireAssertions: true,
 			},

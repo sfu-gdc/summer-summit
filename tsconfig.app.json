@@ -5,6 +5,6 @@
 		"sourceMap": true,
 		"noEmit": false,
 		"typeRoots": ["./@types", "./node_modules/@types", "./node_modules"],
-		"types": ["node", "unplugin-fonts/client"]
+		"types": ["node", "unplugin-fonts/client", "vitest/importMeta"]
 	}
 }
