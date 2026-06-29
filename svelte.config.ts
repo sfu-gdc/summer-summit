@@ -5,7 +5,7 @@ import adapter from '@sveltejs/adapter-cloudflare';
 
 import type { TsConfigJson, OmitIndexSignature } from 'type-fest';
 
-export type ConfigFn = (env: ConfigEnv) => OmitIndexSignature<Config>;
+export type ConfigFn = (env: Partial<ConfigEnv>) => OmitIndexSignature<Config>;
 
 const config: ConfigFn = ({ mode }) => {
 	const isDev = mode == 'development';
