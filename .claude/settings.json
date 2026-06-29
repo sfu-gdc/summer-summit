@@ -1,7 +1,26 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledPlugins": {
-    "svelte@svelte": true,
-    "figma@claude-plugins-official": true
-  }
+	"$schema": "https://json.schemastore.org/claude-code-settings.json",
+	"enabledPlugins": {
+		"svelte@svelte": true,
+		"figma@claude-plugins-official": true
+	},
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"if": "Bash(npm *)",
+						"type": "command",
+						"command": "echo '{ \"hookSpecificOutput\": { \"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"Use pnpm instead\" } }'"
+					},
+					{
+						"if": "Bash(npx *)",
+						"type": "command",
+						"command": "echo '{ \"hookSpecificOutput\": { \"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"Use pnpm dlx instead\" } }'"
+					}
+				]
+			}
+		]
+	}
 }
