@@ -2,8 +2,6 @@
 	"extends": ["./tsconfig.base.json", "./.svelte-kit/tsconfig.json"],
 	"compilerOptions": {
 		"lib": ["DOM", "ESNext"],
-		"sourceMap": true,
-		"noEmit": false,
 		"typeRoots": ["./@types", "./node_modules/@types", "./node_modules"],
 		"types": ["node", "unplugin-fonts/client", "vitest/importMeta"]
 	}

@@ -20,7 +20,7 @@ jobs:
 
       - parallel:
           - name: Svelte Check
-            run: pnpm run check:svelte --fail-on-warnings
+            run: pnpm run check --fail-on-warnings
 
           - name: ESLint
             run: pnpm run lint:eslint

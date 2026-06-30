@@ -28,8 +28,9 @@
 
 		"rewriteRelativeImportExtensions": true,
 		"sourceMap": true,
-		"noEmit": true,
+		"declarationMap": true,
 		"composite": true,
+		"noEmit": false,
 
 		"outDir": "./node_modules/.cache/tsc/",
 
