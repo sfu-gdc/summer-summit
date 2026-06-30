@@ -8,6 +8,7 @@ const config = {
 		'@storybook/addon-vitest',
 		'@storybook/addon-a11y',
 		'@storybook/addon-docs',
+		'storybook-addon-pseudo-states',
 	],
 	framework: '@storybook/sveltekit',
 } satisfies StorybookConfig;

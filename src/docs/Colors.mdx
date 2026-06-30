@@ -1,0 +1,15 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+import { brandColors } from '$lib/tokens';
+
+<Meta title="Design Tokens/Colors" />
+
+# Brand Colors
+
+The `brand` palette. Use as UnoCSS utilities, e.g.
+`bg-brand-primary-500`, `text-brand-shade-900`.
+
+<ColorPalette>
+	<ColorItem title="Primary" subtitle="brand.primary" colors={brandColors.primary} />
+	<ColorItem title="Secondary" subtitle="brand.secondary" colors={brandColors.secondary} />
+	<ColorItem title="Shade" subtitle="brand.shade" colors={brandColors.shade} />
+</ColorPalette>

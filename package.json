@@ -16,7 +16,7 @@
 		"check": "pnpm run /^check:.*/",
 		"watch:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.app.json --watch",
 		"lint:prettier": "prettier --check .",
-		"lint:eslint": "eslint .",
+		"lint:eslint": "eslint --max-warnings=0 .",
 		"lint": "pnpm run /^lint:.*/",
 		"format": "prettier --write .",
 		"test": "vitest",
@@ -29,11 +29,16 @@
 	"dependencies": {
 		"@fontsource-variable/work-sans": "^5.2.8",
 		"@fontsource/syncopate": "^5.2.8",
+		"@unocss/preset-wind4": "^66.7.3",
 		"@unocss/reset": "^66.7.2",
-		"bits-ui": "^2.18.1"
+		"bits-ui": "^2.18.1",
+		"culori": "^4.0.2"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^5.2.1",
+		"@commitlint/cli": "^21.1.0",
+		"@commitlint/config-conventional": "^21.1.0",
+		"@commitlint/types": "^21.1.0",
 		"@eslint/js": "^10.0.1",
 		"@storybook/addon-a11y": "^10.4.6",
 		"@storybook/addon-docs": "^10.4.6",
@@ -44,6 +49,7 @@
 		"@sveltejs/enhanced-img": "^0.11.0",
 		"@sveltejs/kit": "^2.68.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@types/culori": "^4.0.1",
 		"@types/node": "^24",
 		"@unocss/eslint-config": "^66.7.2",
 		"@unocss/extractor-svelte": "^66.7.2",
@@ -61,6 +67,7 @@
 		"prettier": "^3.8.4",
 		"prettier-plugin-svelte": "^4.1.1",
 		"storybook": "^10.4.6",
+		"storybook-addon-pseudo-states": "^10.4.6",
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.1",
 		"type-fest": "^5.7.0",
