@@ -50,6 +50,8 @@ const config: ConfigFn = ({ mode }) => {
 					tsconfig.include.push('../.storybook/preview.ts');
 					tsconfig.include.push('../.storybook/**/*.svelte');
 
+					delete tsconfig.compilerOptions?.noEmit;
+
 					return tsconfig;
 				},
 			},
