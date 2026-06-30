@@ -36,6 +36,9 @@ const config: ConfigFn = ({ mode }) => {
 		},
 		kit: {
 			adapter: adapter(),
+			alias: {
+				$storybook: '.storybook/*',
+			},
 			typescript: {
 				config(tsconfig: TsConfigJson) {
 					// exclude tooling from app `tsconfig.json`
@@ -45,6 +48,7 @@ const config: ConfigFn = ({ mode }) => {
 					);
 
 					tsconfig.include.push('../.storybook/preview.ts');
+					tsconfig.include.push('../.storybook/**/*.svelte');
 
 					return tsconfig;
 				},
