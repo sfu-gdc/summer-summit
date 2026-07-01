@@ -3,7 +3,7 @@
 import { theme } from '@unocss/preset-wind4/theme';
 import { interpolate, interpolatorSplineMonotone2, formatCss, oklch } from 'culori';
 
-const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
 
 export const brand = {
 	primary: {
@@ -14,17 +14,14 @@ export const brand = {
 		500: 'oklch(51.20% 0.2529 286.36)',
 		625: 'oklch(37.27% 0.1841 286.40)',
 		775: 'oklch(24.11% 0.1192 286.50)',
-		900: 'oklch(9.93% 0.0465 288.17)',
+		950: 'oklch(9.93% 0.0465 288.17)',
 	},
 	secondary: {
 		50: 'oklch(90.50% 0.1300 122.90)',
 		100: 'oklch(82.70% 0.2088 122.87)',
 		225: 'oklch(75.82% 0.2039 122.84)',
-		375: 'oklch(63.03% 0.1695 122.65)',
-		500: 'oklch(49.55% 0.1327 122.36)',
-		625: 'oklch(36.34% 0.0983 123.01)',
-		775: 'oklch(23.41% 0.0631 123.86)',
-		900: 'oklch(10.12% 0.0181 122.88)',
+		500: 'oklch(51.03% 0.1695 122.65)',
+		950: 'oklch(23.41% 0.0631 123.86)',
 	},
 	shade: {
 		50: 'oklch(95.30% 0.0060 271.00)',
@@ -32,13 +29,43 @@ export const brand = {
 		225: 'oklch(76.62% 0.0319 272.63)',
 		375: 'oklch(63.50% 0.0518 271.60)',
 		500: 'oklch(51.67% 0.0714 272.43)',
-		625: 'oklch(36.52% 0.0567 273.04)',
-		775: 'oklch(23.57% 0.0361 271.39)',
-		900: 'oklch(10.12% 0.0157 283.23)',
+		950: 'oklch(13.12% 0.0157 283.23)',
 	},
 } as const;
 
 type ColorScale = Record<(typeof colorStops)[number], string>;
+
+// Shadow-shaping knob, one per ramp. The `brand` anchors stay the source of
+// truth; this reshapes only the darker half of each ramp, holding the midpoint
+// lightness and everything above it (plus all chroma/hue) fixed. 1 = authored
+// shadows untouched; >1 deepens shadows, <1 lifts them. Tweak to taste.
+const shadowGamma = {
+	primary: 0.6,
+	secondary: 0.6,
+	shade: 0.6,
+} as const;
+
+// Reshape a ramp's shadows on a gamma curve, pivoting at the midpoint lightness
+// so the upper half stays exactly as authored.
+function shapeShadows(colors: Record<number, string>, gamma: number): Record<number, string> {
+	const parsed = Object.entries(colors).map(([stop, color]) => {
+		const c = oklch(color);
+		if (!c) throw new Error(`unparseable color: ${color}`);
+		return [Number(stop), c] as const;
+	});
+	const lightnesses = parsed.map(([, c]) => c.l);
+	const dark = Math.min(...lightnesses);
+	const span = Math.max(...lightnesses) - dark;
+	return Object.fromEntries(
+		parsed.map(([stop, c]) => {
+			const p = span === 0 ? 0 : (c.l - dark) / span;
+			if (p >= 0.5) return [stop, formatCss(c)];
+			// remap within the lower half, pinning both the black point and midpoint
+			const l = dark + span * 0.5 * (p / 0.5) ** gamma;
+			return [stop, formatCss({ ...c, l })];
+		}),
+	);
+}
 
 // Expand a hand-picked ramp into a full 10-stop scale.
 function generateColors(colors: Record<number, string>): ColorScale {
@@ -58,9 +85,9 @@ function generateColors(colors: Record<number, string>): ColorScale {
 }
 
 export const brandColors = {
-	primary: generateColors(brand.primary),
-	secondary: generateColors(brand.secondary),
-	shade: generateColors(brand.shade),
+	primary: generateColors(shapeShadows(brand.primary, shadowGamma.primary)),
+	secondary: generateColors(shapeShadows(brand.secondary, shadowGamma.secondary)),
+	shade: generateColors(shapeShadows(brand.shade, shadowGamma.shade)),
 };
 
 export const fonts = {

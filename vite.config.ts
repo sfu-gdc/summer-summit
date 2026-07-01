@@ -109,6 +109,10 @@ export default defineConfig((env) => {
 							enabled: true,
 							headless: true,
 							provider: playwright(),
+							// Vitest's default 63315 sits in Windows' ephemeral range, which
+							// Hyper-V/WinNat reserves in shifting blocks -> intermittent EACCES.
+							// Pin a fixed port below 49152 on IPv4. (vitest #9035)
+							api: { host: '127.0.0.1', port: 7357 },
 							instances: [
 								{
 									browser: 'chromium',
