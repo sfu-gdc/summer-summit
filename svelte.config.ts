@@ -8,7 +8,7 @@ import type { TsConfigJson, OmitIndexSignature } from 'type-fest';
 export type ConfigFn = (env: Partial<ConfigEnv>) => OmitIndexSignature<Config>;
 
 const config: ConfigFn = ({ mode }) => {
-	const isDev = mode == 'development';
+	const isDev = mode === 'development';
 
 	const cspDirectives = {
 		'default-src': ['self'],
