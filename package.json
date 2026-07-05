@@ -46,6 +46,7 @@
 		"@storybook/addon-svelte-csf": "^5.1.2",
 		"@storybook/addon-vitest": "^10.4.6",
 		"@storybook/sveltekit": "^10.4.6",
+		"@stylistic/eslint-plugin": "^5.10.0",
 		"@sveltejs/adapter-cloudflare": "^7.2.9",
 		"@sveltejs/enhanced-img": "^0.11.0",
 		"@sveltejs/kit": "^2.68.0",
