@@ -6,15 +6,72 @@ import path from 'node:path';
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import unocss from '@unocss/eslint-config/flat';
-import { defineConfig, includeIgnoreFile, globalIgnores, type Config } from 'eslint/config';
+import { defineConfig, includeIgnoreFile, type Config } from 'eslint/config';
 import globals from 'globals';
 import ts, { type CompatibleConfigArray } from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
+import perfectionist, { type SortImportsOptions } from 'eslint-plugin-perfectionist';
+import { Alphabet } from 'eslint-plugin-perfectionist/alphabet';
 
 import svelteConfig from './svelte.config.ts';
+import type { UndefinedOnPartialDeep } from 'type-fest';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 const extraFileExtensions = ['.svelte'];
+
+// sort subpaths before hyphenated packages
+const alphabet = Alphabet.generateRecommendedAlphabet()
+	.sortByNaturalSort()
+	.placeCharacterBefore({ characterBefore: '/', characterAfter: '-' })
+	.placeCharacterBefore({ characterBefore: '.', characterAfter: '/' })
+	.getCharacters();
+
+function importSortRule(hoistedGroups?: string[], files?: Config['files']) {
+	type GroupNames = NonNullable<SortImportsOptions[number]['groups']>;
+
+	const result = {
+		...(files !== undefined && { files }),
+		rules: {
+			'perfectionist/sort-imports': [
+				'warn',
+				{
+					type: 'custom',
+					alphabet,
+					order: 'asc',
+					specialCharacters: 'trim',
+					fallbackSort: { type: 'natural', order: 'asc' },
+					tsconfig: {
+						rootDir: '.',
+					},
+					newlinesBetween: 0,
+					// mirrors `svelte.config.ts` kit alias and default sveltekit aliases
+					internalPattern: ['^\\$lib(/.*)?$', '^\\$app/.*', '^\\$env/.*', '^\\$storybook(/.*)?$'],
+					customGroups: [
+						{ groupName: 'svelte', elementNamePattern: '^svelte(/.*)?|^@sveltejs/kit$' },
+						{ groupName: 'storybook', elementNamePattern: '^@storybook/.*$' },
+					],
+					groups: [
+						'builtin',
+						{ newlinesBetween: 1 },
+						...((hoistedGroups as GroupNames | undefined)?.concat([{ newlinesBetween: 1 }]) ?? []),
+						'external',
+						{ newlinesBetween: 1 },
+						['internal', 'tsconfig-path'],
+						{ newlinesBetween: 1 },
+						'parent',
+						'sibling',
+						'index',
+						{ newlinesBetween: 1 },
+						'side-effect',
+						'unknown',
+					],
+				},
+			],
+		},
+	} as const satisfies UndefinedOnPartialDeep<Config>;
+
+	return result as Config;
+}
 
 function stripFileFilter(...configs: CompatibleConfigArray[]): Config[] {
 	// Split each config's `rules` into a `files`-less object so they apply to every
@@ -23,8 +80,9 @@ function stripFileFilter(...configs: CompatibleConfigArray[]): Config[] {
 }
 
 export default defineConfig(
-	globalIgnores(['!.storybook'], 'Include Storybook Directory'),
-	includeIgnoreFile(gitignorePath),
+	includeIgnoreFile(gitignorePath, {
+		gitignoreResolution: true,
+	}),
 	js.configs.recommended,
 	stripFileFilter(ts.configs.strictTypeChecked, ts.configs.stylisticTypeChecked),
 	svelte.configs.recommended,
@@ -32,9 +90,12 @@ export default defineConfig(
 	storybook.configs['flat/recommended'] as unknown as Config[],
 	prettier,
 	svelte.configs.prettier,
+	importSortRule(['svelte'], ['src/**/*', '@types/**/*']),
+	importSortRule(['storybook', 'svelte'], ['src/**/*.stories.svelte']),
 	{
 		plugins: {
 			'@stylistic': stylistic,
+			perfectionist,
 		},
 		languageOptions: {
 			globals: { ...globals.browser, ...globals.node },
@@ -74,7 +135,7 @@ export default defineConfig(
 			// --- Possible Problems ---
 			'array-callback-return': ['error', { allowImplicit: true }],
 			'no-constructor-return': 'error',
-			'no-promise-executor-return': 'error',
+			'no-promise-executor-return': ['error', { allowVoid: true }],
 			'no-self-compare': 'error',
 			'no-unmodified-loop-condition': 'error',
 			'no-unreachable-loop': 'error',
@@ -129,6 +190,34 @@ export default defineConfig(
 			'default-case-last': 'error',
 			'grouped-accessor-pairs': 'error',
 			'func-name-matching': 'error',
+
+			'@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
+			'@typescript-eslint/consistent-type-exports': [
+				'error',
+				{ fixMixedExportsWithInlineTypeSpecifier: true },
+			],
+			'@typescript-eslint/no-import-type-side-effects': 'error',
+			'@typescript-eslint/switch-exhaustiveness-check': [
+				'error',
+				{ considerDefaultExhaustiveForUnions: true },
+			],
+			'@typescript-eslint/strict-void-return': 'error',
+			'@typescript-eslint/require-array-sort-compare': ['error', { ignoreStringArrays: true }],
+			'@typescript-eslint/method-signature-style': ['error', 'property'],
+			'@typescript-eslint/prefer-readonly': 'error',
+			'@typescript-eslint/no-unnecessary-parameter-property-assignment': 'error',
+			'@typescript-eslint/no-unnecessary-qualifier': 'error',
+			'@typescript-eslint/no-useless-empty-export': 'error',
+			'@typescript-eslint/no-unused-private-class-members': 'error',
+			'@typescript-eslint/class-methods-use-this': ['error', { ignoreOverrideMethods: true }],
+			'@typescript-eslint/strict-boolean-expressions': [
+				'error',
+				{
+					allowString: false,
+					allowNumber: false,
+					allowNullableBoolean: true,
+				},
+			],
 
 			'@stylistic/quotes': ['error', 'single', { avoidEscape: true, ignoreStringLiterals: true }],
 			'@typescript-eslint/no-unused-vars': [
