@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+
 	import { Button, type ButtonRootProps } from 'bits-ui';
 
 	type Props = ButtonRootProps & {

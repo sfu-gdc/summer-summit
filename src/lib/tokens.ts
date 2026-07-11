@@ -1,7 +1,7 @@
 // Design tokens
 
-import { theme } from '@unocss/preset-wind4/theme';
 import { interpolate, interpolatorSplineMonotone2, formatCss, oklch } from 'culori';
+import { theme } from '@unocss/preset-wind4/theme';
 
 const colorStops = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 

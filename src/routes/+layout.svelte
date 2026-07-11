@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { links } from 'unplugin-fonts/head';
+
+	import favicon from '$lib/assets/favicon.svg';
+
+	import type { LayoutProps } from './$types';
+
 	import 'unfonts.css';
 	import 'virtual:uno.css';
-	import favicon from '$lib/assets/favicon.svg';
-	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
 </script>
