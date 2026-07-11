@@ -1,19 +1,14 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from 'vitest/config';
-import { playwright } from '@vitest/browser-playwright';
-
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-
-import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
-
+import { sveltekit } from '@sveltejs/kit/vite';
 import UnoCSS from 'unocss/vite';
-
 import Unfonts from 'unplugin-fonts/vite';
-
 import devtoolsJson from 'vite-plugin-devtools-json';
+import { playwright } from '@vitest/browser-playwright';
+import { defineConfig } from 'vitest/config';
 
 import svkitCfgFn from './svelte.config.ts';
 

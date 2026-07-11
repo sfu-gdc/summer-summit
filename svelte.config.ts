@@ -1,8 +1,7 @@
 import type { ConfigEnv } from 'vite';
 
-import type { Config, KitConfig } from '@sveltejs/kit';
 import adapter from '@sveltejs/adapter-cloudflare';
-
+import type { Config, KitConfig } from '@sveltejs/kit';
 import type { TsConfigJson, OmitIndexSignature } from 'type-fest';
 
 export type ConfigFn = (env: Partial<ConfigEnv>) => OmitIndexSignature<Config>;

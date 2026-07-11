@@ -1,9 +1,10 @@
 <script module lang="ts">
-	import type { ComponentProps } from 'svelte';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import type { ComponentProps } from 'svelte';
+
+	import PaddingDecorator from '$storybook/PaddingDecorator.svelte';
 
 	import Button from './Button.svelte';
-	import PaddingDecorator from '$storybook/PaddingDecorator.svelte';
 
 	type Args = ComponentProps<typeof Button>;
 
