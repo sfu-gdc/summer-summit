@@ -14,15 +14,17 @@
 		decorators: [() => ({ Component: PaddingDecorator })],
 		args: {
 			disabled: false,
+			spray: false,
 		},
 		argTypes: {
 			disabled: { control: 'boolean' },
+			spray: { control: 'boolean' },
 		},
 		parameters: {
 			// bits-ui's ButtonRootProps leaks ~400 inherited HTML attributes into
 			// autodocs (Storybook #32171). Whitelist the meaningful API instead.
-			controls: { include: ['icon', 'disabled', 'href', 'type', 'children'] },
-			docs: { argTypes: { include: ['icon', 'disabled', 'href', 'type', 'children'] } },
+			controls: { include: ['icon', 'disabled', 'href', 'type', 'children', 'spray'] },
+			docs: { argTypes: { include: ['icon', 'disabled', 'href', 'type', 'children', 'spray'] } },
 		},
 	});
 </script>
@@ -59,3 +61,5 @@
 <Story name="With Icon" args={{ icon: bell }} {template} />
 
 <Story name="Disabled" args={{ disabled: true }} {template} />
+
+<Story name="Spray" args={{ spray: true }} {template} />
