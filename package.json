@@ -33,7 +33,8 @@
 		"@unocss/reset": "^66.7.5",
 		"bits-ui": "^2.18.1",
 		"culori": "^4.0.2",
-		"runed": "^0.37.1"
+		"runed": "^0.37.1",
+		"twgl.js": "^7.0.0"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^5.2.1",

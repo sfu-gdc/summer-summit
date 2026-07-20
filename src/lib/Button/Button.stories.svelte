@@ -17,6 +17,7 @@
 		},
 		argTypes: {
 			disabled: { control: 'boolean' },
+			spray: { control: 'boolean' },
 		},
 		parameters: {
 			// bits-ui's ButtonRootProps leaks ~400 inherited HTML attributes into
@@ -59,3 +60,5 @@
 <Story name="With Icon" args={{ icon: bell }} {template} />
 
 <Story name="Disabled" args={{ disabled: true }} {template} />
+
+<Story name="Spray" args={{ spray: true }} {template} />
