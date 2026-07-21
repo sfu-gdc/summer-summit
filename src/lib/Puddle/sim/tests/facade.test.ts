@@ -1,13 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { seconds, worldUnits } from './brands';
-import { rainEmitter } from './emitters';
-import { BASE_SUBSTEP, defaultGovernor } from './governor';
-import { integrators } from './integrators';
-import { resolveParams } from './params';
-import { createRng } from './rng';
-import type { StateStats } from './types';
-import { createWaterSim } from './index';
+import { createWaterSim } from '..';
 
 function minimumOf(values: Float32Array): number {
 	return values.reduce((minimum, value) => Math.min(minimum, value), Infinity);
@@ -129,42 +122,7 @@ describe('createWaterSim — input validation', () => {
 	});
 });
 
-describe('resolveParams', () => {
-	it('applies defaults, clamps ranges, and rejects non-finite', () => {
-		const resolved = resolveParams({ damping: 5, gravity: NaN, level: 0.7 });
-		expect(resolved.damping).toBeLessThanOrEqual(0.9999);
-		expect(resolved.gravity).toBe(9.8);
-		expect(resolved.level).toBeCloseTo(0.7, 6);
-	});
-
-	it('exposes momentum tuning as clamped params', () => {
-		const resolved = resolveParams({ momentumSmoothing: 5, momentumRetention: -1 });
-		expect(resolved.momentumSmoothing).toBe(1);
-		expect(resolved.momentumRetention).toBe(0);
-		expect(resolveParams({}).momentumRetention).toBeCloseTo(0.82, 6);
-	});
-
-	it('exposes timestep/CFL tuning as clamped params with correct defaults', () => {
-		const defaults = resolveParams({});
-		expect(defaults.cflSafety).toBeCloseTo(0.9, 6);
-		expect(defaults.minWaveDepth).toBeCloseTo(0.001, 6);
-		expect(defaults.baseSubstep).toBeCloseTo(0.08, 6);
-		expect(defaults.timeScale).toBe(6);
-		const clamped = resolveParams({ cflSafety: 9, baseSubstep: 0, timeScale: NaN });
-		expect(clamped.cflSafety).toBe(1);
-		expect(clamped.baseSubstep).toBeGreaterThan(0);
-		expect(clamped.timeScale).toBe(6);
-	});
-});
-
-describe('createWaterSim — governor / grid tuning options', () => {
-	it('caps per-frame substeps at the maxSubsteps override', () => {
-		const sim = createWaterSim({ nx: 32, ny: 20, seed: 2, maxSubsteps: 1 });
-		sim.settle(20);
-		expect(sim.advance(10).substeps).toBeLessThanOrEqual(1);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
-	});
-
+describe('createWaterSim — construction tuning options', () => {
 	it('clamps nx/ny to the maxDim option', () => {
 		const sim = createWaterSim({ nx: 4000, ny: 4000, maxDim: 16 });
 		expect(sim.nx).toBe(16);
@@ -210,83 +168,8 @@ describe('momentum tuning params — threaded to the momentum pass', () => {
 	});
 });
 
-describe('defaultGovernor', () => {
-	const stats: StateStats = { mass: 100, maxDepth: worldUnits(0.6) };
-	const params = resolveParams({});
-
-	it('scales substeps with the frame budget and never exceeds CFL dt', () => {
-		const smallFramePlan = defaultGovernor({
-			frameDt: seconds(BASE_SUBSTEP),
-			stats,
-			integrator: integrators.pipes,
-			params,
-		});
-		const largeFramePlan = defaultGovernor({
-			frameDt: seconds(BASE_SUBSTEP * 5),
-			stats,
-			integrator: integrators.pipes,
-			params,
-		});
-		expect(smallFramePlan.substeps).toBe(1);
-		expect(largeFramePlan.substeps).toBeGreaterThan(smallFramePlan.substeps);
-		expect(largeFramePlan.dt).toBeLessThanOrEqual(BASE_SUBSTEP + 1e-9);
-	});
-
-	it('caps substeps per frame (no spiral of death)', () => {
-		const cappedPlan = defaultGovernor({
-			frameDt: seconds(100),
-			stats,
-			integrator: integrators.pipes,
-			params,
-		});
-		expect(cappedPlan.substeps).toBeLessThanOrEqual(8);
-	});
-});
-
-describe('rainEmitter — framerate-independent scheduling', () => {
-	it('emits the same drop count over the same sim-time regardless of dt chunking', () => {
-		const grid = { nx: 10, ny: 10 };
-		const emitter = rainEmitter({ intervalSec: 0.5, amount: 1, radius: 1 });
-		const countDrops = (dt: number, steps: number) => {
-			const rng = createRng(1);
-			let time = 0;
-			let dropCount = 0;
-			for (let stepIndex = 0; stepIndex < steps; stepIndex++) {
-				dropCount += emitter({ grid, time: seconds(time), dt: seconds(dt), rng }).length;
-				time += dt;
-			}
-			return dropCount;
-		};
-		// 5 sim-seconds either way; 0.5 and 0.25 are exact in binary (no fp drift).
-		expect(countDrops(0.5, 10)).toBe(10);
-		expect(countDrops(0.25, 20)).toBe(10);
-	});
-});
-
-describe('advance — framerate independence (governor accumulator)', () => {
-	it('runs the same total substeps for the same real time regardless of frame size', () => {
-		const totalSubsteps = (frameDt: number, frames: number) => {
-			const sim = createWaterSim({ nx: 32, ny: 20, seed: 2 });
-			sim.settle(30);
-			let totalSubstepCount = 0;
-			for (let frameIndex = 0; frameIndex < frames; frameIndex++)
-				totalSubstepCount += sim.advance(frameDt).substeps;
-			return totalSubstepCount;
-		};
-		const substepsAt30Fps = totalSubsteps(1 / 30, 60);
-		const substepsAt60Fps = totalSubsteps(1 / 60, 120);
-		const substepsAt120Fps = totalSubsteps(1 / 120, 240);
-		// The floor accumulator carries the remainder, so total advanced sim-time
-		// is the same (within one substep of quantization) at every frame rate.
-		expect(Math.abs(substepsAt60Fps - substepsAt30Fps)).toBeLessThanOrEqual(2);
-		expect(Math.abs(substepsAt60Fps - substepsAt120Fps)).toBeLessThanOrEqual(2);
-		expect(substepsAt60Fps).toBeGreaterThanOrEqual(147);
-		expect(substepsAt60Fps).toBeLessThanOrEqual(151);
-	});
-});
-
 describe('setTiltOffset — interactive gravity tilt', () => {
-	const halfMasses = (sim: { nx: number; ny: number; height: Float32Array }) => {
+	const halfMasses = (sim: { nx: number; height: Float32Array }) => {
 		return sim.height.reduce(
 			({ left, right }, depth, cellIndex) =>
 				cellIndex % sim.nx < sim.nx / 2

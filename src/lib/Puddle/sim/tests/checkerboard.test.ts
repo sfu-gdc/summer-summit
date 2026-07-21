@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { FluxField } from './types';
-import { createWaterSim } from './index';
+import { createWaterSim } from '../index';
+import type { FluxField } from '../types';
 
 interface InternalSim {
 	engine: { resources: { currentFlux: () => FluxField } };
@@ -74,11 +74,15 @@ function checkerSample(
 			for (let column = 1; column < width - 1; column++) {
 				const index = row * width + column;
 				if (active[index] !== 1) continue;
+				const value = residual[index];
+				if (value === undefined) continue;
 				for (const next of [index + lag, index + lag * width]) {
 					if (active[next] !== 1) continue;
-					product += residual[index] * residual[next];
-					firstEnergy += residual[index] ** 2;
-					secondEnergy += residual[next] ** 2;
+					const nextValue = residual[next];
+					if (nextValue === undefined) continue;
+					product += value * nextValue;
+					firstEnergy += value ** 2;
+					secondEnergy += nextValue ** 2;
 				}
 			}
 		}

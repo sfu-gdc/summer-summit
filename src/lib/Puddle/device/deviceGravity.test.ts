@@ -5,7 +5,7 @@ import {
 	projectDeviceGravity,
 	requestDeviceGravityPermission,
 	type DeviceMotionReading,
-} from './deviceGravity';
+} from './index';
 
 const reading = (
 	acceleration: [number, number, number] | null,
