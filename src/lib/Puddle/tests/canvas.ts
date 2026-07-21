@@ -13,10 +13,21 @@ export function ctxOf(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
 	return ctx;
 }
 
-export function rgbaAt(canvas: HTMLCanvasElement, fx: number, fy: number): Uint8ClampedArray {
+export function rgbaAt(
+	canvas: HTMLCanvasElement,
+	fx: number,
+	fy: number,
+	colorSpace?: PredefinedColorSpace,
+): Uint8ClampedArray {
 	const x = Math.floor(canvas.width * fx);
 	const y = Math.floor(canvas.height * fy);
-	return ctxOf(canvas).getImageData(x, y, 1, 1).data;
+	return ctxOf(canvas).getImageData(
+		x,
+		y,
+		1,
+		1,
+		colorSpace !== undefined ? { colorSpace } : undefined,
+	).data;
 }
 
 export function alphaAt(canvas: HTMLCanvasElement, fx: number, fy: number): number {

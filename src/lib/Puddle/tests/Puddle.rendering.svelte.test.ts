@@ -41,6 +41,20 @@ test('accepts a culori Color object for `color`', async () => {
 	}
 
 	// The object's red, not the near-black fallback a dropped color would give.
-	const px = rgbaAt(canvas, 0.5, 0.5);
+	const px = rgbaAt(canvas, 0.5, 0.5, 'srgb');
 	expect([px[0], px[1], px[2], (px[3] ?? 0) > 0]).toEqual([255, 0, 0, true]);
+});
+
+test('preserves a wide-gamut CSS color for the CSS fallback', async () => {
+	await render(Puddle, {
+		props: {
+			animated: false,
+			color: 'color(display-p3 1 0 0)',
+			style: 'width:760px;height:420px;',
+		},
+	});
+
+	const fallback = document.querySelector<HTMLElement>('.fallback');
+	expect(fallback?.style.getPropertyValue('--puddle-color-wide')).toMatch(/^color\(display-p3 /);
+	expect(fallback?.style.getPropertyValue('--puddle-color')).toMatch(/^color\(srgb /);
 });

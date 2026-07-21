@@ -2,7 +2,7 @@
 	import { MediaQuery } from 'svelte/reactivity';
 	import { devicePixelRatio } from 'svelte/reactivity/window';
 
-	import { formatCss, rgb } from 'culori';
+	import { formatCss, parse, toGamut, type Color } from 'culori';
 	import { ElementSize } from 'runed';
 
 	import { browser } from '$app/environment';
@@ -49,11 +49,17 @@
 		...rest
 	}: PuddleProps = $props();
 
-	// Sanitize the color once via rgb(), which converts Color objects as well as
-	// CSS strings (parse() is string-only and would drop objects to the fallback).
-	const colorObj = $derived(rgb(color) ?? { mode: 'rgb' as const, r: 0.08, g: 0.08, b: 0.08 });
+	const fallbackColor = { mode: 'rgb', r: 0.08, g: 0.08, b: 0.08 } as const satisfies Color;
+	const mapToP3 = toGamut('p3', 'oklch');
+	const mapToSrgb = toGamut('rgb', 'oklch');
+	// Keep the source mode until each output path selects its supported gamut.
+	const colorObj = $derived.by(() => {
+		if (typeof color !== 'string') return { ...color };
+		return parse(color) ?? fallbackColor;
+	});
 	// SSR'd onto the fallback so the no-JS backdrop keeps the puddle color.
-	const cssColor = $derived(formatCss(colorObj));
+	const cssColor = $derived(formatCss(mapToSrgb(colorObj)));
+	const wideCssColor = $derived(formatCss(mapToP3(colorObj)));
 
 	let canvas = $state<HTMLCanvasElement | null>(null);
 	let host = $state<HTMLElement | null>(null);
@@ -188,7 +194,13 @@
 />
 
 <div bind:this={host} class={['host', className]} {...rest}>
-	<div class="fallback" class:painted style:--puddle-color={cssColor} aria-hidden="true"></div>
+	<div
+		class="fallback"
+		class:painted
+		style:--puddle-color={cssColor}
+		style:--puddle-color-wide={wideCssColor}
+		aria-hidden="true"
+	></div>
 	<canvas bind:this={canvas} class="renderer" aria-hidden="true"></canvas>
 	{@render children?.()}
 </div>
@@ -214,6 +226,11 @@
 	.fallback {
 		background: var(--puddle-color, #141414);
 		border-radius: 12%/20%;
+	}
+	@supports (color: color(display-p3 1 0 0)) {
+		.fallback {
+			background: var(--puddle-color-wide, var(--puddle-color, #141414));
+		}
 	}
 	.fallback.painted {
 		display: none;
