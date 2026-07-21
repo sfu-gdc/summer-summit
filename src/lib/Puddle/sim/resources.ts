@@ -87,11 +87,15 @@ export class Resources {
 
 	stats(): StateStats {
 		const heightData = this.height().data;
-		const mass = heightData.reduce((total, depth) => total + depth, 0);
-		const maxDepth = heightData.reduce(
-			(currentMax, depth) => (depth > currentMax ? depth : currentMax),
-			0,
-		);
+		let mass = 0;
+		let maxDepth = 0;
+		let index = 0;
+		while (index < heightData.length) {
+			const depth = heightData[index] ?? 0;
+			mass += depth;
+			if (depth > maxDepth) maxDepth = depth;
+			index += 1;
+		}
 		return { mass, maxDepth: worldUnits(maxDepth) };
 	}
 

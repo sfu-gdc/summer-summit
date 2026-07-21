@@ -1,6 +1,6 @@
 import { texelCoordinate, texelDistance, worldUnits } from '../brands';
 import { params as paramSchema } from '../params';
-import type { FrameStats } from '../types';
+import type { FrameStats, StateStats } from '../types';
 import { createConfiguredEngine, createWaterSimConfig } from './config';
 import { DEFAULT_SETTLE_SUBSTEPS } from './defaults';
 import { type WaterSimOptions, nonnegativeIntegerOrZero } from './options';
@@ -66,8 +66,8 @@ export class WaterSim {
 		this.tiltOffset.y = clampTilt(y);
 	}
 
-	clampMass(target: number): void {
-		if (Number.isFinite(target)) this.engine.clampMass(Math.max(0, target));
+	clampMass(target: number, knownStats?: Pick<StateStats, 'mass'>): void {
+		if (Number.isFinite(target)) this.engine.clampMass(Math.max(0, target), knownStats);
 	}
 
 	totalMass(): number {

@@ -31,11 +31,29 @@ describe('createWaterSim — invariants', () => {
 		sim.settle();
 		const massCap = sim.totalMass();
 		for (let frameIndex = 0; frameIndex < 200; frameIndex++) {
-			sim.advance(1 / 60);
-			sim.clampMass(massCap);
+			const frameStats = sim.advance(1 / 60);
+			sim.clampMass(massCap, frameStats);
 		}
 		expect(sim.totalMass()).toBeLessThanOrEqual(massCap + 1e-3);
 		expect(allFinite(sim.height)).toBe(true);
+	});
+
+	it('reuses advance stats without changing the mass clamp result', () => {
+		const options = { nx: 24, ny: 16, seed: 9, rain: true } as const;
+		const fallbackSim = createWaterSim(options);
+		const reusedStatsSim = createWaterSim(options);
+		fallbackSim.settle();
+		reusedStatsSim.settle();
+		const massCap = fallbackSim.totalMass();
+
+		for (let frameIndex = 0; frameIndex < 50; frameIndex++) {
+			fallbackSim.advance(1 / 60);
+			fallbackSim.clampMass(massCap);
+			const frameStats = reusedStatsSim.advance(1 / 60);
+			reusedStatsSim.clampMass(massCap, frameStats);
+		}
+
+		expect(Float32Array.from(reusedStatsSim.height)).toEqual(Float32Array.from(fallbackSim.height));
 	});
 });
 

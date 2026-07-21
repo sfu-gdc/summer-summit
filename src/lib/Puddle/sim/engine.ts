@@ -161,8 +161,12 @@ export class Engine {
 		applyCommand(this.resources, command);
 	}
 
-	clampMass(targetMass: number): void {
-		const currentMass = this.resources.stats().mass;
+	clampMass(targetMass: number, knownStats?: Pick<StateStats, 'mass'>): void {
+		const knownMass = knownStats?.mass;
+		const currentMass =
+			knownMass !== undefined && Number.isFinite(knownMass) && knownMass >= 0
+				? knownMass
+				: this.resources.stats().mass;
 		if (currentMass <= targetMass || currentMass === 0) return;
 		const massScale = targetMass / currentMass;
 		this.resources.applyToHeight((heightData) => {

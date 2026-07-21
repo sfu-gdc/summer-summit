@@ -1,9 +1,9 @@
 export type FieldTransform = (value: number, index: number, column: number, row: number) => number;
 
 export function writeField(field: Float32Array, width: number, transform: FieldTransform): void {
-	field.set(
-		field.map((value, index) => transform(value, index, index % width, Math.floor(index / width))),
-	);
+	for (let index = 0; index < field.length; index += 1) {
+		field[index] = transform(field[index] ?? 0, index, index % width, Math.floor(index / width));
+	}
 }
 
 export function clamp(value: number, min: number, max: number): number {

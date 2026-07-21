@@ -88,8 +88,8 @@ export function startPuddleLoop(options: PuddleLoopOptions): () => void {
 		const dt = last > 0 ? (time - last) / 1000 : 0;
 		last = time;
 		if (followCursor || deviceGravity) applyInteractiveTilt(dt, performance.now());
-		sim.advance(dt);
-		sim.clampMass(massCap);
+		const frameStats = sim.advance(dt);
+		sim.clampMass(massCap, frameStats);
 		draw();
 		raf = requestAnimationFrame(loop);
 	};
