@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { MediaQuery } from 'svelte/reactivity';
-	import { devicePixelRatio } from 'svelte/reactivity/window';
 
 	import { formatCss, parse, toGamut, type Color } from 'culori';
 	import { ElementSize } from 'runed';
@@ -61,7 +60,13 @@
 	const cssColor = $derived(formatCss(mapToSrgb(colorObj)));
 	const wideCssColor = $derived(formatCss(mapToP3(colorObj)));
 
-	let canvas = $state<HTMLCanvasElement | null>(null);
+	const instanceId = $props.id();
+	const shapeId = `${instanceId}-puddle-shape`;
+	const clipId = `${instanceId}-puddle-clip`;
+	// Full-host descendant overlays can reuse the silhouette with `clip-path: var(--puddle-clip)`.
+	const clipUrl = `url("#${clipId}")`;
+
+	let shape = $state<SVGPathElement | null>(null);
 	let host = $state<HTMLElement | null>(null);
 	const hostSize = new ElementSize(() => host);
 	const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
@@ -91,7 +96,6 @@
 	const screenAngle = () =>
 		(screen as unknown as { orientation?: { angle?: number } }).orientation?.angle ?? 0;
 
-	const dpr = $derived(devicePixelRatio.current ?? 1);
 	const cellCap = $derived(
 		Number.isFinite(maxCells) && maxCells >= 1 ? Math.floor(maxCells) : PUDDLE_DEFAULTS.maxCells,
 	);
@@ -103,6 +107,10 @@
 	);
 	const rows = $derived(
 		hostSize.height > 0 ? Math.min(cellCap, Math.max(6, Math.round(hostSize.height / cell))) : 0,
+	);
+	const viewBox = $derived(`0 0 ${Math.max(cols, 1).toString()} ${Math.max(rows, 1).toString()}`);
+	const clipTransform = $derived(
+		`scale(${(1 / Math.max(cols, 1)).toString()} ${(1 / Math.max(rows, 1)).toString()})`,
 	);
 
 	const sim = $derived.by(() => {
@@ -133,16 +141,12 @@
 	});
 
 	$effect(() => {
-		if (!browser || !canvas || !host || !sim || hostSize.width === 0 || hostSize.height === 0)
+		if (!browser || !shape || !host || !sim || hostSize.width === 0 || hostSize.height === 0)
 			return;
-		const target = canvas;
+		const target = shape;
 		const element = host;
 		const water = sim;
-		const cssW = hostSize.width;
-		const cssH = hostSize.height;
-		const pixelRatio = dpr;
 		const depthThreshold = threshold;
-		const fillColor = colorObj;
 		const follow = followCursor;
 		const tiltStrength = cursorTilt;
 		const tiltTau = cursorEase;
@@ -155,11 +159,7 @@
 				nx: water.nx,
 				ny: water.ny,
 				height: water.height,
-				cssW,
-				cssH,
-				dpr: pixelRatio,
 				threshold: depthThreshold,
-				color: fillColor,
 			});
 		};
 
@@ -193,15 +193,23 @@
 	onvisibilitychange={deviceGravity ? onVisibilityChange : undefined}
 />
 
-<div bind:this={host} class={['host', className]} {...rest}>
-	<div
-		class="fallback"
-		class:painted
-		style:--puddle-color={cssColor}
-		style:--puddle-color-wide={wideCssColor}
-		aria-hidden="true"
-	></div>
-	<canvas bind:this={canvas} class="renderer" aria-hidden="true"></canvas>
+<div
+	bind:this={host}
+	class={['host', className]}
+	{...rest}
+	style:--puddle-color={cssColor}
+	style:--puddle-color-wide={wideCssColor}
+	style:--puddle-clip={clipUrl}
+>
+	<div class="fallback" class:painted aria-hidden="true"></div>
+	<svg class="renderer" {viewBox} preserveAspectRatio="none" aria-hidden="true">
+		<defs>
+			<clipPath id={clipId} clipPathUnits="objectBoundingBox">
+				<use href={`#${shapeId}`} transform={clipTransform}></use>
+			</clipPath>
+		</defs>
+		<path bind:this={shape} id={shapeId} class="shape"></path>
+	</svg>
 	{@render children?.()}
 </div>
 
@@ -221,6 +229,12 @@
 		pointer-events: none;
 		z-index: -1;
 	}
+	.renderer {
+		shape-rendering: crispEdges;
+	}
+	.shape {
+		fill: var(--puddle-color, #141414);
+	}
 
 	/* No-JS backdrop: a plain rounded block in the puddle color until the sim paints. */
 	.fallback {
@@ -230,6 +244,9 @@
 	@supports (color: color(display-p3 1 0 0)) {
 		.fallback {
 			background: var(--puddle-color-wide, var(--puddle-color, #141414));
+		}
+		.shape {
+			fill: var(--puddle-color-wide, var(--puddle-color, #141414));
 		}
 	}
 	.fallback.painted {

@@ -2,17 +2,15 @@ import { expect, test } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 
 import Puddle from '../Puddle.svelte';
-import { nextFrame, paintedHalves } from './canvas';
+import { nextFrame, paintedHalves } from './svg';
 
 async function waitForPaintedHalves(
-	canvas: HTMLCanvasElement,
+	path: SVGPathElement,
 ): Promise<{ left: number; right: number }> {
 	let halves = { left: 0, right: 0 };
 	for (let i = 0; i < 120; i++) {
-		if (canvas.width > 0) {
-			halves = paintedHalves(canvas);
-			if (halves.left + halves.right > 0) break;
-		}
+		halves = paintedHalves(path);
+		if (halves.left + halves.right > 0) break;
 		await nextFrame();
 	}
 	return halves;
@@ -22,16 +20,18 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 	await render(Puddle, {
 		props: { animated: true, followCursor: true, style: 'width:760px;height:420px;' },
 	});
-	const canvas = document.querySelector('canvas');
-	expect(canvas).not.toBeNull();
-	if (!canvas) return;
+	const path = document.querySelector<SVGPathElement>('path.shape');
+	expect(path).not.toBeNull();
+	if (!path) return;
 
-	const before = await waitForPaintedHalves(canvas);
+	const before = await waitForPaintedHalves(path);
 	const total = before.left + before.right;
 	expect(total).toBeGreaterThan(0);
 
 	// Hold the cursor well to the right of the puddle and let the loop run.
-	const rect = canvas.getBoundingClientRect();
+	const rect = path.ownerSVGElement?.getBoundingClientRect();
+	expect(rect).toBeDefined();
+	if (!rect) return;
 	window.dispatchEvent(
 		new PointerEvent('pointermove', {
 			clientX: Math.min(window.innerWidth - 2, rect.right + 300),
@@ -45,7 +45,7 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 	let after = before;
 	for (let i = 0; i < 30 && after.right - after.left <= target; i++) {
 		await new Promise<void>((resolve) => void setTimeout(resolve, 500));
-		after = paintedHalves(canvas);
+		after = paintedHalves(path);
 	}
 	expect(after.right - after.left).toBeGreaterThan(target);
 });
@@ -61,11 +61,11 @@ test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
 			style: 'width:760px;height:420px;',
 		},
 	});
-	const canvas = document.querySelector('canvas');
-	expect(canvas).not.toBeNull();
-	if (!canvas) return;
+	const path = document.querySelector<SVGPathElement>('path.shape');
+	expect(path).not.toBeNull();
+	if (!path) return;
 
-	const before = await waitForPaintedHalves(canvas);
+	const before = await waitForPaintedHalves(path);
 	const total = before.left + before.right;
 	expect(total).toBeGreaterThan(0);
 
@@ -87,7 +87,7 @@ test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
 			}),
 		);
 		await new Promise<void>((resolve) => void setTimeout(resolve, 100));
-		after = paintedHalves(canvas);
+		after = paintedHalves(path);
 	}
 	expect(after.right - after.left).toBeGreaterThan(target);
 });

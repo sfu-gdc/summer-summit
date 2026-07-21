@@ -5,7 +5,7 @@
 	import { expect } from 'storybook/test';
 
 	import Puddle from '../Puddle.svelte';
-	import { waitForPaintedFraction } from '../tests/canvas';
+	import { waitForPaintedFraction } from '../tests/svg';
 	import { puddleStoryConfig } from './storyConfig';
 
 	type Args = ComponentProps<typeof Puddle>;
@@ -36,10 +36,10 @@
 	name="Default"
 	{template}
 	play={async ({ canvasElement }) => {
-		const canvas = canvasElement.querySelector('canvas');
-		await expect(canvas).not.toBeNull();
-		if (!canvas) return;
-		const fraction = await waitForPaintedFraction(canvas, 60);
+		const path = canvasElement.querySelector<SVGPathElement>('path.shape');
+		await expect(path).not.toBeNull();
+		if (!path) return;
+		const fraction = await waitForPaintedFraction(path, 60);
 		// A puddle covers part of the box but not all of it.
 		await expect(fraction).toBeGreaterThan(0.1);
 		await expect(fraction).toBeLessThan(0.95);

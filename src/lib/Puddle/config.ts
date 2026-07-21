@@ -7,6 +7,7 @@ import type { IntegratorId } from './waterSim';
 
 // Omit the deprecated HTML `color` attribute; intersecting with it would
 // collapse the prop type to `string` and reject culori Color objects.
+/** Descendants inherit `--puddle-clip`; full-host overlays can use it as their `clip-path`. */
 export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	/** Puddle fill color. Any CSS color string or culori Color. */
 	color?: string | Color;
