@@ -12,4 +12,5 @@ export {
 	type PaletteConfig,
 	type PaletteSwatch,
 } from './ColorPalette/palette';
+export { default as Puddle } from './Puddle/Puddle.svelte';
 export { default as SprayBorder } from './SprayBorder/SprayBorder.svelte';
