@@ -18,7 +18,7 @@ function percentile(values: number[], fraction: number): number {
 }
 
 function isNearShoreline(
-	depth: Float32Array,
+	depth: ArrayLike<number>,
 	nx: number,
 	ny: number,
 	column: number,

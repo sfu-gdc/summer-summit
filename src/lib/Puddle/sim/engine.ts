@@ -84,7 +84,7 @@ export class Engine {
 	}
 
 	/** Live ping-pong buffer; callers must not cache or write it. */
-	height(): Float32Array {
+	height(): ArrayLike<number> {
 		return this.resources.height().data;
 	}
 

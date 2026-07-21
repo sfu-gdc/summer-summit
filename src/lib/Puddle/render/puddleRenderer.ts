@@ -23,7 +23,7 @@ export interface PuddleRendererOptions {
 export interface PuddleRenderParams {
 	nx: number;
 	ny: number;
-	height: Float32Array;
+	height: ArrayLike<number>;
 	/** CSS pixel size of the box the puddle fills. */
 	cssW: number;
 	cssH: number;

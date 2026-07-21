@@ -1,9 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { createWaterSim } from '..';
 
-function minimumOf(values: Float32Array): number {
-	return values.reduce((minimum, value) => Math.min(minimum, value), Infinity);
+function minimumOf(values: ArrayLike<number>): number {
+	return Array.from(values).reduce((minimum, value) => Math.min(minimum, value), Infinity);
+}
+
+function allFinite(values: ArrayLike<number>): boolean {
+	return Array.from(values).every(Number.isFinite);
 }
 
 describe('createWaterSim — invariants', () => {
@@ -31,7 +35,7 @@ describe('createWaterSim — invariants', () => {
 			sim.clampMass(massCap);
 		}
 		expect(sim.totalMass()).toBeLessThanOrEqual(massCap + 1e-3);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 });
 
@@ -45,7 +49,7 @@ describe('createWaterSim — momentum integrator (pipes+momentum)', () => {
 		expect(Math.abs(sim.totalMass() - afterSplat) / afterSplat).toBeLessThan(1e-4);
 		expect(massBeforeSplat).toBeGreaterThan(0);
 		expect(minimumOf(sim.height)).toBeGreaterThanOrEqual(0);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 });
 
@@ -83,7 +87,7 @@ describe('createWaterSim — momentum shoreline stability', () => {
 		expect(
 			toggleCounts.reduce((maximum, count) => Math.max(maximum, count), 0),
 		).toBeLessThanOrEqual(2);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 		expect(Math.abs(sim.totalMass() - massStart) / massStart).toBeLessThan(1e-4);
 	});
 });
@@ -118,7 +122,7 @@ describe('createWaterSim — input validation', () => {
 	it('clamps non-finite / out-of-range params so the sim stays finite', () => {
 		const sim = createWaterSim({ nx: 40, ny: 24, damping: NaN, gravity: -10, level: Infinity });
 		sim.settle(120);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 });
 
@@ -139,7 +143,7 @@ describe('createWaterSim — construction tuning options', () => {
 			driftRateHz: 0.2,
 		});
 		sim.settle(120);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 });
 
@@ -169,14 +173,13 @@ describe('momentum tuning params — threaded to the momentum pass', () => {
 });
 
 describe('setTiltOffset — interactive gravity tilt', () => {
-	const halfMasses = (sim: { nx: number; height: Float32Array }) => {
-		return sim.height.reduce(
-			({ left, right }, depth, cellIndex) =>
-				cellIndex % sim.nx < sim.nx / 2
-					? { left: left + depth, right }
-					: { left, right: right + depth },
-			{ left: 0, right: 0 },
-		);
+	const halfMasses = (sim: { nx: number; height: ArrayLike<number> }) => {
+		const masses = { left: 0, right: 0 };
+		for (let cellIndex = 0; cellIndex < sim.height.length; cellIndex++) {
+			const side = cellIndex % sim.nx < sim.nx / 2 ? 'left' : 'right';
+			masses[side] += sim.height[cellIndex] ?? 0;
+		}
+		return masses;
 	};
 
 	it('shifts mass toward +x for a negative x offset (flux-pass sign convention)', () => {
@@ -213,7 +216,7 @@ describe('facade — non-finite input guards', () => {
 		sim.step(NaN);
 		sim.clampMass(NaN);
 		for (let frameIndex = 0; frameIndex < 30; frameIndex++) sim.advance(1 / 60);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 
 	it('clamps a negative clampMass target to zero instead of flipping depths', () => {
@@ -221,16 +224,12 @@ describe('facade — non-finite input guards', () => {
 		sim.settle(40);
 		sim.clampMass(-5);
 		expect(minimumOf(sim.height)).toBeGreaterThanOrEqual(0);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(allFinite(sim.height)).toBe(true);
 	});
 
-	it('hands out a snapshot: writing to sim.height cannot corrupt sim state', () => {
+	it('exposes height as a read-only array-like view', () => {
 		const sim = createWaterSim({ nx: 24, ny: 16, seed: 4 });
-		sim.settle(40);
-		// Scribble on the returned buffer — a live-buffer leak would poison the field.
-		sim.height.fill(NaN);
-		sim.advance(1 / 60);
-		expect(Number.isFinite(sim.totalMass())).toBe(true);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expectTypeOf(sim.height).toEqualTypeOf<ArrayLike<number>>();
+		expect(sim.height.length).toBe(sim.nx * sim.ny);
 	});
 });

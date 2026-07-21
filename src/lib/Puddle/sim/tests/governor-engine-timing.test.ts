@@ -65,6 +65,6 @@ describe('advance — framerate independence (governor accumulator)', () => {
 		const sim = createWaterSim({ nx: 32, ny: 20, seed: 2, maxSubsteps: 1 });
 		sim.settle(20);
 		expect(sim.advance(10).substeps).toBeLessThanOrEqual(1);
-		expect(sim.height.every(Number.isFinite)).toBe(true);
+		expect(Array.from(sim.height).every(Number.isFinite)).toBe(true);
 	});
 });

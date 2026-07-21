@@ -16,7 +16,6 @@ export class WaterSim {
 	readonly ny: number;
 
 	private readonly engine: ReturnType<typeof createConfiguredEngine>;
-	private readonly heightSnapshot: Float32Array;
 	private readonly tiltOffset = { x: 0, y: 0 };
 
 	constructor(options: WaterSimOptions) {
@@ -24,18 +23,11 @@ export class WaterSim {
 		this.nx = config.grid.nx;
 		this.ny = config.grid.ny;
 		this.engine = createConfiguredEngine(config);
-
-		// Hide the mutable, ping-pong engine buffer behind a reused snapshot.
-		this.heightSnapshot = new Float32Array(this.nx * this.ny);
 	}
 
-	/**
-	 * Current per-cell depth for rendering. This reused snapshot is overwritten on
-	 * each access; copy it to retain a frame's values.
-	 */
-	get height(): Float32Array {
-		this.heightSnapshot.set(this.engine.height());
-		return this.heightSnapshot;
+	/** Current per-cell depth for rendering. Copy it to retain a frame's values. */
+	get height(): ArrayLike<number> {
+		return this.engine.height();
 	}
 
 	/** Run substeps to bring poured water to rest (deterministic). */
