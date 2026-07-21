@@ -4,7 +4,7 @@ import type { IntegratorId } from '../integrators';
 export const SIM_DEFAULTS = {
 	level: 0.42,
 	integrator: 'pipes+momentum',
-	momentumSmoothing: 0,
+	momentumSmoothing: 0.1,
 	momentumRetention: 0.98,
 	gravityDrift: true,
 	driftAmp: 1,

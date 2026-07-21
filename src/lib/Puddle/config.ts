@@ -114,7 +114,7 @@ export const PUDDLE_DEFAULTS = {
 	animated: false,
 	followCursor: false,
 	integrator: 'pipes+momentum',
-	momentumSmoothing: 0,
+	momentumSmoothing: 0.1,
 	momentumRetention: 0.98,
 	timeScale: 6,
 	baseSubstep: 0.08,
