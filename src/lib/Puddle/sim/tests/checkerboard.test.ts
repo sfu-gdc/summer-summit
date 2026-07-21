@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createWaterSim } from '../index';
+import { createWaterSim, SIM_DEFAULTS } from '../index';
 import type { FluxField } from '../types';
 
 interface InternalSim {
@@ -146,5 +146,43 @@ describe('momentum checkerboard regression', () => {
 		// A coherent checkerboard approaches 1 for both metrics.
 		expect(percentile(parity, 0.95)).toBeLessThan(0.03);
 		expect(percentile(lag, 0.95)).toBeLessThan(0.17);
+	});
+
+	it('does not immediately reverse threshold state under default high-motion momentum', () => {
+		const nx = 63;
+		const ny = 35;
+		const threshold = 0.065;
+		const sim = createWaterSim({
+			nx,
+			ny,
+			seed: 7,
+			integrator: SIM_DEFAULTS.integrator,
+			level: 0.46,
+			momentumSmoothing: SIM_DEFAULTS.momentumSmoothing,
+			momentumRetention: SIM_DEFAULTS.momentumRetention,
+			gravityDrift: false,
+		});
+		sim.settle(90);
+		const massCap = sim.totalMass();
+		sim.setTiltOffset(-2, 0);
+
+		const mask = () => Uint8Array.from(sim.height, (height) => (height > threshold ? 1 : 0));
+		let twoFramesAgo = mask();
+		let previous = twoFramesAgo;
+		let oneFrameReversals = 0;
+		for (let frame = 0; frame < 300; frame++) {
+			const stats = sim.advance(1 / 60);
+			sim.clampMass(massCap, stats);
+			const current = mask();
+			for (let cell = 0; cell < current.length; cell++) {
+				if (current[cell] === twoFramesAgo[cell] && current[cell] !== previous[cell]) {
+					oneFrameReversals++;
+				}
+			}
+			twoFramesAgo = previous;
+			previous = current;
+		}
+
+		expect(oneFrameReversals).toBeLessThanOrEqual(100);
 	});
 });
