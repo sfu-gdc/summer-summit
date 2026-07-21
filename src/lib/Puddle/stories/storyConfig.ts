@@ -28,7 +28,7 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	minWaveDepth: { control: { type: 'range', min: 0.0001, max: 0.05, step: 0.0005 } },
 	settleSubsteps: { control: { type: 'range', min: 0, max: 200, step: 10 } },
 	gravityDrift: { control: 'boolean' },
-	driftAmp: { control: { type: 'range', min: 0, max: 8, step: 0.5 } },
+	driftAmp: { control: { type: 'range', min: 0, max: 8, step: 0.05 } },
 	driftRateHz: { control: { type: 'range', min: 0, max: 0.5, step: 0.01 } },
 	rainInterval: { control: { type: 'range', min: 0.1, max: 3, step: 0.1 } },
 	rainAmount: { control: { type: 'range', min: 0, max: 0.3, step: 0.01 } },
