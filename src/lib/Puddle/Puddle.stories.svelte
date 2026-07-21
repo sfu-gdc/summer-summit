@@ -47,6 +47,10 @@
 			rainAmount: 0.06,
 			rainRadius: 1.5,
 			maxCells: 200,
+			deviceGravity: false,
+			deviceTilt: 6,
+			deviceEase: 0.18,
+			deviceNeutralWindow: 2,
 		},
 		argTypes: {
 			cellSize: { control: { type: 'range', min: 12, max: 60, step: 1 } },
@@ -74,6 +78,10 @@
 			maxCells: { control: { type: 'range', min: 20, max: 200, step: 10 } },
 			cursorTilt: { control: { type: 'range', min: 0, max: 2, step: 0.1 } },
 			cursorEase: { control: { type: 'range', min: 0.05, max: 1.5, step: 0.05 } },
+			deviceGravity: { control: 'boolean' },
+			deviceTilt: { control: { type: 'range', min: 0, max: 12, step: 0.5 } },
+			deviceEase: { control: { type: 'range', min: 0.05, max: 1.5, step: 0.05 } },
+			deviceNeutralWindow: { control: { type: 'range', min: 0, max: 10, step: 0.25 } },
 			color: { control: 'color' },
 		},
 		parameters: {
@@ -106,10 +114,23 @@
 					'maxCells',
 					'cursorTilt',
 					'cursorEase',
+					'deviceGravity',
+					'deviceTilt',
+					'deviceEase',
+					'deviceNeutralWindow',
 				],
 			},
 		},
 	});
+</script>
+
+<script lang="ts">
+	import { requestDeviceGravityPermission, type DeviceGravityPermission } from './deviceGravity';
+
+	let devicePermission = $state<DeviceGravityPermission | 'idle'>('idle');
+	const enableDeviceGravity = async () => {
+		devicePermission = await requestDeviceGravityPermission();
+	};
 </script>
 
 {#snippet template(args: Args)}
@@ -162,3 +183,14 @@
 
 <!-- Gravity gently leans toward the pointer, so the puddle follows the cursor. -->
 <Story name="Cursor" {template} args={{ animated: true, followCursor: true }} />
+
+{#snippet device(args: Args)}
+	<div style="background:#c7f735; padding:48px; display:grid; gap:16px; justify-items:start;">
+		<button type="button" onclick={enableDeviceGravity}>Enable device motion</button>
+		<span>Permission: {devicePermission}</span>
+		<Puddle {...args} style="width: 760px; height: 420px;" />
+	</div>
+{/snippet}
+
+<!-- Device motion requires HTTPS and, on some browsers, this explicit user gesture. -->
+<Story name="Device Gravity" template={device} args={{ animated: true, deviceGravity: true }} />

@@ -136,3 +136,52 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 	}
 	expect(after.right - after.left).toBeGreaterThan(target);
 });
+
+test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
+	await render(Puddle, {
+		props: {
+			animated: true,
+			deviceGravity: true,
+			deviceTilt: 8,
+			deviceEase: 0.05,
+			deviceNeutralWindow: 10,
+			style: 'width:760px;height:420px;',
+		},
+	});
+	const canvas = document.querySelector('canvas');
+	expect(canvas).not.toBeNull();
+	if (!canvas) return;
+
+	let before = { left: 0, right: 0 };
+	for (let i = 0; i < 120; i++) {
+		if (canvas.width > 0) {
+			before = paintedHalves(canvas);
+			if (before.left + before.right > 0) break;
+		}
+		await nextFrame();
+	}
+	const total = before.left + before.right;
+	expect(total).toBeGreaterThan(0);
+
+	window.dispatchEvent(
+		new DeviceMotionEvent('devicemotion', {
+			accelerationIncludingGravity: { x: 0, y: 0, z: 9.8 },
+			interval: 16,
+		}),
+	);
+	await new Promise<void>((resolve) => void setTimeout(resolve, 100));
+
+	const target = before.right - before.left + total * 0.02;
+	let after = before;
+	for (let i = 0; i < 30 && after.right - after.left <= target; i++) {
+		window.dispatchEvent(
+			new DeviceMotionEvent('devicemotion', {
+				accelerationIncludingGravity: { x: -9.8, y: 0, z: 0 },
+				interval: 16,
+			}),
+		);
+		await new Promise<void>((resolve) => void setTimeout(resolve, 100));
+		after = paintedHalves(canvas);
+	}
+	expect(after.right - after.left).toBeGreaterThan(target);
+});

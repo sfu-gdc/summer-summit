@@ -9,6 +9,7 @@
 
 	import { browser } from '$app/environment';
 
+	import { createDeviceGravityEstimator } from './deviceGravity';
 	import { createPuddleRenderer } from './puddleRenderer';
 	import { createWaterSim, PUDDLE_DEFAULTS, type IntegratorId } from './waterSim';
 
@@ -67,6 +68,14 @@
 		cursorTilt?: number;
 		/** Cursor-follow easing time-constant in seconds (only with `followCursor`). */
 		cursorEase?: number;
+		/** Lean with device motion sensors after permission is requested. Needs `animated`; ignored under prefers-reduced-motion. */
+		deviceGravity?: boolean;
+		/** Maximum device-driven in-plane gravity. */
+		deviceTilt?: number;
+		/** Device-gravity easing time-constant in seconds. */
+		deviceEase?: number;
+		/** Trailing window averaged as the neutral device orientation, in seconds. Zero disables neutralization. */
+		deviceNeutralWindow?: number;
 		children?: Snippet;
 	};
 
@@ -97,6 +106,10 @@
 		maxCells = 200,
 		cursorTilt = PUDDLE_DEFAULTS.cursorTilt,
 		cursorEase = PUDDLE_DEFAULTS.cursorEase,
+		deviceGravity = false,
+		deviceTilt = 6,
+		deviceEase = 0.18,
+		deviceNeutralWindow = 2,
 		class: className,
 		children,
 		...rest
@@ -118,6 +131,12 @@
 	const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 	// Per-instance renderer: owns its scratch canvas + reusable ImageData.
 	const renderer = createPuddleRenderer();
+	const deviceGravityEstimator = createDeviceGravityEstimator();
+	const deviceNeutralSeconds = $derived(
+		Number.isFinite(deviceNeutralWindow) && deviceNeutralWindow >= 0
+			? Math.min(deviceNeutralWindow, 60)
+			: 2,
+	);
 
 	// Stays false without JS, keeping the CSS fallback backdrop visible.
 	let painted = $state(false);
@@ -131,6 +150,15 @@
 	const clearPointer = () => {
 		pointer = null; // ease back to level when the cursor leaves the page
 	};
+	const onDeviceMotion = (event: DeviceMotionEvent) => {
+		deviceGravityEstimator.update(event, performance.now(), deviceNeutralSeconds);
+	};
+	const onVisibilityChange = () => {
+		if (document.hidden) deviceGravityEstimator.reset();
+	};
+	// Older sensor-capable Safari lacks the Screen Orientation API.
+	const screenAngle = () =>
+		(screen as unknown as { orientation?: { angle?: number } }).orientation?.angle ?? 0;
 
 	const dpr = $derived(devicePixelRatio.current ?? 1);
 	// Clamp cell size and grid so a zero / non-finite / tiny cellSize can't divide
@@ -207,13 +235,19 @@
 		const follow = followCursor;
 		const tiltStrength = cursorTilt;
 		const tiltTau = cursorEase;
+		const followDevice = deviceGravity;
+		const deviceStrength = Number.isFinite(deviceTilt) ? Math.max(0, deviceTilt) : 6;
+		const deviceTau = Number.isFinite(deviceEase) && deviceEase > 0 ? deviceEase : 0.18;
+		const neutralWindow = deviceNeutralSeconds;
 		// Eased tilt state, in unit direction toward the cursor.
 		let tiltX = 0;
 		let tiltY = 0;
-		const applyCursorTilt = (dt: number) => {
+		let deviceX = 0;
+		let deviceY = 0;
+		const applyInteractiveTilt = (dt: number, now: number) => {
 			let gx = 0;
 			let gy = 0;
-			if (pointer) {
+			if (follow && pointer) {
 				const r = el.getBoundingClientRect();
 				const dx = pointer.x - (r.left + r.width / 2);
 				const dy = pointer.y - (r.top + r.height / 2);
@@ -226,12 +260,19 @@
 					gy = (dy / len) * m;
 				}
 			}
-			const k = 1 - Math.exp(-dt / tiltTau);
-			tiltX += (gx - tiltX) * k;
-			tiltY += (gy - tiltY) * k;
+			const cursorK = 1 - Math.exp(-dt / tiltTau);
+			tiltX += (gx - tiltX) * cursorK;
+			tiltY += (gy - tiltY) * cursorK;
+
+			const deviceTarget = followDevice
+				? deviceGravityEstimator.tilt(now, screenAngle(), deviceStrength, neutralWindow)
+				: null;
+			const deviceK = 1 - Math.exp(-dt / deviceTau);
+			deviceX += ((deviceTarget?.x ?? 0) - deviceX) * deviceK;
+			deviceY += ((deviceTarget?.y ?? 0) - deviceY) * deviceK;
 			// negative tilt drives flow toward +axis (flux pass: dt·(g·dEta − tilt)),
 			// and grid +y is screen-down, matching clientY
-			s.setTiltOffset(-tiltStrength * tiltX, -tiltStrength * tiltY);
+			s.setTiltOffset(-tiltStrength * tiltX + deviceX, -tiltStrength * tiltY + deviceY);
 		};
 
 		const cap = s.totalMass(); // raindrops add mass; cap keeps the level steady
@@ -241,7 +282,7 @@
 		const loop = (t: number) => {
 			const dt = last > 0 ? (t - last) / 1000 : 0; // real elapsed seconds
 			last = t;
-			if (follow) applyCursorTilt(dt);
+			if (follow || followDevice) applyInteractiveTilt(dt, performance.now());
 			s.advance(dt); // framerate-independent stepping
 			s.clampMass(cap);
 			draw();
@@ -256,6 +297,7 @@
 		const stop = () => {
 			running = false;
 			cancelAnimationFrame(raf);
+			deviceGravityEstimator.reset();
 		};
 
 		// Don't burn CPU rippling a puddle that's scrolled out of view.
@@ -275,8 +317,12 @@
 <svelte:window
 	onpointermove={followCursor ? onPointerMove : undefined}
 	onblur={followCursor ? clearPointer : undefined}
+	ondevicemotion={deviceGravity && animated && !reducedMotion.current ? onDeviceMotion : undefined}
 />
-<svelte:document onmouseleave={followCursor ? clearPointer : undefined} />
+<svelte:document
+	onmouseleave={followCursor ? clearPointer : undefined}
+	onvisibilitychange={deviceGravity ? onVisibilityChange : undefined}
+/>
 
 <div bind:this={host} class={['host', className]} {...rest}>
 	<div class="fallback" class:painted style:--puddle-color={cssColor} aria-hidden="true"></div>
