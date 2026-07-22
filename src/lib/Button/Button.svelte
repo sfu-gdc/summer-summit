@@ -27,9 +27,9 @@
 	{...sprayOpts}
 	as={restProps.href != null ? 'a' : 'button'}
 	{...restProps as HTMLAttributes<HTMLElement>}
-	color={brandColorValues.shade[800]}
+	color={brandColorValues.primary[800]}
 	class={[
-		'text-white tracking-wider font-bold font-sans px-5 outline-4 outline-transparent outline-offset--4 inline-flex gap-2 h-14 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center disabled:text-brand-shade-300 disabled:bg-brand-shade-700 disabled:cursor-not-allowed active:scale-[0.98] focus-visible:rounded-lg focus-visible:not-disabled:outline-brand-shade-800 focus-visible:not-disabled:outline-offset-4 hover:text-brand-secondary-50',
+		'text-white tracking-wider font-bold font-sans px-5 outline-4 outline-transparent outline-offset--4 inline-flex gap-2 h-14 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center disabled:text-brand-primary-300 disabled:bg-brand-primary-700 disabled:cursor-not-allowed active:scale-[0.98] focus-visible:rounded-lg focus-visible:not-disabled:outline-brand-primary-800 focus-visible:not-disabled:outline-offset-4 hover:text-brand-primary-50',
 		'bg-transparent',
 		className,
 	]}

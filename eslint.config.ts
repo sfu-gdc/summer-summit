@@ -218,6 +218,12 @@ export default defineConfig(
 					allowNullableBoolean: true,
 				},
 			],
+			'@typescript-eslint/restrict-template-expressions': [
+				'error',
+				{
+					allowNumber: true,
+				},
+			],
 
 			'@stylistic/quotes': ['error', 'single', { avoidEscape: true, ignoreStringLiterals: true }],
 			'@typescript-eslint/no-unused-vars': [

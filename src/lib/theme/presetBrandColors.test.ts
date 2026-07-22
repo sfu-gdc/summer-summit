@@ -21,10 +21,13 @@ describe('presetBrandColors', () => {
 				presetBrandColors({ values: brandColorValues, references: brandColors }),
 			],
 		});
-		const { css } = await uno.generate('bg-brand-primary-500');
+		const { css } = await uno.generate('bg-brand-primary-500 bg-brand-secondary-500');
 
 		expect(css).toContain('--brand-primary-500: rgb(');
+		expect(css).toContain('--brand-secondary-500: rgb(');
 		expect(css).toContain('.bg-brand-primary-500');
 		expect(css).toContain('var(--brand-primary-500)');
+		expect(css).toContain('.bg-brand-secondary-500');
+		expect(css).toContain('var(--brand-secondary-500)');
 	});
 });

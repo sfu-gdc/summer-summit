@@ -35,7 +35,7 @@
 			radius: 9,
 			density: 1,
 			seed: 7,
-			color: brandColorValues.shade['800'],
+			color: brandColorValues.primary['800'],
 		},
 		argTypes: {
 			spread: { control: { type: 'range', min: 4, max: 40, step: 1 } },
