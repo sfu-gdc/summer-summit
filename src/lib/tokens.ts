@@ -84,10 +84,21 @@ function generateColors(colors: Record<number, string>): ColorScale {
 	) as ColorScale;
 }
 
-export const brandColors = {
+export const brandColorValues = {
 	primary: generateColors(shapeShadows(brand.primary, shadowGamma.primary)),
 	secondary: generateColors(shapeShadows(brand.secondary, shadowGamma.secondary)),
 	shade: generateColors(shapeShadows(brand.shade, shadowGamma.shade)),
+};
+
+type BrandColorValues = typeof brandColorValues;
+
+export const brandColors = Object.fromEntries(
+	Object.entries(brandColorValues).map(([family, colors]) => [
+		family,
+		Object.fromEntries(Object.keys(colors).map((stop) => [stop, `var(--brand-${family}-${stop})`])),
+	]),
+) as {
+	[Family in keyof BrandColorValues]: { [Stop in keyof BrandColorValues[Family]]: string };
 };
 
 export const fonts = {
