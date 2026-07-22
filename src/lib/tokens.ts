@@ -59,8 +59,9 @@ export const brandColors = {
 } as const;
 
 export const fonts = {
-	sans: 'Work Sans Variable',
-	hero: 'Syncopate',
+	body: 'PP Neue Montreal',
+	header: 'Redaction 35',
+	art: 'Redaction 50',
 } as const;
 
 export type SizeName = string;

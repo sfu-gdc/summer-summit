@@ -13,12 +13,12 @@ importers:
 
   .:
     dependencies:
-      '@fontsource-variable/work-sans':
-        specifier: ^5.2.8
-        version: 5.2.8
-      '@fontsource/syncopate':
-        specifier: ^5.2.8
-        version: 5.2.8
+      '@fontsource/redaction-35':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/redaction-50':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@unocss/preset-wind4':
         specifier: ^66.7.5
         version: 66.7.5
@@ -636,11 +636,11 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@fontsource-variable/work-sans@5.2.8':
-    resolution: {integrity: sha512-8uWtTt0/B5NxGie9xUVD5y5Ch4Q+Hy7kFYKtUpwYbzSAgJEoaMxT8rMnfnK7zfAYSLC8GnGO1/tXrFtKIYYQVQ==}
+  '@fontsource/redaction-35@5.3.0':
+    resolution: {integrity: sha512-c4n4fgTbYoiyODKvasBWjj1EzV9G+X2oYDgr1PPShIO3rzM50CYvlJ+VCpgBmNyw9l8D/6T1PUmn8ZGgzOlV3g==}
 
-  '@fontsource/syncopate@5.2.8':
-    resolution: {integrity: sha512-8r+Qyb9nmwfBiR1GWZeCOskoF9pw7ZZ8g/eOswocew2H3REt+UNItmxcOUoVbpXVALG+SdRvdqDpxC4sBskaxA==}
+  '@fontsource/redaction-50@5.3.0':
+    resolution: {integrity: sha512-gB62yw+lqqRW21fZA/i+O4icjaXlKfdmrwzrJoyZzMJ5PJknBAdUBcKdF+Vhyw9T9vSoU7/hf5J12tjOvnT0+Q==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -4057,9 +4057,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fontsource-variable/work-sans@5.2.8': {}
+  '@fontsource/redaction-35@5.3.0': {}
 
-  '@fontsource/syncopate@5.2.8': {}
+  '@fontsource/redaction-50@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
