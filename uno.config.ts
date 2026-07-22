@@ -10,7 +10,8 @@ import {
 } from 'unocss';
 import extractorSvelte from '@unocss/extractor-svelte';
 
-import { brandColors, fonts } from './src/lib/tokens';
+import { presetBrandColors } from './src/lib/theme/presetBrandColors';
+import { brandColors, brandColorValues, fonts } from './src/lib/tokens';
 
 export default defineConfig({
 	presets: [
@@ -19,6 +20,7 @@ export default defineConfig({
 				reset: true,
 			},
 		}),
+		presetBrandColors({ values: brandColorValues, references: brandColors }),
 		presetIcons({
 			warn: true,
 		}),
@@ -30,9 +32,4 @@ export default defineConfig({
 	],
 	transformers: [transformerVariantGroup(), transformerDirectives(), transformerCompileClass()],
 	extractors: [extractorSvelte()],
-	theme: {
-		colors: {
-			brand: brandColors,
-		},
-	},
 });

@@ -4,7 +4,7 @@
 
 	import { expect } from 'storybook/test';
 
-	import { brandColors } from '$lib/tokens';
+	import { brandColorValues } from '$lib/tokens';
 
 	import SprayBorder from './SprayBorder.svelte';
 
@@ -35,7 +35,7 @@
 			radius: 9,
 			density: 1,
 			seed: 7,
-			color: brandColors.shade['800'],
+			color: brandColorValues.primary['800'],
 		},
 		argTypes: {
 			spread: { control: { type: 'range', min: 4, max: 40, step: 1 } },

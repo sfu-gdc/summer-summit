@@ -36,19 +36,19 @@
 	<div class="flex flex-wrap gap-8 items-start">
 		<div class="flex flex-col gap-3 items-center">
 			<Button {...args}>Notify me</Button>
-			<span class="text-xs text-brand-shade-500 tracking-wide font-sans uppercase">Default</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Default</span>
 		</div>
 		<div class="pseudo-hover-all flex flex-col gap-3 items-center">
 			<Button {...args}>Notify me</Button>
-			<span class="text-xs text-brand-shade-500 tracking-wide font-sans uppercase">Hover</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Hover</span>
 		</div>
 		<div class="pseudo-active-all flex flex-col gap-3 items-center">
 			<Button {...args}>Notify me</Button>
-			<span class="text-xs text-brand-shade-500 tracking-wide font-sans uppercase">Active</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Active</span>
 		</div>
 		<div class="pseudo-focus-visible-all flex flex-col gap-3 items-center">
 			<Button {...args}>Notify me</Button>
-			<span class="text-xs text-brand-shade-500 tracking-wide font-sans uppercase"
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase"
 				>Focus Visible</span
 			>
 		</div>
