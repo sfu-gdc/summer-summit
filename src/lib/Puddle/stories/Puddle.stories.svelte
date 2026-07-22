@@ -8,12 +8,39 @@
 	import { waitForPaintedFraction } from '../tests/svg';
 	import { puddleStoryConfig } from './storyConfig';
 
-	type Args = ComponentProps<typeof Puddle>;
+	type Args = ComponentProps<typeof Puddle> & {
+		backgroundColor: string;
+		puddleTextColor: string;
+		textColor: string;
+	};
 
-	const { Story } = defineMeta({
+	const { Story } = defineMeta<typeof template, typeof Puddle>({
 		title: 'Puddle',
 		component: Puddle,
 		...puddleStoryConfig,
+		args: {
+			...puddleStoryConfig.args,
+			backgroundColor: '#c7f735',
+			puddleTextColor: '#ffffff',
+			textColor: '#000000',
+		},
+		argTypes: {
+			...puddleStoryConfig.argTypes,
+			backgroundColor: { control: 'color' },
+			puddleTextColor: { control: 'color' },
+			textColor: { control: 'color' },
+		},
+		parameters: {
+			...puddleStoryConfig.parameters,
+			controls: {
+				include: [
+					...puddleStoryConfig.parameters.controls.include,
+					'backgroundColor',
+					'puddleTextColor',
+					'textColor',
+				],
+			},
+		},
 	});
 </script>
 
@@ -26,8 +53,13 @@
 	};
 </script>
 
-{#snippet template(args: Args)}
-	<div style="background:#c7f735; padding:48px;">
+{#snippet template({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
+	<div
+		style="padding:48px;"
+		style:--puddle-text-color={puddleTextColor}
+		style:background-color={backgroundColor}
+		style:color={textColor}
+	>
 		<Puddle {...args} style="width: 760px; height: 420px;" />
 	</div>
 {/snippet}
@@ -47,12 +79,17 @@
 />
 
 <!-- The landing-page hero: puddle behind the title. -->
-{#snippet hero(args: Args)}
-	<div style="background:#c7f735; padding:48px;">
+{#snippet hero({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
+	<div
+		style="padding:48px;"
+		style:--puddle-text-color={puddleTextColor}
+		style:background-color={backgroundColor}
+		style:color={textColor}
+	>
 		<Puddle {...args} style="width: 820px; height: 460px;">
 			<div style="position:absolute; inset:0; display:grid; place-items:center; padding:40px;">
 				<span
-					style="color:black; font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+					style="font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
 					>SUMMER SUMMIT<br />GAME JAM 2026</span
 				>
 			</div>
@@ -61,7 +98,7 @@
 				style="position:absolute; inset:0; display:grid; place-items:center; padding:40px; clip-path:var(--puddle-clip);"
 			>
 				<span
-					style="color:white; font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+					style="color:var(--puddle-text-color); font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
 					>SUMMER SUMMIT<br />GAME JAM 2026</span
 				>
 			</div>
@@ -80,8 +117,13 @@
 <!-- Gravity gently leans toward the pointer, so the puddle follows the cursor. -->
 <Story name="Cursor" {template} args={{ animated: true, followCursor: true }} />
 
-{#snippet device(args: Args)}
-	<div style="background:#c7f735; padding:48px; display:grid; gap:16px; justify-items:start;">
+{#snippet device({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
+	<div
+		style="padding:48px; display:grid; gap:16px; justify-items:start;"
+		style:--puddle-text-color={puddleTextColor}
+		style:background-color={backgroundColor}
+		style:color={textColor}
+	>
 		<button type="button" onclick={enableDeviceGravity}>Enable device motion</button>
 		<span>Permission: {devicePermission}</span>
 		<Puddle {...args} style="width: 760px; height: 420px;" />
