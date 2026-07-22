@@ -12,8 +12,8 @@ type PuddleMeta = Meta<typeof Puddle>;
 
 const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	cellSize: { control: { type: 'range', min: 12, max: 60, step: 1 } },
-	threshold: { control: { type: 'range', min: 0.005, max: 0.3, step: 0.005 } },
-	level: { control: { type: 'range', min: 0.3, max: 1, step: 0.02 } },
+	threshold: { control: { type: 'range', min: 0, max: 0.3, step: 0.005 } },
+	level: { control: { type: 'range', min: 0.3, max: 4, step: 0.02 } },
 	seed: { control: { type: 'range', min: 1, max: 40, step: 1 } },
 	noiseAmp: { control: { type: 'range', min: 0, max: 0.8, step: 0.02 } },
 	animated: { control: 'boolean' },
@@ -34,7 +34,7 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	rainAmount: { control: { type: 'range', min: 0, max: 0.3, step: 0.01 } },
 	rainRadius: { control: { type: 'range', min: 0.5, max: 5, step: 0.5 } },
 	maxCells: { control: { type: 'range', min: 20, max: 200, step: 10 } },
-	cursorTilt: { control: { type: 'range', min: 0, max: 2, step: 0.1 } },
+	cursorTilt: { control: { type: 'range', min: 0, max: 8, step: 0.1 } },
 	cursorEase: { control: { type: 'range', min: 0.05, max: 1.5, step: 0.05 } },
 	deviceGravity: { control: 'boolean' },
 	deviceTilt: { control: { type: 'range', min: 0, max: 12, step: 0.5 } },
