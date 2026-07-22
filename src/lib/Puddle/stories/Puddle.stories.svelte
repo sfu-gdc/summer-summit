@@ -49,14 +49,22 @@
 <!-- The landing-page hero: puddle behind the title. -->
 {#snippet hero(args: Args)}
 	<div style="background:#c7f735; padding:48px;">
-		<Puddle
-			{...args}
-			style="width: 820px; height: 460px; display:grid; place-items:center; padding:40px;"
-		>
-			<span
-				style="color:white; font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
-				>SUMMER SUMMIT<br />GAME JAM 2026</span
+		<Puddle {...args} style="width: 820px; height: 460px;">
+			<div style="position:absolute; inset:0; display:grid; place-items:center; padding:40px;">
+				<span
+					style="color:black; font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+					>SUMMER SUMMIT<br />GAME JAM 2026</span
+				>
+			</div>
+			<div
+				aria-hidden="true"
+				style="position:absolute; inset:0; display:grid; place-items:center; padding:40px; clip-path:var(--puddle-clip);"
 			>
+				<span
+					style="color:white; font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+					>SUMMER SUMMIT<br />GAME JAM 2026</span
+				>
+			</div>
 		</Puddle>
 	</div>
 {/snippet}
