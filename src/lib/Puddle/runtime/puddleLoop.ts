@@ -1,4 +1,4 @@
-import type { DeviceGravityEstimator } from '../device';
+import type { DeviceMotionEstimator } from '../device';
 import type { WaterSim } from '../sim';
 
 export interface PointerPosition {
@@ -9,7 +9,7 @@ export interface PointerPosition {
 export interface PuddleLoopOptions {
 	readonly host: HTMLElement;
 	readonly sim: Pick<WaterSim, 'advance' | 'clampMass' | 'setTiltOffset' | 'totalMass'>;
-	readonly deviceGravityEstimator: Pick<DeviceGravityEstimator, 'reset' | 'tilt'>;
+	readonly deviceMotionEstimator: Pick<DeviceMotionEstimator, 'reset' | 'tilt'>;
 	readonly draw: () => void;
 	readonly getPointer: () => PointerPosition | null;
 	readonly followCursor: boolean;
@@ -18,7 +18,6 @@ export interface PuddleLoopOptions {
 	readonly deviceGravity: boolean;
 	readonly deviceTilt: number;
 	readonly deviceEase: number;
-	readonly deviceNeutralWindow: number;
 	readonly screenAngle: () => number;
 }
 
@@ -31,7 +30,7 @@ export function startPuddleLoop(options: PuddleLoopOptions): () => void {
 	const {
 		host,
 		sim,
-		deviceGravityEstimator,
+		deviceMotionEstimator,
 		draw,
 		getPointer,
 		followCursor,
@@ -40,7 +39,6 @@ export function startPuddleLoop(options: PuddleLoopOptions): () => void {
 		deviceGravity,
 		deviceTilt,
 		deviceEase,
-		deviceNeutralWindow,
 		screenAngle,
 	} = options;
 	const deviceStrength = Number.isFinite(deviceTilt) ? Math.max(0, deviceTilt) : 6;
@@ -71,7 +69,7 @@ export function startPuddleLoop(options: PuddleLoopOptions): () => void {
 		tiltY += (gy - tiltY) * cursorK;
 
 		const deviceTarget = deviceGravity
-			? deviceGravityEstimator.tilt(now, screenAngle(), deviceStrength, deviceNeutralWindow)
+			? deviceMotionEstimator.tilt(now, screenAngle(), deviceStrength)
 			: null;
 		const deviceK = 1 - Math.exp(-dt / deviceTau);
 		deviceX += ((deviceTarget?.x ?? 0) - deviceX) * deviceK;
@@ -102,7 +100,10 @@ export function startPuddleLoop(options: PuddleLoopOptions): () => void {
 	const stop = (): void => {
 		running = false;
 		cancelAnimationFrame(raf);
-		deviceGravityEstimator.reset();
+		deviceX = 0;
+		deviceY = 0;
+		deviceMotionEstimator.reset();
+		sim.setTiltOffset(0, 0);
 	};
 
 	const observer = new IntersectionObserver(([entry]) => {

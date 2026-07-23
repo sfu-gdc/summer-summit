@@ -1,11 +1,6 @@
 export type DeviceGravityPermission = 'granted' | 'denied' | 'unsupported';
 
 export interface DeviceMotionReading {
-	readonly accelerationIncludingGravity: {
-		readonly x: number | null;
-		readonly y: number | null;
-		readonly z: number | null;
-	} | null;
 	readonly rotationRate: {
 		readonly alpha: number | null;
 		readonly beta: number | null;
@@ -14,25 +9,22 @@ export interface DeviceMotionReading {
 	readonly interval: number;
 }
 
-export interface DeviceGravityTilt {
+export interface DeviceMotionTilt {
 	readonly x: number;
 	readonly y: number;
 }
 
-export interface DeviceGravityEstimator {
-	readonly update: (
-		reading: DeviceMotionReading,
-		nowMs: number,
-		neutralWindowSeconds?: number,
-	) => void;
-	readonly tilt: (
-		nowMs: number,
-		screenAngle: number,
-		strength: number,
-		neutralWindowSeconds?: number,
-	) => DeviceGravityTilt | null;
+export interface DeviceMotionEstimator {
+	readonly update: (reading: DeviceMotionReading, nowMs: number) => void;
+	readonly tilt: (nowMs: number, screenAngle: number, strength: number) => DeviceMotionTilt | null;
 	readonly reset: () => void;
 }
+
+/** Compatibility name for code written against the earlier gravity estimator. */
+export type DeviceGravityTilt = DeviceMotionTilt;
+
+/** Compatibility name for code written against the earlier gravity estimator. */
+export type DeviceGravityEstimator = DeviceMotionEstimator;
 
 export interface Vector3 {
 	readonly x: number;
@@ -40,7 +32,7 @@ export interface Vector3 {
 	readonly z: number;
 }
 
-export interface TimedVector {
-	readonly at: number;
-	readonly vector: Vector3;
+export interface Vector2 {
+	readonly x: number;
+	readonly y: number;
 }

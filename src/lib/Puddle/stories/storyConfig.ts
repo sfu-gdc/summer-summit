@@ -39,7 +39,6 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	deviceGravity: { control: 'boolean' },
 	deviceTilt: { control: { type: 'range', min: 0, max: 12, step: 0.5 } },
 	deviceEase: { control: { type: 'range', min: 0.05, max: 1.5, step: 0.05 } },
-	deviceNeutralWindow: { control: { type: 'range', min: 0, max: 10, step: 0.25 } },
 	color: { control: 'color' },
 };
 

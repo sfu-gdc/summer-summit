@@ -61,14 +61,12 @@ export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	cursorTilt?: number;
 	/** Cursor-follow easing time-constant in seconds (only with `followCursor`). */
 	cursorEase?: number;
-	/** Lean with device motion sensors after permission is requested. Needs `animated`; ignored under prefers-reduced-motion. */
+	/** Slosh with device rotation after permission is requested. Needs `animated`; ignored under prefers-reduced-motion. */
 	deviceGravity?: boolean;
-	/** Maximum device-driven in-plane gravity. */
+	/** Maximum device-motion slosh force. */
 	deviceTilt?: number;
-	/** Device-gravity easing time-constant in seconds. */
+	/** Device-motion easing time-constant in seconds. */
 	deviceEase?: number;
-	/** Trailing window averaged as the neutral device orientation, in seconds. Zero disables neutralization. */
-	deviceNeutralWindow?: number;
 	children?: Snippet;
 };
 
@@ -101,8 +99,7 @@ type PuddleDefaultKey =
 	| 'cursorEase'
 	| 'deviceGravity'
 	| 'deviceTilt'
-	| 'deviceEase'
-	| 'deviceNeutralWindow';
+	| 'deviceEase';
 
 /** Default values for every Puddle-specific prop. Spread into stories to match the component. */
 export const PUDDLE_DEFAULTS = {
@@ -135,5 +132,4 @@ export const PUDDLE_DEFAULTS = {
 	deviceGravity: false,
 	deviceTilt: 6,
 	deviceEase: 0.18,
-	deviceNeutralWindow: 2,
 } as const satisfies Required<Pick<PuddleProps, PuddleDefaultKey>>;

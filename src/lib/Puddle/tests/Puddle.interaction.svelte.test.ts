@@ -50,14 +50,13 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 	expect(after.right - after.left).toBeGreaterThan(target);
 });
 
-test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
+test('deviceGravity sloshes the puddle using device rotation', async () => {
 	await render(Puddle, {
 		props: {
 			animated: true,
 			deviceGravity: true,
 			deviceTilt: 8,
 			deviceEase: 0.05,
-			deviceNeutralWindow: 10,
 			style: 'width:760px;height:420px;',
 		},
 	});
@@ -71,18 +70,18 @@ test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
 
 	window.dispatchEvent(
 		new DeviceMotionEvent('devicemotion', {
-			accelerationIncludingGravity: { x: 0, y: 0, z: 9.8 },
+			rotationRate: { alpha: 0, beta: 0, gamma: 0 },
 			interval: 16,
 		}),
 	);
-	await new Promise<void>((resolve) => void setTimeout(resolve, 100));
+	await new Promise<void>((resolve) => void setTimeout(resolve, 50));
 
 	const target = before.right - before.left + total * 0.02;
 	let after = before;
 	for (let i = 0; i < 30 && after.right - after.left <= target; i++) {
 		window.dispatchEvent(
 			new DeviceMotionEvent('devicemotion', {
-				accelerationIncludingGravity: { x: -9.8, y: 0, z: 0 },
+				rotationRate: { alpha: 0, beta: 360, gamma: 0 },
 				interval: 16,
 			}),
 		);

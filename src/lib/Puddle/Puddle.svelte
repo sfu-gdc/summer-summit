@@ -34,7 +34,6 @@
 		deviceGravity = PUDDLE_DEFAULTS.deviceGravity,
 		deviceTilt = PUDDLE_DEFAULTS.deviceTilt,
 		deviceEase = PUDDLE_DEFAULTS.deviceEase,
-		deviceNeutralWindow = PUDDLE_DEFAULTS.deviceNeutralWindow,
 		class: className,
 		children,
 		...rest
@@ -78,7 +77,6 @@
 		getDeviceGravity: () => deviceGravity,
 		getDeviceTilt: () => deviceTilt,
 		getDeviceEase: () => deviceEase,
-		getDeviceNeutralWindow: () => deviceNeutralWindow,
 	});
 </script>
 

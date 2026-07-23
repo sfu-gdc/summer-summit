@@ -4,8 +4,7 @@ import { ElementSize } from 'runed';
 
 import { browser } from '$app/environment';
 
-import { PUDDLE_DEFAULTS } from '../config';
-import { createDeviceGravityEstimator, getScreenAngle } from '../device';
+import { createDeviceMotionEstimator, getScreenAngle } from '../device';
 import { resolvePuddleGeometry, type PuddleGeometryOptions } from '../geometry';
 import { createPuddleRenderer } from '../render/puddleRenderer';
 import { startPuddleLoop } from './puddleLoop';
@@ -23,7 +22,6 @@ export interface PuddleRuntimeOptions {
 	readonly getDeviceGravity: () => boolean;
 	readonly getDeviceTilt: () => number;
 	readonly getDeviceEase: () => number;
-	readonly getDeviceNeutralWindow: () => number;
 }
 
 export interface PuddleRuntime {
@@ -47,13 +45,7 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 	const hostSize = new ElementSize(() => host);
 	const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 	const renderer = createPuddleRenderer();
-	const deviceGravityEstimator = createDeviceGravityEstimator();
-	const deviceNeutralSeconds = $derived.by(() => {
-		const value = options.getDeviceNeutralWindow();
-		return Number.isFinite(value) && value >= 0
-			? Math.min(value, 60)
-			: PUDDLE_DEFAULTS.deviceNeutralWindow;
-	});
+	const deviceMotionEstimator = createDeviceMotionEstimator();
 	const geometry = $derived(
 		resolvePuddleGeometry(hostSize.width, hostSize.height, options.getGeometryOptions()),
 	);
@@ -73,10 +65,10 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		pointer = null;
 	};
 	const onDeviceMotion = (event: DeviceMotionEvent): void => {
-		deviceGravityEstimator.update(event, performance.now(), deviceNeutralSeconds);
+		deviceMotionEstimator.update(event, performance.now());
 	};
 	const onVisibilityChange = (): void => {
-		if (document.hidden) deviceGravityEstimator.reset();
+		if (document.hidden) deviceMotionEstimator.reset();
 	};
 
 	$effect(() => {
@@ -96,7 +88,6 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		const deviceGravity = options.getDeviceGravity();
 		const deviceTilt = options.getDeviceTilt();
 		const deviceEase = options.getDeviceEase();
-		const neutralWindow = deviceNeutralSeconds;
 		const draw = (): void => {
 			painted = renderer.render(target, {
 				nx: water.nx,
@@ -111,7 +102,7 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		return startPuddleLoop({
 			host: element,
 			sim: water,
-			deviceGravityEstimator,
+			deviceMotionEstimator,
 			draw,
 			getPointer: () => pointer,
 			followCursor,
@@ -120,7 +111,6 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 			deviceGravity,
 			deviceTilt,
 			deviceEase,
-			deviceNeutralWindow: neutralWindow,
 			screenAngle: getScreenAngle,
 		});
 	});
