@@ -47,6 +47,8 @@
 </script>
 
 <script lang="ts">
+	import { ErodedCheckerboard } from '$lib';
+
 	import { requestDeviceGravityPermission, type DeviceGravityPermission } from '../device';
 
 	let devicePermission = $state<DeviceGravityPermission | 'idle'>('idle');
@@ -89,6 +91,7 @@
 		style:--story-text-color={textColor}
 	>
 		<Puddle {...args} class="h-[460px] w-[820px]">
+			<ErodedCheckerboard />
 			<div class="p-10 grid inset-0 place-items-center absolute">
 				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
 					>SUMMER SUMMIT<br />GAME JAM 2026</span

@@ -2,6 +2,8 @@
 export { default as Button } from './Button/Button.svelte';
 export { default as ColorPalette } from './ColorPalette/ColorPalette.svelte';
 export type { ColorPaletteProps } from './ColorPalette/ColorPalette.svelte';
+export { default as ErodedCheckerboard } from './ErodedCheckerboard/ErodedCheckerboard.svelte';
+export type { ErodedCheckerboardProps } from './ErodedCheckerboard/ErodedCheckerboard.svelte';
 export {
 	createColorPalette,
 	interpolatorNames,
