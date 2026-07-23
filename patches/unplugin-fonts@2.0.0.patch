@@ -1,0 +1,43 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index c9c2808405c2f3f41c21910df6c13fd42ed69701..af6a07cde8104f2c26609e47bb65a795087e1aaf 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -3,7 +3,7 @@ import { customVirtualModule, resolveFontFiles, resolveUserOption } from "./load
+ import { collectFallbackNames, generateAllFallbacks, transformFontFamilyDeclarations } from "./loaders/fallback.mjs";
+ import { fontsourceImports, fontsourceVirtualModule } from "./loaders/fontsource.mjs";
+ import MagicString from "magic-string";
+-import { basename, extname, join } from "pathe";
++import { basename, dirname, extname, join, relative } from "pathe";
+ import { createUnplugin } from "unplugin";
+ //#region src/index.ts
+ const virtualStylesId = "unfonts.css";
+@@ -11,6 +11,20 @@ const resolvedVirtualStylesId = `\0${virtualStylesId}`;
+ const virtualModuleId = "unplugin-fonts/head";
+ const resolvedVirtualModuleId = `\0${virtualModuleId}`;
+ const fontFileRegex = /\.(?:woff2?|ttf|eot|otf)(?:\?.*)?$/i;
++const cssUrlRegex = /url\((\s*)(?:(["'])(.*?)\2|([^'")]*?))(\s*)\)/g;
++const absoluteUrlRegex = /^(?:[a-z][a-z\d+.-]*:|\/\/|\/|#)/i;
++function rebaseCssUrls(css, cssFileName, htmlPath) {
++	const htmlFileName = htmlPath.replace(/^\/+/, "");
++	return css.replace(cssUrlRegex, (match, before, quote, quotedUrl, unquotedUrl, after) => {
++		const url = (quotedUrl ?? unquotedUrl).trim();
++		if (!url || absoluteUrlRegex.test(url)) return match;
++		const parts = /^([^?#]*)([?#].*)?$/.exec(url);
++		if (!parts?.[1]) return match;
++		let rebasedUrl = relative(dirname(htmlFileName), join(dirname(cssFileName), parts[1]));
++		if (!rebasedUrl.startsWith(".")) rebasedUrl = `./${rebasedUrl}`;
++		return `url(${before}${quote ?? ""}${rebasedUrl}${parts[2] ?? ""}${quote ?? ""}${after})`;
++	});
++}
+ var src_default = createUnplugin((userOptions) => {
+ 	const options = userOptions || {};
+ 	let root;
+@@ -101,7 +115,7 @@ var src_default = createUnplugin((userOptions) => {
+ 							const css = typeof info.source === "string" ? info.source : "";
+ 							const matches = css.match(fontFaceRegex);
+ 							if (matches) {
+-								fontFaceRules.push(...matches);
++								fontFaceRules.push(...matches.map((rule) => rebaseCssUrls(rule, info.fileName, ctx.path)));
+ 								info.source = css.replace(fontFaceRegex, "");
+ 							}
+ 						}

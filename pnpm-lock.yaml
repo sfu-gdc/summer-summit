@@ -9,6 +9,9 @@ overrides:
   undici@>=7.23.0 <7.28.0: ^7.28.0
   ws@>=8.0.0 <8.21.0: ^8.21.0
 
+patchedDependencies:
+  unplugin-fonts@2.0.0: daf89586c1c46e1f69c3db9885a0abddd667d76a91ab3ff48091ec0b0b1c0706
+
 importers:
 
   .:
@@ -172,7 +175,7 @@ importers:
         version: 66.7.5(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0))
       unplugin-fonts:
         specifier: ^2.0.0
-        version: 2.0.0(esbuild@0.28.1)(rolldown@1.1.5)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0))
+        version: 2.0.0(patch_hash=daf89586c1c46e1f69c3db9885a0abddd667d76a91ab3ff48091ec0b0b1c0706)(esbuild@0.28.1)(rolldown@1.1.5)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0))
       vite:
         specifier: ^8.1.4
         version: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)
@@ -6625,7 +6628,7 @@ snapshots:
     transitivePeerDependencies:
       - vite
 
-  unplugin-fonts@2.0.0(esbuild@0.28.1)(rolldown@1.1.5)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)):
+  unplugin-fonts@2.0.0(patch_hash=daf89586c1c46e1f69c3db9885a0abddd667d76a91ab3ff48091ec0b0b1c0706)(esbuild@0.28.1)(rolldown@1.1.5)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)):
     dependencies:
       css-tree: 3.2.1
       fast-glob: 3.3.3
