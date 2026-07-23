@@ -4,6 +4,8 @@
 
 	import { expect } from 'storybook/test';
 
+	import { brandColorValues } from '$lib/tokens';
+
 	import Puddle from '../Puddle.svelte';
 	import { waitForPaintedFraction } from '../tests/svg';
 	import { puddleStoryConfig } from './storyConfig';
@@ -20,9 +22,9 @@
 		...puddleStoryConfig,
 		args: {
 			...puddleStoryConfig.args,
-			backgroundColor: '#c7f735',
-			puddleTextColor: '#ffffff',
-			textColor: '#000000',
+			backgroundColor: brandColorValues.primary['100'],
+			puddleTextColor: brandColorValues.shade['50'],
+			textColor: brandColorValues.shade['950'],
 		},
 		argTypes: {
 			...puddleStoryConfig.argTypes,

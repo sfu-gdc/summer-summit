@@ -50,7 +50,10 @@ export const puddleStoryConfig = {
 	} satisfies Args,
 	argTypes,
 	parameters: {
-		backgrounds: { default: 'lime', values: [{ name: 'lime', value: '#c7f735' }] },
+		backgrounds: {
+			default: 'lime',
+			values: [{ name: 'lime', value: brandColorValues.primary['100'] }],
+		},
 		controls: { include: Object.keys(argTypes) },
 	},
 } satisfies Pick<PuddleMeta, 'args' | 'argTypes' | 'parameters'>;
