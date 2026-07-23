@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'svelte/elements';
 
 import type { Color } from 'culori';
 
-import type { IntegratorId } from './waterSim';
+import type { IntegratorId } from './sim';
 
 // Omit the deprecated HTML `color` attribute; intersecting with it would
 // collapse the prop type to `string` and reject culori Color objects.

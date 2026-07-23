@@ -1,5 +1,5 @@
 import type { DeviceGravityEstimator } from '../device';
-import type { WaterSim } from '../waterSim';
+import type { WaterSim } from '../sim';
 
 export interface PointerPosition {
 	readonly x: number;

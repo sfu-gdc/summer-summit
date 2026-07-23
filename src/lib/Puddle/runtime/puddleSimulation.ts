@@ -1,6 +1,6 @@
 import type { PuddleProps } from '../config';
 import type { PuddleGeometry } from '../geometry';
-import { createWaterSim, type WaterSim } from '../waterSim';
+import { createWaterSim, type WaterSim } from '../sim';
 
 type PuddleSimulationProp =
 	| 'seed'
