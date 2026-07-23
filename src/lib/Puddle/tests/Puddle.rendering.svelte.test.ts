@@ -8,7 +8,7 @@ test('renders a thresholded puddle silhouette', async () => {
 	await render(Puddle, {
 		props: { animated: false, color: '#141414', style: 'width:760px;height:420px;' },
 	});
-	const path = document.querySelector<SVGPathElement>('path.shape');
+	const path = document.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	expect(path).not.toBeNull();
 	if (!path) return;
 
@@ -31,8 +31,8 @@ test('accepts a culori Color object for `color`', async () => {
 			style: 'width:760px;height:420px;',
 		},
 	});
-	const host = document.querySelector<HTMLElement>('.host');
-	const path = document.querySelector<SVGPathElement>('path.shape');
+	const host = document.querySelector<HTMLElement>('[data-puddle-host]');
+	const path = document.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	expect(host).not.toBeNull();
 	expect(path).not.toBeNull();
 	if (!host || !path) return;
@@ -51,7 +51,7 @@ test('uses one canonical CSS color variable for the SVG and fallback', async () 
 		},
 	});
 
-	const host = document.querySelector<HTMLElement>('.host');
+	const host = document.querySelector<HTMLElement>('[data-puddle-host]');
 	expect(host?.style.getPropertyValue('--puddle-color')).toBe('color(display-p3 1 0 0)');
 });
 
@@ -59,9 +59,9 @@ test('reuses the responsive SVG shape as an inherited normalized clip', async ()
 	await render(Puddle, {
 		props: { animated: false, style: 'width:760px;height:420px;' },
 	});
-	const host = document.querySelector<HTMLElement>('.host');
-	const svg = document.querySelector<SVGSVGElement>('svg.renderer');
-	const path = svg?.querySelector<SVGPathElement>('path.shape');
+	const host = document.querySelector<HTMLElement>('[data-puddle-host]');
+	const svg = document.querySelector<SVGSVGElement>('svg[data-puddle-renderer]');
+	const path = svg?.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	const clip = svg?.querySelector<SVGClipPathElement>('clipPath');
 	const use = clip?.querySelector<SVGUseElement>('use');
 	expect(host).not.toBeNull();
@@ -86,7 +86,7 @@ test('uses unique clip and shape IDs for each component instance', async () => {
 	await render(Puddle, { props: { animated: false, style: 'width:80px;height:60px;' } });
 	await render(Puddle, { props: { animated: false, style: 'width:80px;height:60px;' } });
 
-	const paths = [...document.querySelectorAll<SVGPathElement>('path.shape')];
+	const paths = [...document.querySelectorAll<SVGPathElement>('path[data-puddle-shape]')];
 	const clips = [...document.querySelectorAll<SVGClipPathElement>('clipPath')];
 	expect(paths).toHaveLength(2);
 	expect(clips).toHaveLength(2);

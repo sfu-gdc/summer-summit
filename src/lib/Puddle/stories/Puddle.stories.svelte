@@ -55,12 +55,12 @@
 
 {#snippet template({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
 	<div
-		style="padding:48px;"
+		class="text-[var(--story-text-color)] p-12 bg-[var(--story-background-color)]"
+		style:--story-background-color={backgroundColor}
 		style:--puddle-text-color={puddleTextColor}
-		style:background-color={backgroundColor}
-		style:color={textColor}
+		style:--story-text-color={textColor}
 	>
-		<Puddle {...args} style="width: 760px; height: 420px;" />
+		<Puddle {...args} class="h-[420px] w-[760px]" />
 	</div>
 {/snippet}
 
@@ -68,7 +68,7 @@
 	name="Default"
 	{template}
 	play={async ({ canvasElement }) => {
-		const path = canvasElement.querySelector<SVGPathElement>('path.shape');
+		const path = canvasElement.querySelector<SVGPathElement>('path[data-puddle-shape]');
 		await expect(path).not.toBeNull();
 		if (!path) return;
 		const fraction = await waitForPaintedFraction(path, 60);
@@ -81,24 +81,22 @@
 <!-- The landing-page hero: puddle behind the title. -->
 {#snippet hero({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
 	<div
-		style="padding:48px;"
+		class="text-[var(--story-text-color)] p-12 bg-[var(--story-background-color)]"
+		style:--story-background-color={backgroundColor}
 		style:--puddle-text-color={puddleTextColor}
-		style:background-color={backgroundColor}
-		style:color={textColor}
+		style:--story-text-color={textColor}
 	>
-		<Puddle {...args} style="width: 820px; height: 460px;">
-			<div style="position:absolute; inset:0; display:grid; place-items:center; padding:40px;">
-				<span
-					style="font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+		<Puddle {...args} class="h-[460px] w-[820px]">
+			<div class="p-10 grid inset-0 place-items-center absolute">
+				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
 					>SUMMER SUMMIT<br />GAME JAM 2026</span
 				>
 			</div>
 			<div
 				aria-hidden="true"
-				style="position:absolute; inset:0; display:grid; place-items:center; padding:40px; clip-path:var(--puddle-clip);"
+				class="text-[var(--puddle-text-color)] p-10 grid [clip-path:var(--puddle-clip)] inset-0 place-items-center absolute"
 			>
-				<span
-					style="color:var(--puddle-text-color); font-family: Syncopate, sans-serif; font-weight:700; font-size:44px; line-height:1.1; text-align:center; letter-spacing:0.04em;"
+				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
 					>SUMMER SUMMIT<br />GAME JAM 2026</span
 				>
 			</div>
@@ -119,14 +117,14 @@
 
 {#snippet device({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
 	<div
-		style="padding:48px; display:grid; gap:16px; justify-items:start;"
+		class="text-[var(--story-text-color)] p-12 bg-[var(--story-background-color)] gap-4 grid justify-items-start"
+		style:--story-background-color={backgroundColor}
 		style:--puddle-text-color={puddleTextColor}
-		style:background-color={backgroundColor}
-		style:color={textColor}
+		style:--story-text-color={textColor}
 	>
 		<button type="button" onclick={enableDeviceGravity}>Enable device motion</button>
 		<span>Permission: {devicePermission}</span>
-		<Puddle {...args} style="width: 760px; height: 420px;" />
+		<Puddle {...args} class="h-[420px] w-[760px]" />
 	</div>
 {/snippet}
 

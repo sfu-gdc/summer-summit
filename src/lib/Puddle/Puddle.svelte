@@ -94,52 +94,38 @@
 
 <div
 	bind:this={runtime.host}
-	class={['host', className]}
+	class={['relative isolate', className]}
 	{...rest}
+	data-puddle-host
 	style:--puddle-color={cssColor}
 	style:--puddle-clip={clipUrl}
 >
-	<div class="fallback" class:painted={runtime.painted} aria-hidden="true"></div>
-	<svg class="renderer" viewBox={runtime.viewBox} preserveAspectRatio="none" aria-hidden="true">
+	<div
+		class={[
+			'pointer-events-none absolute inset-0 -z-1 block h-full w-full rounded-[12%/20%] bg-[var(--puddle-color,#141414)]',
+			{ hidden: runtime.painted },
+		]}
+		data-puddle-fallback
+		aria-hidden="true"
+	></div>
+	<svg
+		class="h-full w-full block pointer-events-none [shape-rendering:crispEdges] inset-0 absolute -z-1"
+		data-puddle-renderer
+		viewBox={runtime.viewBox}
+		preserveAspectRatio="none"
+		aria-hidden="true"
+	>
 		<defs>
 			<clipPath id={clipId} clipPathUnits="objectBoundingBox">
 				<use href={`#${shapeId}`} transform={runtime.clipTransform}></use>
 			</clipPath>
 		</defs>
-		<path bind:this={runtime.shape} id={shapeId} class="shape"></path>
+		<path
+			bind:this={runtime.shape}
+			id={shapeId}
+			class="fill-[var(--puddle-color,#141414)]"
+			data-puddle-shape
+		></path>
 	</svg>
 	{@render children?.()}
 </div>
-
-<style>
-	.host {
-		position: relative;
-		isolation: isolate;
-	}
-
-	.renderer,
-	.fallback {
-		position: absolute;
-		inset: 0;
-		display: block;
-		width: 100%;
-		height: 100%;
-		pointer-events: none;
-		z-index: -1;
-	}
-	.renderer {
-		shape-rendering: crispEdges;
-	}
-	.shape {
-		fill: var(--puddle-color, #141414);
-	}
-
-	/* No-JS backdrop: a plain rounded block in the puddle color until the sim paints. */
-	.fallback {
-		background: var(--puddle-color, #141414);
-		border-radius: 12%/20%;
-	}
-	.fallback.painted {
-		display: none;
-	}
-</style>

@@ -20,7 +20,7 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 	await render(Puddle, {
 		props: { animated: true, followCursor: true, style: 'width:760px;height:420px;' },
 	});
-	const path = document.querySelector<SVGPathElement>('path.shape');
+	const path = document.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	expect(path).not.toBeNull();
 	if (!path) return;
 
@@ -61,7 +61,7 @@ test('deviceGravity leans the puddle using motion-sensor gravity', async () => {
 			style: 'width:760px;height:420px;',
 		},
 	});
-	const path = document.querySelector<SVGPathElement>('path.shape');
+	const path = document.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	expect(path).not.toBeNull();
 	if (!path) return;
 
