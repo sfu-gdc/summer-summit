@@ -24,7 +24,7 @@
 			...puddleStoryConfig.args,
 			backgroundColor: brandColorValues.primary['100'],
 			puddleTextColor: brandColorValues.shade['50'],
-			textColor: brandColorValues.shade['950'],
+			textColor: brandColorValues.secondary['500'],
 		},
 		argTypes: {
 			...puddleStoryConfig.argTypes,
@@ -85,7 +85,7 @@
 <!-- The landing-page hero: puddle behind the title. -->
 {#snippet hero({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
 	<div
-		class="text-[var(--story-text-color)] p-12 bg-[var(--story-background-color)]"
+		class="text-[var(--story-text-color)] bg-[var(--story-background-color)]"
 		style:--story-background-color={backgroundColor}
 		style:--puddle-text-color={puddleTextColor}
 		style:--story-text-color={textColor}
@@ -109,7 +109,7 @@
 	</div>
 {/snippet}
 
-<Story name="Hero" template={hero} args={{ animated: false }} />
+<Story name="Hero" template={hero} />
 
 <!-- Opt-in ripples: raindrops disturb the settled surface, wobbling the blocky edge. -->
 <Story name="Animated" {template} args={{ animated: true }} />
