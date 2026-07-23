@@ -2,7 +2,7 @@ import type { ComponentProps } from 'svelte';
 
 import type { Meta } from '@storybook/sveltekit';
 
-import { brandColors } from '$lib/tokens';
+import { brandColorValues } from '$lib/tokens';
 
 import { PUDDLE_DEFAULTS } from '../config';
 import type Puddle from '../Puddle.svelte';
@@ -46,7 +46,7 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 export const puddleStoryConfig = {
 	args: {
 		...PUDDLE_DEFAULTS,
-		color: brandColors.shade['950'],
+		color: brandColorValues.shade['950'],
 	} satisfies Args,
 	argTypes,
 	parameters: {

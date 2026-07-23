@@ -11,6 +11,9 @@ if (!primaryColor) throw new Error();
 const secondaryColor = parse('#3600F7');
 if (!secondaryColor) throw new Error();
 
+const shadeColor = parse('#141414');
+if (!shadeColor) throw new Error();
+
 export const primaryPaletteConfig = {
 	color: primaryColor,
 	hue: {
@@ -35,8 +38,21 @@ export const secondaryPaletteConfig = {
 	},
 } satisfies Parameters<typeof createColorPalette>[0];
 
+export const shadePaletteConfig = {
+	color: shadeColor,
+	hue: {
+		stops: [0, 0],
+		interpolator: 'interpolatorLinear',
+	},
+	chroma: {
+		stops: [0, 0],
+		interpolator: 'interpolatorLinear',
+	},
+} satisfies Parameters<typeof createColorPalette>[0];
+
 const primaryPalette = createColorPalette(primaryPaletteConfig);
 const secondaryPalette = createColorPalette(secondaryPaletteConfig);
+const shadePalette = createColorPalette(shadePaletteConfig);
 
 function paletteRecord(
 	value: typeof primaryPalette,
@@ -51,11 +67,13 @@ function paletteRecord(
 export const brandColorValues = {
 	primary: paletteRecord(primaryPalette, ({ css }) => css),
 	secondary: paletteRecord(secondaryPalette, ({ css }) => css),
+	shade: paletteRecord(shadePalette, ({ css }) => css),
 } as const;
 
 export const brandColors = {
 	primary: paletteRecord(primaryPalette, ({ stop }) => `var(--brand-primary-${stop})`),
 	secondary: paletteRecord(secondaryPalette, ({ stop }) => `var(--brand-secondary-${stop})`),
+	shade: paletteRecord(shadePalette, ({ stop }) => `var(--brand-shade-${stop})`),
 } as const;
 
 export const fonts = {
