@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { formatCss } from 'culori';
+
 	import { PUDDLE_DEFAULTS, type PuddleProps } from './config';
-	import { resolvePuddleCssColors } from './render/color';
 	import { createPuddleRuntime } from './runtime/puddleRuntime.svelte';
 
 	const {
@@ -39,7 +40,7 @@
 		...rest
 	}: PuddleProps = $props();
 
-	const cssColors = $derived(resolvePuddleCssColors(color));
+	const cssColor = $derived(typeof color === 'string' ? color : formatCss(color));
 
 	const instanceId = $props.id();
 	const shapeId = `${instanceId}-puddle-shape`;
@@ -95,8 +96,7 @@
 	bind:this={runtime.host}
 	class={['host', className]}
 	{...rest}
-	style:--puddle-color={cssColors.srgb}
-	style:--puddle-color-wide={cssColors.p3}
+	style:--puddle-color={cssColor}
 	style:--puddle-clip={clipUrl}
 >
 	<div class="fallback" class:painted={runtime.painted} aria-hidden="true"></div>
@@ -138,14 +138,6 @@
 	.fallback {
 		background: var(--puddle-color, #141414);
 		border-radius: 12%/20%;
-	}
-	@supports (color: color(display-p3 1 0 0)) {
-		.fallback {
-			background: var(--puddle-color-wide, var(--puddle-color, #141414));
-		}
-		.shape {
-			fill: var(--puddle-color-wide, var(--puddle-color, #141414));
-		}
 	}
 	.fallback.painted {
 		display: none;

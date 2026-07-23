@@ -42,7 +42,7 @@ test('accepts a culori Color object for `color`', async () => {
 	expect(getComputedStyle(path).fill).not.toBe('rgb(20, 20, 20)');
 });
 
-test('preserves wide-gamut CSS color variables for the SVG and fallback', async () => {
+test('uses one canonical CSS color variable for the SVG and fallback', async () => {
 	await render(Puddle, {
 		props: {
 			animated: false,
@@ -52,8 +52,7 @@ test('preserves wide-gamut CSS color variables for the SVG and fallback', async 
 	});
 
 	const host = document.querySelector<HTMLElement>('.host');
-	expect(host?.style.getPropertyValue('--puddle-color-wide')).toMatch(/^color\(display-p3 /);
-	expect(host?.style.getPropertyValue('--puddle-color')).toMatch(/^color\(srgb /);
+	expect(host?.style.getPropertyValue('--puddle-color')).toBe('color(display-p3 1 0 0)');
 });
 
 test('reuses the responsive SVG shape as an inherited normalized clip', async () => {
