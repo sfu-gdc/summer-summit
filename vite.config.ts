@@ -30,23 +30,44 @@ export default defineConfig((env) => {
 			}),
 			Unfonts({
 				inlineFontFace: true,
+				custom: {
+					preload: false,
+					display: 'swap',
+					families: [
+						{
+							name: 'PP Neue Montreal',
+							local: 'PP Neue Montreal',
+							src: './src/lib/assets/fonts/body/*.woff2',
+							fallback: {
+								category: 'sans-serif',
+							},
+							transform(font) {
+								const match = /^([A-Za-z]+)-(\d+)$/.exec(font.basename);
+								if (!match) return null;
+
+								const [, subfamily, weight] = match;
+								if (subfamily === undefined || weight === undefined) return null;
+
+								return {
+									...font,
+									weight: Number(weight),
+									style: subfamily.endsWith('Italic') ? 'italic' : 'normal',
+								};
+							},
+						},
+					],
+				},
 				fontsource: {
 					families: [
 						{
-							name: 'Syncopate',
-							weights: [700],
-							fallback: {
-								category: 'sans-serif',
-							},
+							name: 'Redaction 35',
+							weights: [400, 700],
+							styles: ['normal'],
 						},
 						{
-							name: 'Work Sans',
-							variable: {
-								wght: true,
-							},
-							fallback: {
-								category: 'sans-serif',
-							},
+							name: 'Redaction 50',
+							weights: [400, 700],
+							styles: ['normal'],
 						},
 					],
 				},
