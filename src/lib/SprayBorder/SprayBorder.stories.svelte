@@ -10,6 +10,18 @@
 
 	type Args = ComponentProps<typeof SprayBorder>;
 
+	const comparisonSeeds = [3, 7, 19] as const;
+	const comparisonSizes = [
+		{
+			label: 'Small',
+			class: 'h-10 px-4 text-sm',
+		},
+		{
+			label: 'Large',
+			class: 'h-14 px-5',
+		},
+	] as const;
+
 	const nextFrame = () =>
 		new Promise((r) => void requestAnimationFrame(() => void requestAnimationFrame(r)));
 
@@ -62,6 +74,31 @@
 	</div>
 {/snippet}
 
+{#snippet comparison(args: Args)}
+	<div class="p-12 gap-8 grid">
+		{#each comparisonSizes as size (size.label)}
+			<div class="gap-3 grid">
+				<p class="text-sm font-bold font-sans uppercase">{size.label}</p>
+				<div class="flex flex-wrap gap-10">
+					{#each comparisonSeeds as seed (seed)}
+						<div class="gap-2 grid justify-items-center">
+							<SprayBorder
+								{...args}
+								{seed}
+								class={[
+									'text-white tracking-wider font-bold font-sans inline-flex uppercase items-center justify-center',
+									size.class,
+								]}><span>FAQ</span></SprayBorder
+							>
+							<span class="text-xs font-mono">Seed {seed}</span>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/each}
+	</div>
+{/snippet}
+
 <Story
 	name="Default"
 	{template}
@@ -76,5 +113,22 @@
 		// Where WebGL2 is available the spray must actually blit; otherwise just no-op.
 		if (hasWebGL2()) await expect(paintedPixels(canvas)).toBeGreaterThan(0);
 		else await expect(canvas).toBeTruthy();
+	}}
+/>
+
+<Story
+	name="Sizes and seeds"
+	template={comparison}
+	play={async ({ canvasElement }) => {
+		const canvases = Array.from(canvasElement.querySelectorAll('canvas'));
+		const webGL2Available = hasWebGL2();
+		await expect(canvases).toHaveLength(comparisonSeeds.length * comparisonSizes.length);
+		for (const canvas of canvases) {
+			for (let i = 0; i < 30; i++) {
+				if (paintedPixels(canvas) > 0) break;
+				await nextFrame();
+			}
+			if (webGL2Available) await expect(paintedPixels(canvas)).toBeGreaterThan(0);
+		}
 	}}
 />
