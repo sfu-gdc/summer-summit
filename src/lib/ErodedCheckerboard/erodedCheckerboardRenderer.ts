@@ -153,9 +153,7 @@ void main() {
 		texture(uPattern, textureCoordinate + sampleOffset).r;
 	coverage /= 16.0;
 	coverage = round(coverage * 8.0) / 8.0;
-	float alpha = coverage * uOpacity;
-	if (alpha <= 0.001) discard;
-	fragmentColor = vec4(vec3(1.0), alpha);
+	fragmentColor = vec4(vec3(coverage), uOpacity);
 }`;
 
 export interface ErodedCheckerboardRenderOptions {
