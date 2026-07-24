@@ -76,6 +76,42 @@ export const brandColors = {
 	shade: paletteRecord(shadePalette, ({ stop }) => `var(--brand-shade-${stop})`),
 } as const;
 
+export const buttonColorValues = {
+	dark: {
+		surface: brandColorValues.shade[900],
+		content: brandColorValues.shade[50],
+		hoverContent: brandColorValues.primary[50],
+		disabledSurface: brandColorValues.shade[700],
+		disabledContent: brandColorValues.shade[400],
+	},
+	light: {
+		surface: brandColorValues.shade[50],
+		content: brandColorValues.shade[900],
+		hoverContent: brandColorValues.secondary[700],
+		disabledSurface: brandColorValues.shade[300],
+		disabledContent: brandColorValues.shade[600],
+	},
+	focusRing: brandColorValues.primary[800],
+} as const;
+
+export const buttonColors = {
+	dark: {
+		surface: brandColors.shade[900],
+		content: brandColors.shade[50],
+		hoverContent: brandColors.primary[50],
+		disabledSurface: brandColors.shade[700],
+		disabledContent: brandColors.shade[400],
+	},
+	light: {
+		surface: brandColors.shade[50],
+		content: brandColors.shade[900],
+		hoverContent: brandColors.secondary[700],
+		disabledSurface: brandColors.shade[300],
+		disabledContent: brandColors.shade[600],
+	},
+	focusRing: brandColors.primary[800],
+} as const;
+
 export const fonts = {
 	body: 'PP Neue Montreal',
 	header: 'Redaction 35',
