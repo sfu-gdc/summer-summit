@@ -23,3 +23,5 @@ peerDependencyRules:
 publicHoistPattern:
   - 'react'
   - 'react-dom'
+patchedDependencies:
+  unplugin-fonts@2.0.0: patches/unplugin-fonts@2.0.0.patch
