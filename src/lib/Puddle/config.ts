@@ -27,6 +27,10 @@ export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	bowlWidth?: number;
 	/** Terrain bowl height in CSS pixels. */
 	bowlHeight?: number;
+	/** Terrain bowl depth. */
+	bowlAmp?: number;
+	/** Width of the terrain bowl's softened rim. */
+	bowlRim?: number;
 	/** Ripple with raindrops instead of holding the settled shape. Ignored under prefers-reduced-motion. */
 	animated?: boolean;
 	/** Gently tilt gravity toward the pointer so the water leans after the cursor. Needs `animated`; ignored under prefers-reduced-motion. */
@@ -85,6 +89,8 @@ type PuddleDefaultKey =
 	| 'noiseAmp'
 	| 'bowlWidth'
 	| 'bowlHeight'
+	| 'bowlAmp'
+	| 'bowlRim'
 	| 'animated'
 	| 'followCursor'
 	| 'integrator'
@@ -119,6 +125,8 @@ export const PUDDLE_DEFAULTS = {
 	noiseAmp: 0.4,
 	bowlWidth: 730,
 	bowlHeight: 380,
+	bowlAmp: 1.4,
+	bowlRim: 0.22,
 	animated: true,
 	followCursor: true,
 	integrator: 'pipes+momentum',

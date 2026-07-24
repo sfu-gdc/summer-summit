@@ -6,6 +6,7 @@ import { brandColorValues } from '$lib/tokens';
 
 import { PUDDLE_DEFAULTS } from '../config';
 import type Puddle from '../Puddle.svelte';
+import { paramSchema } from '../sim';
 
 type Args = ComponentProps<typeof Puddle>;
 type PuddleMeta = Meta<typeof Puddle>;
@@ -18,6 +19,22 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	noiseAmp: { control: { type: 'range', min: 0, max: 0.8, step: 0.02 } },
 	bowlWidth: { control: { type: 'range', min: 200, max: 1800, step: 10 } },
 	bowlHeight: { control: { type: 'range', min: 120, max: 1200, step: 10 } },
+	bowlAmp: {
+		control: {
+			type: 'range',
+			min: paramSchema.bowlAmp.min,
+			max: paramSchema.bowlAmp.max,
+			step: 0.1,
+		},
+	},
+	bowlRim: {
+		control: {
+			type: 'range',
+			min: paramSchema.bowlRim.min,
+			max: paramSchema.bowlRim.max,
+			step: 0.01,
+		},
+	},
 	animated: { control: 'boolean' },
 	followCursor: { control: 'boolean' },
 	integrator: { control: 'radio', options: ['pipes', 'pipes+momentum'] },

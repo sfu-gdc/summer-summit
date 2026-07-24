@@ -8,6 +8,8 @@ type PuddleSimulationProp =
 	| 'noiseAmp'
 	| 'bowlWidth'
 	| 'bowlHeight'
+	| 'bowlAmp'
+	| 'bowlRim'
 	| 'integrator'
 	| 'momentumSmoothing'
 	| 'momentumRetention'
@@ -37,6 +39,8 @@ export function createPuddleSimulation(
 		noiseAmp: options.noiseAmp,
 		bowlHalfX: options.bowlWidth / geometry.width / 2,
 		bowlHalfY: options.bowlHeight / geometry.height / 2,
+		bowlAmp: options.bowlAmp,
+		bowlRim: options.bowlRim,
 		integrator: options.integrator,
 		momentumSmoothing: options.momentumSmoothing,
 		momentumRetention: options.momentumRetention,
