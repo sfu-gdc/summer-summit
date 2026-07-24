@@ -126,6 +126,8 @@ export default defineConfig(
 		},
 		rules: {
 			'prefer-const': 'off', // covered by svelte plugin
+			'svelte/no-bind-value-on-checkable-inputs': 'error',
+			'svelte/no-conflicting-module-names': 'error',
 		},
 	},
 	{
