@@ -17,6 +17,7 @@
 		"watch:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.app.json --watch",
 		"lint:prettier": "prettier --check .",
 		"lint:eslint": "eslint --max-warnings=0 .",
+		"lint:commit": "node ./tools/lint-commit-msg.ts --verbose",
 		"lint": "pnpm run /^lint:.*/",
 		"format": "prettier --write .",
 		"test": "vitest",
