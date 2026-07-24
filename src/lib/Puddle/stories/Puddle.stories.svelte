@@ -34,6 +34,7 @@
 		},
 		parameters: {
 			...puddleStoryConfig.parameters,
+			layout: 'fullscreen',
 			controls: {
 				include: [
 					...puddleStoryConfig.parameters.controls.include,
@@ -59,12 +60,12 @@
 
 {#snippet template({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
 	<div
-		class="text-[var(--story-text-color)] p-12 bg-[var(--story-background-color)]"
+		class="text-[var(--story-text-color)] bg-[var(--story-background-color)]"
 		style:--story-background-color={backgroundColor}
 		style:--puddle-text-color={puddleTextColor}
 		style:--story-text-color={textColor}
 	>
-		<Puddle {...args} class="h-[420px] w-[760px]" />
+		<Puddle {...args} class="h-screen" />
 	</div>
 {/snippet}
 
@@ -90,7 +91,7 @@
 		style:--puddle-text-color={puddleTextColor}
 		style:--story-text-color={textColor}
 	>
-		<Puddle {...args} class="h-[460px] w-[820px]">
+		<Puddle {...args}>
 			<ErodedCheckerboard />
 			<div class="p-10 grid inset-0 place-items-center absolute">
 				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
@@ -129,7 +130,7 @@
 	>
 		<button type="button" onclick={enableDeviceGravity}>Enable device motion</button>
 		<span>Permission: {devicePermission}</span>
-		<Puddle {...args} class="h-[420px] w-[760px]" />
+		<Puddle {...args} class="h-screen" />
 	</div>
 {/snippet}
 
