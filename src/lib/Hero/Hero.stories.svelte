@@ -27,7 +27,7 @@
 </script>
 
 {#snippet template(args: Args)}
-	<Hero {...args} />
+	<Hero {...args} class="h-screen" />
 {/snippet}
 
 <Story name="Default" {template} />
