@@ -4,6 +4,8 @@ export { default as ColorPalette } from './ColorPalette/ColorPalette.svelte';
 export type { ColorPaletteProps } from './ColorPalette/ColorPalette.svelte';
 export { default as ErodedCheckerboard } from './ErodedCheckerboard/ErodedCheckerboard.svelte';
 export type { ErodedCheckerboardProps } from './ErodedCheckerboard/ErodedCheckerboard.svelte';
+export { default as Hero } from './Hero/Hero.svelte';
+export type { HeroProps } from './Hero/Hero.svelte';
 export {
 	createColorPalette,
 	interpolatorNames,

@@ -48,8 +48,6 @@
 </script>
 
 <script lang="ts">
-	import { ErodedCheckerboard } from '$lib';
-
 	import { requestDeviceGravityPermission, type DeviceGravityPermission } from '../device';
 
 	let devicePermission = $state<DeviceGravityPermission | 'idle'>('idle');
@@ -82,35 +80,6 @@
 		await expect(fraction).toBeLessThan(0.95);
 	}}
 />
-
-<!-- The landing-page hero: puddle behind the title. -->
-{#snippet hero({ backgroundColor, puddleTextColor, textColor, ...args }: Args)}
-	<div
-		class="text-[var(--story-text-color)] bg-[var(--story-background-color)]"
-		style:--story-background-color={backgroundColor}
-		style:--puddle-text-color={puddleTextColor}
-		style:--story-text-color={textColor}
-	>
-		<Puddle {...args}>
-			<ErodedCheckerboard />
-			<div class="p-10 grid inset-0 place-items-center absolute">
-				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
-					>SUMMER SUMMIT<br />GAME JAM 2026</span
-				>
-			</div>
-			<div
-				aria-hidden="true"
-				class="text-[var(--puddle-text-color)] p-10 grid [clip-path:var(--puddle-clip)] inset-0 place-items-center absolute"
-			>
-				<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
-					>SUMMER SUMMIT<br />GAME JAM 2026</span
-				>
-			</div>
-		</Puddle>
-	</div>
-{/snippet}
-
-<Story name="Hero" template={hero} />
 
 <!-- Opt-in ripples: raindrops disturb the settled surface, wobbling the blocky edge. -->
 <Story name="Animated" {template} args={{ animated: true }} />
