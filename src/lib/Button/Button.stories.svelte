@@ -17,21 +17,23 @@
 		args: {
 			appearance: 'dark',
 			disabled: false,
+			size: 'default',
 		},
 		argTypes: {
 			appearance: { control: 'inline-radio', options: ['dark', 'light'] },
 			disabled: { control: 'boolean' },
+			size: { control: 'inline-radio', options: ['default', 'large'] },
 			spray: { control: 'boolean' },
 		},
 		parameters: {
 			// bits-ui's ButtonRootProps leaks ~400 inherited HTML attributes into
 			// autodocs (Storybook #32171). Whitelist the meaningful API instead.
 			controls: {
-				include: ['appearance', 'icon', 'disabled', 'href', 'type', 'children'],
+				include: ['appearance', 'size', 'icon', 'disabled', 'href', 'type', 'children'],
 			},
 			docs: {
 				argTypes: {
-					include: ['appearance', 'icon', 'disabled', 'href', 'type', 'children'],
+					include: ['appearance', 'size', 'icon', 'disabled', 'href', 'type', 'children'],
 				},
 			},
 		},
@@ -82,6 +84,12 @@
 	<Button {...args}>About</Button>
 {/snippet}
 
+{#snippet largeCta(args: Args)}
+	<div class="p-8 bg-brand-shade-900">
+		<Button {...args} appearance="light" size="large">Join the jam</Button>
+	</div>
+{/snippet}
+
 <Story
 	name="Figma Treatments"
 	template={figmaTreatments}
@@ -107,6 +115,17 @@
 <Story name="With Icon" args={{ icon: bell }} {template} />
 
 <Story name="Disabled" args={{ disabled: true }} {template} />
+
+<Story
+	name="Large CTA"
+	template={largeCta}
+	play={async ({ canvasElement }) => {
+		const cta = within(canvasElement).getByRole('button', { name: 'Join the jam' });
+
+		await expect(cta.getBoundingClientRect().height).toBeCloseTo(48);
+		await expect(getComputedStyle(cta).paddingInline).toBe('16px');
+	}}
+/>
 
 <Story
 	name="Link"

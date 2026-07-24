@@ -4,23 +4,27 @@
 
 	import type { ButtonRootProps } from 'bits-ui';
 
-	import { buttonColors, buttonColorValues, fonts } from '$lib/tokens';
+	import { buttonColors, buttonColorValues, buttonSizes, fonts } from '$lib/tokens';
 
 	import SprayBorder from '../SprayBorder/SprayBorder.svelte';
 
 	export type ButtonAppearance = 'dark' | 'light';
+	export type ButtonSize = keyof typeof buttonSizes;
 
 	type Props = ButtonRootProps & {
 		/** Dark navigation treatment or the light, inverted call-to-action treatment. */
 		appearance?: ButtonAppearance;
 		/** Optional icon rendered before the label. */
 		icon?: Snippet;
+		/** Use the large size for prominent call-to-actions. */
+		size?: ButtonSize;
 		/** Swap the solid fill for a WebGL spray-paint border. `true` for defaults, or tune it. */
 		spray?: boolean | ComponentProps<typeof SprayBorder>;
 	};
 
 	let {
 		appearance = 'dark',
+		size = 'default',
 		icon,
 		children,
 		class: className,
@@ -29,10 +33,11 @@
 		...restProps
 	}: Props = $props();
 
+	const sizeValues = $derived(buttonSizes[size]);
 	// `spray` is always on for now; an object still tunes the border's knobs.
 	const sprayOpts = $derived({
-		spread: 6,
-		radius: 6,
+		spread: sizeValues.spraySpread,
+		radius: sizeValues.sprayRadius,
 		...(typeof spray === 'object' ? spray : {}),
 	});
 	const colorValues = $derived(buttonColorValues[appearance]);
@@ -46,6 +51,8 @@
 			`--button-disabled-content:${colors.disabledContent}`,
 			`--button-focus-ring:${buttonColors.focusRing}`,
 			`--button-font-family:${fonts.body}`,
+			`--button-height:${sizeValues.height}`,
+			`--button-inline-padding:${sizeValues.inlinePadding}`,
 		]
 			.filter(Boolean)
 			.join(';'),
@@ -61,7 +68,7 @@
 	color={colorValues.surface}
 	style={buttonStyle}
 	class={[
-		':uno: summer-summit-button bg-transparent text-base px-2 outline-2 outline-transparent outline-offset--2 inline-flex gap-2 h-10 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center disabled:cursor-not-allowed active:scale-[0.98] focus-visible:rounded focus-visible:not-disabled:outline-offset-3',
+		':uno: summer-summit-button bg-transparent text-base outline-2 outline-transparent outline-offset--2 inline-flex gap-2 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center disabled:cursor-not-allowed active:scale-[0.98] focus-visible:rounded focus-visible:not-disabled:outline-offset-3',
 		className,
 	]}
 >
@@ -76,6 +83,8 @@
 		color: var(--button-content);
 		font-family: var(--button-font-family);
 		font-weight: 600;
+		height: var(--button-height);
+		padding-inline: var(--button-inline-padding);
 		letter-spacing: normal;
 	}
 

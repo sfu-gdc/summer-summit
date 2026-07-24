@@ -112,6 +112,21 @@ export const buttonColors = {
 	focusRing: brandColors.primary[800],
 } as const;
 
+export const buttonSizes = {
+	default: {
+		height: '2.5rem',
+		inlinePadding: '0.5rem',
+		sprayRadius: 6,
+		spraySpread: 6,
+	},
+	large: {
+		height: '3rem',
+		inlinePadding: '1rem',
+		sprayRadius: 8,
+		spraySpread: 8,
+	},
+} as const;
+
 export const fonts = {
 	body: 'PP Neue Montreal',
 	header: 'Redaction 35',
