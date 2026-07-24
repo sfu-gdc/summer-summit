@@ -1,7 +1,7 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 
-	import { formatHex, parse, type Color } from 'culori';
+	import { formatCss, parse, type Color } from 'culori';
 
 	import { primaryPaletteConfig, secondaryPaletteConfig } from '../tokens';
 	import ColorPalette from './ColorPalette.svelte';
@@ -41,7 +41,7 @@
 
 	function createStoryArgs(config: PaletteConfig, label: string): Args {
 		return {
-			color: formatHex(config.color),
+			color: formatCss(config.color),
 			hueStops: [...config.hue.stops],
 			hueInterpolator: config.hue.interpolator,
 			chromaStops: [...config.chroma.stops],

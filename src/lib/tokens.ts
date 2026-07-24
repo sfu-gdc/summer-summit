@@ -5,7 +5,7 @@ import { theme } from '@unocss/preset-wind4/theme';
 
 import { createColorPalette, type ColorStop } from './ColorPalette/palette';
 
-const primaryColor = parse('#C7FF00');
+const primaryColor = parse('oklch(0.8925 0.2645 125.76)');
 if (!primaryColor) throw new Error();
 
 const secondaryColor = parse('#3600F7');
@@ -21,7 +21,7 @@ export const primaryPaletteConfig = {
 		interpolator: 'interpolatorSplineMonotone2',
 	},
 	chroma: {
-		stops: [0.04, -0.06, -0.36],
+		stops: [0, -0.06, -0.36, -0.6],
 		interpolator: 'interpolatorSplineMonotone2',
 	},
 } satisfies Parameters<typeof createColorPalette>[0];
