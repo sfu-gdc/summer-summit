@@ -66,18 +66,9 @@
 </script>
 
 <canvas
-	class={['eroded-checkerboard', className]}
+	class={['block h-full w-full pointer-events-none', className]}
 	aria-hidden="true"
 	bind:clientWidth={width}
 	bind:clientHeight={height}
 	{@attach renderCheckerboard}
 ></canvas>
-
-<style>
-	.eroded-checkerboard {
-		display: block;
-		inline-size: 100%;
-		block-size: 100%;
-		pointer-events: none;
-	}
-</style>
