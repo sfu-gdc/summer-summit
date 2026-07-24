@@ -104,7 +104,7 @@
 >
 	<div
 		class={[
-			'pointer-events-none absolute inset-0 -z-1 block h-full w-full rounded-[12%/20%] bg-[var(--puddle-color,#141414)]',
+			'pointer-events-none absolute inset-0 -z-1 h-full w-full rounded-[12%/20%] bg-[var(--puddle-color,#141414)]',
 			{ hidden: runtime.painted },
 		]}
 		data-puddle-fallback
