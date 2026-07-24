@@ -6,6 +6,8 @@ type PuddleSimulationProp =
 	| 'seed'
 	| 'level'
 	| 'noiseAmp'
+	| 'bowlWidth'
+	| 'bowlHeight'
 	| 'integrator'
 	| 'momentumSmoothing'
 	| 'momentumRetention'
@@ -24,7 +26,7 @@ type PuddleSimulationProp =
 export type PuddleSimulationOptions = Required<Pick<PuddleProps, PuddleSimulationProp>>;
 
 export function createPuddleSimulation(
-	geometry: Pick<PuddleGeometry, 'cols' | 'rows'>,
+	geometry: Pick<PuddleGeometry, 'width' | 'height' | 'cols' | 'rows'>,
 	options: PuddleSimulationOptions,
 ): WaterSim {
 	return createWaterSim({
@@ -33,6 +35,8 @@ export function createPuddleSimulation(
 		seed: options.seed,
 		level: options.level,
 		noiseAmp: options.noiseAmp,
+		bowlHalfX: options.bowlWidth / geometry.width / 2,
+		bowlHalfY: options.bowlHeight / geometry.height / 2,
 		integrator: options.integrator,
 		momentumSmoothing: options.momentumSmoothing,
 		momentumRetention: options.momentumRetention,

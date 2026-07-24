@@ -6,7 +6,13 @@ import { waitForPaintedFraction, wetAt } from './svg';
 
 test('renders a thresholded puddle silhouette', async () => {
 	await render(Puddle, {
-		props: { animated: false, color: '#141414', style: 'width:760px;height:420px;' },
+		props: {
+			animated: false,
+			bowlWidth: 517,
+			bowlHeight: 252,
+			color: '#141414',
+			style: 'width:760px;height:420px;',
+		},
 	});
 	const path = document.querySelector<SVGPathElement>('path[data-puddle-shape]');
 	expect(path).not.toBeNull();

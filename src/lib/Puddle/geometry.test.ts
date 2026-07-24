@@ -7,6 +7,8 @@ describe('resolvePuddleGeometry', () => {
 		const geometry = resolvePuddleGeometry(760, 420, { cellSize: 19, maxCells: 200 });
 
 		expect(geometry).toEqual({
+			width: 760,
+			height: 420,
 			cols: 40,
 			rows: 22,
 			ready: true,
@@ -19,6 +21,8 @@ describe('resolvePuddleGeometry', () => {
 		const geometry = resolvePuddleGeometry(0, 0, { cellSize: 19, maxCells: 200 });
 
 		expect(geometry).toEqual({
+			width: 0,
+			height: 0,
 			cols: 0,
 			rows: 0,
 			ready: false,

@@ -16,6 +16,8 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 	level: { control: { type: 'range', min: 0.3, max: 4, step: 0.02 } },
 	seed: { control: { type: 'range', min: 1, max: 40, step: 1 } },
 	noiseAmp: { control: { type: 'range', min: 0, max: 0.8, step: 0.02 } },
+	bowlWidth: { control: { type: 'range', min: 200, max: 1800, step: 10 } },
+	bowlHeight: { control: { type: 'range', min: 120, max: 1200, step: 10 } },
 	animated: { control: 'boolean' },
 	followCursor: { control: 'boolean' },
 	integrator: { control: 'radio', options: ['pipes', 'pipes+momentum'] },
