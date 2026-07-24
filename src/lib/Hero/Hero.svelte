@@ -3,9 +3,7 @@
 
 	import type { PuddleProps } from '../Puddle/config';
 
-	export type HeroProps = PuddleProps & {
-		class?: HTMLAttributes<HTMLDivElement>['class'];
-	};
+	export type HeroProps = PuddleProps & HTMLAttributes<HTMLDivElement>;
 </script>
 
 <script lang="ts">
@@ -14,7 +12,7 @@
 	import ErodedCheckerboard from '../ErodedCheckerboard/ErodedCheckerboard.svelte';
 	import Puddle from '../Puddle/Puddle.svelte';
 
-	let { class: className, ...puddleProps }: HeroProps = $props();
+	let { class: className, children, ...puddleProps }: HeroProps = $props();
 </script>
 
 <div
@@ -25,18 +23,14 @@
 >
 	<Puddle {...puddleProps} class="h-full w-full inset-0 absolute">
 		<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
-		<div class="p-10 grid inset-0 place-items-center absolute">
-			<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
-				>SUMMER SUMMIT<br />GAME JAM 2026</span
-			>
+		<div class="inset-0 absolute">
+			{@render children?.()}
 		</div>
 		<div
 			aria-hidden="true"
-			class="text-[var(--hero-puddle-text-color)] p-10 grid [clip-path:var(--puddle-clip)] inset-0 place-items-center absolute"
+			class="text-[var(--hero-puddle-text-color)] [clip-path:var(--puddle-clip)] inset-0 absolute"
 		>
-			<span class="text-6xl leading-[1.1] tracking-[0.04em] font-header text-center"
-				>SUMMER SUMMIT<br />GAME JAM 2026</span
-			>
+			{@render children?.()}
 		</div>
 	</Puddle>
 </div>

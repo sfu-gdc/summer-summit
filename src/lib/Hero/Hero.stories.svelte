@@ -27,7 +27,17 @@
 </script>
 
 {#snippet template(args: Args)}
-	<Hero {...args} class="h-screen" />
+	<Hero {...args} class="h-screen">
+		<div class="flex flex-col h-full place-content-center place-items-center">
+			<div class="text-8xl leading-[1.15] tracking-[0.04em] font-header text-center">
+				SUMMER SUMMIT<br />GAME JAM 2026
+			</div>
+			<div class="px-10 flex max-w-[830px] w-full items-baseline justify-between">
+				<span class="text-xl font-semibold">SEPT 4-6</span>
+				<div></div>
+			</div>
+		</div></Hero
+	>
 {/snippet}
 
 <Story name="Default" {template} />
