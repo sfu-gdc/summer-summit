@@ -55,7 +55,6 @@
 				checkerSize,
 				pixelSize,
 				seed,
-				opacity,
 				maxErosion,
 				falloff,
 			});
@@ -67,6 +66,7 @@
 
 <canvas
 	class={['block h-full w-full pointer-events-none', className]}
+	style:opacity={Math.min(Math.max(opacity, 0), 1)}
 	aria-hidden="true"
 	bind:clientWidth={width}
 	bind:clientHeight={height}

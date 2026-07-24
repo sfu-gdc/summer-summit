@@ -137,7 +137,6 @@ out vec4 fragmentColor;
 
 uniform sampler2D uPattern;
 uniform vec2 uPatternTexelSize;
-uniform float uOpacity;
 
 void main() {
 	vec2 sampleOffset = uPatternTexelSize * 2.0;
@@ -153,7 +152,7 @@ void main() {
 		texture(uPattern, textureCoordinate + sampleOffset).r;
 	coverage /= 16.0;
 	coverage = round(coverage * 8.0) / 8.0;
-	fragmentColor = vec4(vec3(coverage), uOpacity);
+	fragmentColor = vec4(vec3(coverage), 1.0);
 }`;
 
 export interface ErodedCheckerboardRenderOptions {
@@ -165,7 +164,6 @@ export interface ErodedCheckerboardRenderOptions {
 	checkerSize: number;
 	pixelSize: number;
 	seed: number;
-	opacity: number;
 	maxErosion: number;
 	falloff: number;
 }
@@ -179,12 +177,10 @@ export function createErodedCheckerboardRenderer(
 	canvas: HTMLCanvasElement,
 ): ErodedCheckerboardRenderer | undefined {
 	const gl = canvas.getContext('webgl2', {
-		alpha: true,
+		alpha: false,
 		antialias: false,
 		depth: false,
 		powerPreference: 'low-power',
-		premultipliedAlpha: false,
-		preserveDrawingBuffer: true,
 		stencil: false,
 	});
 	if (!gl) return;
@@ -273,7 +269,6 @@ export function createErodedCheckerboardRenderer(
 			twgl.setUniforms(presentProgramInfo, {
 				uPattern: patternTexture,
 				uPatternTexelSize: [1 / sourceWidth, 1 / sourceHeight],
-				uOpacity: Math.min(Math.max(options.opacity, 0), 1),
 			});
 			twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES);
 		},
