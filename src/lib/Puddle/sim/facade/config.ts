@@ -1,7 +1,7 @@
 import { texelDistance, worldUnits } from '../brands';
 import { rainEmitter } from '../emitters';
 import { createEngine, type EngineConfig } from '../engine';
-import { DEFAULT_MAX_SUBSTEPS, defaultGovernor, makeGovernor } from '../governor';
+import { DEFAULT_MAX_SUBSTEPS } from '../governor';
 import { constantGravity, noiseGravity, offsetGravity } from '../gravity';
 import { integrators } from '../integrators';
 import { resolveParams } from '../params';
@@ -59,10 +59,8 @@ export function createWaterSimConfig(
 				]
 			: [];
 
-	// Keep governor and engine caps aligned.
 	const maxSubsteps = finiteOrFallback(options.maxSubsteps, DEFAULT_MAX_SUBSTEPS);
 	const substepCap = nonnegativeIntegerOrZero(maxSubsteps);
-	const governor = options.maxSubsteps !== undefined ? makeGovernor(substepCap) : defaultGovernor;
 
 	return {
 		grid,
@@ -76,7 +74,6 @@ export function createWaterSimConfig(
 			integrator,
 			gravity,
 			emitters,
-			governor,
 			maxSubsteps: substepCap,
 		},
 	};

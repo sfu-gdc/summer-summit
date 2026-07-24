@@ -1,8 +1,6 @@
-import { type SubstepSeconds, substepSeconds } from './brands';
-import { params as paramSchema } from './params';
-import type { GovernorPolicy, SubstepPlan } from './types';
-
-export const BASE_SUBSTEP = paramSchema.baseSubstep.default;
+import { type Seconds, type SubstepSeconds, substepSeconds } from './brands';
+import type { Params } from './params';
+import type { Integrator, StateStats } from './types';
 
 export const DEFAULT_MAX_SUBSTEPS = 8;
 
@@ -11,19 +9,21 @@ function substepCount(frameDt: number, substepDt: number, maxSubsteps: number): 
 	return Math.max(0, Math.min(maxSubsteps, desiredSubsteps));
 }
 
-export function makeGovernor(maxSubsteps: number): GovernorPolicy {
-	return ({ frameDt, stats, integrator, params }) => {
-		const stableDt = integrator.maxStableDt(stats, params);
-		const substepDt = Math.min(params.baseSubstep, stableDt);
-		// Floor preserves the accumulator remainder; rounding would overdraw its budget.
-		return {
-			substeps: substepCount(frameDt, substepDt, maxSubsteps),
-			dt: substepSeconds(substepDt),
-		} satisfies SubstepPlan;
+export function planSubsteps(
+	frameDt: Seconds,
+	stats: StateStats,
+	integrator: Integrator,
+	params: Params,
+	maxSubsteps: number,
+) {
+	const stableDt = integrator.maxStableDt(stats, params);
+	const substepDt = Math.min(params.baseSubstep, stableDt);
+	// Floor preserves the accumulator remainder; rounding would overdraw its budget.
+	return {
+		substeps: substepCount(frameDt, substepDt, maxSubsteps),
+		dt: substepSeconds(substepDt),
 	};
 }
-
-export const defaultGovernor: GovernorPolicy = makeGovernor(DEFAULT_MAX_SUBSTEPS);
 
 export function maxFrameBudget(maxSubsteps: number, baseSubstep: number): SubstepSeconds {
 	return substepSeconds(maxSubsteps * baseSubstep);

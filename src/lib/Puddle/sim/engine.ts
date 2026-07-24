@@ -4,13 +4,12 @@
 import { seconds, substepSeconds, type WorldUnits } from './brands';
 import { applyCommand } from './emitters';
 import { runSubstep } from './executor';
-import { DEFAULT_MAX_SUBSTEPS, maxFrameBudget } from './governor';
+import { DEFAULT_MAX_SUBSTEPS, maxFrameBudget, planSubsteps } from './governor';
 import type { Params } from './params';
 import { createResources, type Resources } from './resources';
 import { createRng, type Rng } from './rng';
 import type {
 	FrameStats,
-	GovernorPolicy,
 	GravityDriver,
 	Grid,
 	Integrator,
@@ -28,8 +27,7 @@ export interface EngineConfig {
 	readonly integrator: Integrator;
 	readonly gravity: GravityDriver;
 	readonly emitters: readonly SourceEmitter[];
-	readonly governor: GovernorPolicy;
-	/** Per-frame substep cap; defaults to `DEFAULT_MAX_SUBSTEPS` and must match the governor. */
+	/** Per-frame substep cap; defaults to `DEFAULT_MAX_SUBSTEPS`. */
 	readonly maxSubsteps?: number | undefined;
 }
 
@@ -46,7 +44,6 @@ export class Engine {
 	private readonly integrator: Integrator;
 	private readonly gravity: GravityDriver;
 	private readonly emitters: readonly SourceEmitter[];
-	private readonly governor: GovernorPolicy;
 	private readonly maxSubsteps: number;
 	private readonly resources: Resources;
 	private rng: Rng;
@@ -63,7 +60,6 @@ export class Engine {
 		this.integrator = config.integrator;
 		this.gravity = config.gravity;
 		this.emitters = config.emitters;
-		this.governor = config.governor;
 		this.maxSubsteps = config.maxSubsteps ?? DEFAULT_MAX_SUBSTEPS;
 		this.resources = createResources(config.grid, config.terrain);
 		this.rng = createRng(config.seed);
@@ -107,12 +103,13 @@ export class Engine {
 			this.runEmitters(this.emittedUpTo, horizon - this.emittedUpTo);
 			this.emittedUpTo = horizon;
 		}
-		const plan = this.governor({
-			frameDt: seconds(this.accumulatedTime),
-			stats: this.resources.stats(),
-			integrator: this.integrator,
-			params: this.params,
-		});
+		const plan = planSubsteps(
+			seconds(this.accumulatedTime),
+			this.resources.stats(),
+			this.integrator,
+			this.params,
+			this.maxSubsteps,
+		);
 		let completedSubsteps = 0;
 		for (let substepIndex = 0; substepIndex < plan.substeps; substepIndex++) {
 			runSubstep(

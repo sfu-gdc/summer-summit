@@ -8,7 +8,7 @@ export type { ParamKey, ParamOverrides, Params } from './params';
 export { Engine, createEngine } from './engine';
 export type { EngineConfig } from './engine';
 export { constantGravity, noiseGravity, offsetGravity } from './gravity';
-export { DEFAULT_MAX_SUBSTEPS, defaultGovernor, makeGovernor } from './governor';
+export { DEFAULT_MAX_SUBSTEPS } from './governor';
 export { rainEmitter } from './emitters';
 export { makeTerrain } from './terrain';
 export {
@@ -31,8 +31,6 @@ export type { Rng } from './rng';
 export type {
 	EmitCtx,
 	FrameStats,
-	GovernorInput,
-	GovernorPolicy,
 	GravityDriver,
 	GravitySample,
 	Grid,
@@ -40,5 +38,4 @@ export type {
 	SourceCommand,
 	SourceEmitter,
 	StateStats,
-	SubstepPlan,
 } from './types';

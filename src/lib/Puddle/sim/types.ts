@@ -96,19 +96,6 @@ export interface EmitCtx {
 }
 export type SourceEmitter = (context: EmitCtx) => readonly SourceCommand[];
 
-export interface SubstepPlan {
-	readonly substeps: number;
-	readonly dt: SubstepSeconds;
-}
-
-export interface GovernorInput {
-	readonly frameDt: Seconds;
-	readonly stats: StateStats;
-	readonly integrator: Integrator;
-	readonly params: Params;
-}
-export type GovernorPolicy = (input: GovernorInput) => SubstepPlan;
-
 /** Serializable so a noise-phase driver can participate in snapshots. */
 export interface GravityDriver {
 	readonly sample: (time: Seconds) => GravitySample;

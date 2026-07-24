@@ -2,41 +2,44 @@ import { describe, expect, it } from 'vitest';
 
 import { createWaterSim } from '..';
 import { seconds, worldUnits } from '../brands';
-import { BASE_SUBSTEP, defaultGovernor } from '../governor';
+import { DEFAULT_MAX_SUBSTEPS, planSubsteps } from '../governor';
 import { integrators } from '../integrators';
 import { resolveParams } from '../params';
 import type { StateStats } from '../types';
 
-describe('defaultGovernor', () => {
+describe('planSubsteps', () => {
 	const stats: StateStats = { mass: 100, maxDepth: worldUnits(0.6) };
 	const params = resolveParams({});
 
 	it('scales substeps with the frame budget and never exceeds CFL dt', () => {
-		const smallFramePlan = defaultGovernor({
-			frameDt: seconds(BASE_SUBSTEP),
+		const smallFramePlan = planSubsteps(
+			seconds(params.baseSubstep),
 			stats,
-			integrator: integrators.pipes,
+			integrators.pipes,
 			params,
-		});
-		const largeFramePlan = defaultGovernor({
-			frameDt: seconds(BASE_SUBSTEP * 5),
+			DEFAULT_MAX_SUBSTEPS,
+		);
+		const largeFramePlan = planSubsteps(
+			seconds(params.baseSubstep * 5),
 			stats,
-			integrator: integrators.pipes,
+			integrators.pipes,
 			params,
-		});
+			DEFAULT_MAX_SUBSTEPS,
+		);
 		expect(smallFramePlan.substeps).toBe(1);
 		expect(largeFramePlan.substeps).toBeGreaterThan(smallFramePlan.substeps);
-		expect(largeFramePlan.dt).toBeLessThanOrEqual(BASE_SUBSTEP + 1e-9);
+		expect(largeFramePlan.dt).toBeLessThanOrEqual(params.baseSubstep + 1e-9);
 	});
 
 	it('caps substeps per frame (no spiral of death)', () => {
-		const cappedPlan = defaultGovernor({
-			frameDt: seconds(100),
+		const cappedPlan = planSubsteps(
+			seconds(100),
 			stats,
-			integrator: integrators.pipes,
+			integrators.pipes,
 			params,
-		});
-		expect(cappedPlan.substeps).toBeLessThanOrEqual(8);
+			DEFAULT_MAX_SUBSTEPS,
+		);
+		expect(cappedPlan.substeps).toBeLessThanOrEqual(DEFAULT_MAX_SUBSTEPS);
 	});
 });
 
