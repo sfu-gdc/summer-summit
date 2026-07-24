@@ -5,11 +5,14 @@ import { theme } from '@unocss/preset-wind4/theme';
 
 import { createColorPalette, type ColorStop } from './ColorPalette/palette';
 
-const primaryColor = parse('#C7FF00');
+const primaryColor = parse('oklch(0.8925 0.2645 125.76)');
 if (!primaryColor) throw new Error();
 
 const secondaryColor = parse('#3600F7');
 if (!secondaryColor) throw new Error();
+
+const shadeColor = parse('#141414');
+if (!shadeColor) throw new Error();
 
 export const primaryPaletteConfig = {
 	color: primaryColor,
@@ -18,7 +21,7 @@ export const primaryPaletteConfig = {
 		interpolator: 'interpolatorSplineMonotone2',
 	},
 	chroma: {
-		stops: [0.04, -0.06, -0.36],
+		stops: [0, -0.06, -0.36, -0.6],
 		interpolator: 'interpolatorSplineMonotone2',
 	},
 } satisfies Parameters<typeof createColorPalette>[0];
@@ -35,8 +38,21 @@ export const secondaryPaletteConfig = {
 	},
 } satisfies Parameters<typeof createColorPalette>[0];
 
+export const shadePaletteConfig = {
+	color: shadeColor,
+	hue: {
+		stops: [0, 0],
+		interpolator: 'interpolatorLinear',
+	},
+	chroma: {
+		stops: [0, 0],
+		interpolator: 'interpolatorLinear',
+	},
+} satisfies Parameters<typeof createColorPalette>[0];
+
 const primaryPalette = createColorPalette(primaryPaletteConfig);
 const secondaryPalette = createColorPalette(secondaryPaletteConfig);
+const shadePalette = createColorPalette(shadePaletteConfig);
 
 function paletteRecord(
 	value: typeof primaryPalette,
@@ -51,11 +67,13 @@ function paletteRecord(
 export const brandColorValues = {
 	primary: paletteRecord(primaryPalette, ({ css }) => css),
 	secondary: paletteRecord(secondaryPalette, ({ css }) => css),
+	shade: paletteRecord(shadePalette, ({ css }) => css),
 } as const;
 
 export const brandColors = {
 	primary: paletteRecord(primaryPalette, ({ stop }) => `var(--brand-primary-${stop})`),
 	secondary: paletteRecord(secondaryPalette, ({ stop }) => `var(--brand-secondary-${stop})`),
+	shade: paletteRecord(shadePalette, ({ stop }) => `var(--brand-shade-${stop})`),
 } as const;
 
 export const fonts = {

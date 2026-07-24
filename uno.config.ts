@@ -27,7 +27,9 @@ export default defineConfig({
 		presetTypography(),
 		presetWebFonts({
 			provider: 'none', // handled by unplugin-font with vite
-			fonts,
+			fonts: Object.fromEntries(
+				Object.entries(fonts).map(([className, family]) => [className, `'${family}'`]),
+			),
 		}),
 	],
 	transformers: [transformerVariantGroup(), transformerDirectives(), transformerCompileClass()],

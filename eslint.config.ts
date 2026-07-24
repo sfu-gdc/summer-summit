@@ -115,7 +115,7 @@ export default defineConfig(
 		},
 	},
 	{
-		files: ['**/*.svelte', '**/*.svelte.?({mc}){tj}s'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {
 				parser: ts.parser,
