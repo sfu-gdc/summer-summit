@@ -47,19 +47,6 @@ const argTypes: NonNullable<PuddleMeta['argTypes']> = {
 export const puddleStoryConfig = {
 	args: {
 		...PUDDLE_DEFAULTS,
-		cellSize: 28,
-		animated: true,
-		followCursor: true,
-		momentumRetention: 0,
-		timeScale: 2,
-		driftAmp: 3,
-		driftRateHz: 0.5,
-		rainAmount: 0.11,
-		cursorTilt: 2.5,
-		cursorEase: 0.05,
-		deviceGravity: true,
-		deviceEase: 0.05,
-		color: brandColorValues.shade['950'],
 	} satisfies Args,
 	argTypes,
 	parameters: {

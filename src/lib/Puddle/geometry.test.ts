@@ -37,7 +37,7 @@ describe('resolvePuddleGeometry', () => {
 			maxCells: Number.NaN,
 		});
 
-		expect(geometry.cols).toBe(40);
-		expect(geometry.rows).toBe(22);
+		expect(geometry.cols).toBe(27);
+		expect(geometry.rows).toBe(15);
 	});
 });

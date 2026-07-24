@@ -3,6 +3,8 @@ import type { HTMLAttributes } from 'svelte/elements';
 
 import type { Color } from 'culori';
 
+import { brandColorValues } from '$lib/tokens';
+
 import type { IntegratorId } from './sim';
 
 // Omit the deprecated HTML `color` attribute; intersecting with it would
@@ -109,35 +111,35 @@ type PuddleDefaultKey =
 
 /** Default values for every Puddle-specific prop. Spread into stories to match the component. */
 export const PUDDLE_DEFAULTS = {
-	color: '#141414',
-	cellSize: 19,
+	color: brandColorValues.shade['900'],
+	cellSize: 28,
 	threshold: 0.035,
 	level: 0.42,
 	seed: 7,
 	noiseAmp: 0.4,
 	bowlWidth: 730,
 	bowlHeight: 380,
-	animated: false,
-	followCursor: false,
+	animated: true,
+	followCursor: true,
 	integrator: 'pipes+momentum',
 	momentumSmoothing: 0.1,
-	momentumRetention: 0.98,
-	timeScale: 6,
+	momentumRetention: 0,
+	timeScale: 2,
 	baseSubstep: 0.08,
 	maxSubsteps: 8,
 	cflSafety: 0.9,
 	minWaveDepth: 0.001,
 	settleSubsteps: 90,
 	gravityDrift: true,
-	driftAmp: 1,
-	driftRateHz: 0.05,
+	driftAmp: 3,
+	driftRateHz: 0.5,
 	rainInterval: 0.6,
-	rainAmount: 0.06,
+	rainAmount: 0.11,
 	rainRadius: 1.5,
 	maxCells: 200,
-	cursorTilt: 1.7,
-	cursorEase: 0.2,
+	cursorTilt: 2.5,
+	cursorEase: 0.05,
 	deviceGravity: false,
 	deviceTilt: 6,
-	deviceEase: 0.18,
+	deviceEase: 0.05,
 } as const satisfies Required<Pick<PuddleProps, PuddleDefaultKey>>;
