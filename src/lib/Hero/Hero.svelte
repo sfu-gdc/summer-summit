@@ -1,11 +1,7 @@
 <script module lang="ts">
 	import type { PuddleProps } from '../Puddle/config';
 
-	export type HeroProps = PuddleProps & {
-		backgroundColor?: string;
-		puddleTextColor?: string;
-		textColor?: string;
-	};
+	export type HeroProps = PuddleProps;
 </script>
 
 <script lang="ts">
@@ -14,19 +10,14 @@
 	import ErodedCheckerboard from '../ErodedCheckerboard/ErodedCheckerboard.svelte';
 	import Puddle from '../Puddle/Puddle.svelte';
 
-	let {
-		backgroundColor = brandColorValues.primary['100'],
-		puddleTextColor = brandColorValues.shade['50'],
-		textColor = brandColorValues.secondary['500'],
-		...puddleProps
-	}: HeroProps = $props();
+	let puddleProps: HeroProps = $props();
 </script>
 
 <div
 	class="text-[var(--hero-text-color)] bg-[var(--hero-background-color)]"
-	style:--hero-background-color={backgroundColor}
-	style:--hero-puddle-text-color={puddleTextColor}
-	style:--hero-text-color={textColor}
+	style:--hero-background-color={brandColorValues.primary['100']}
+	style:--hero-puddle-text-color={brandColorValues.shade['50']}
+	style:--hero-text-color={brandColorValues.secondary['500']}
 >
 	<Puddle {...puddleProps}>
 		<ErodedCheckerboard />
