@@ -67,8 +67,13 @@
 	}
 </script>
 
-<div class="minimap">
-	<svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-labelledby={`${uid}-title`}>
+<div class="minimap rounded-[0.3rem] min-w-0 aspect-2/1 relative overflow-hidden">
+	<svg
+		class="size-full overflow-visible"
+		viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+		role="img"
+		aria-labelledby={`${uid}-title`}
+	>
 		<title id={`${uid}-title`}>{title}</title>
 		<defs>
 			<linearGradient id={`${uid}-hues`} x1="0" y1="0" x2="1" y2="0">
@@ -113,29 +118,22 @@
 		<text class="axis-label" x={PLOT.right - 1} y={HEIGHT - 2}>H</text>
 	</svg>
 
-	<div class="legend" aria-hidden="true">
+	<div
+		class="legend text-[0.42rem] leading-[1.2] tracking-[0.02em] font-650 px-[0.14rem] py-[0.08rem] rounded-[0.15rem] flex gap-[0.18rem] [inset-block-start:0.18rem] [inset-inline-end:0.22rem] absolute"
+		aria-hidden="true"
+	>
 		{#each map.boundaries.toReversed() as boundary (boundary.gamut)}
-			<span class:larger={gamutRank[boundary.gamut] > gamutRank[gamut]}>{boundary.label}</span>
+			<span class={{ 'opacity-34': gamutRank[boundary.gamut] > gamutRank[gamut] }}>
+				{boundary.label}
+			</span>
 		{/each}
 	</div>
 </div>
 
 <style>
 	.minimap {
-		position: relative;
-		min-inline-size: 0;
-		aspect-ratio: 2 / 1;
-		overflow: hidden;
 		background: color-mix(in oklab, currentColor 7%, transparent);
 		border: 1px solid color-mix(in oklab, currentColor 16%, transparent);
-		border-radius: 0.3rem;
-	}
-
-	svg {
-		display: block;
-		inline-size: 100%;
-		block-size: 100%;
-		overflow: visible;
 	}
 
 	.axis,
@@ -205,21 +203,6 @@
 	}
 
 	.legend {
-		position: absolute;
-		inset-block-start: 0.18rem;
-		inset-inline-end: 0.22rem;
-		display: flex;
-		gap: 0.18rem;
-		padding: 0.08rem 0.14rem;
 		background: color-mix(in oklab, canvas 70%, transparent);
-		border-radius: 0.15rem;
-		font-size: 0.42rem;
-		font-weight: 650;
-		letter-spacing: 0.02em;
-		line-height: 1.2;
-	}
-
-	.legend .larger {
-		opacity: 0.34;
 	}
 </style>

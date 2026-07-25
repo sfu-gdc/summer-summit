@@ -74,40 +74,20 @@
 	});
 </script>
 
-<svelte:element this={as} bind:this={host} class={['host', className]} {...rest}>
+<svelte:element this={as} bind:this={host} class={['host relative isolate', className]} {...rest}>
 	<canvas
 		bind:this={canvas}
 		aria-hidden="true"
 		style:--spread="{spread}px"
 		style:--spray-color={cssColor}
-		class="renderer"
+		class={[
+			'renderer pointer-events-none absolute -z-1 block top-[calc(-1*var(--spread))] left-[calc(-1*var(--spread))] h-[calc(100%+var(--spread)*2)] w-[calc(100%+var(--spread)*2)]',
+			{
+				'[outline:2px_dashed_var(--spray-color,currentColor)] outline-offset-[calc(-1*var(--spread))]':
+					!sprayed,
+			},
+		]}
 		class:sprayed
 	></canvas>
 	{@render children?.()}
 </svelte:element>
-
-<style>
-	/* The consumer styles this as the box to outline; the canvas overlays it and bleeds `spread` past. */
-	.host {
-		position: relative;
-		isolation: isolate;
-	}
-
-	.renderer {
-		position: absolute;
-		display: block;
-		pointer-events: none;
-		z-index: -1;
-
-		top: calc(-1 * var(--spread));
-		left: calc(-1 * var(--spread));
-		width: calc(100% + var(--spread) * 2);
-		height: calc(100% + var(--spread) * 2);
-	}
-
-	/* No-JS / no-WebGL2 fallback: dashed frame at the box edge until the spray paints. */
-	.renderer:not(.sprayed) {
-		outline: 2px dashed var(--spray-color, currentColor);
-		outline-offset: calc(-1 * var(--spread));
-	}
-</style>

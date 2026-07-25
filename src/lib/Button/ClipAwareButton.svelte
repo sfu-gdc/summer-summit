@@ -69,11 +69,11 @@
 
 {#snippet baseLayer()}
 	<span
-		class="visual-state"
+		class="visual-state outline-2 outline-transparent outline-offset--2 inline-flex [transition:transform_100ms_ease-out,outline-offset_100ms_ease-out] relative"
 		data-clip-aware-visual="base"
 		style:--clip-aware-focus-ring={buttonColors.focusRing}
 	>
-		<span class="presentation-surface" aria-hidden="true" inert>
+		<span class="presentation-surface contents" aria-hidden="true" inert>
 			<ButtonSurface {appearance} {children} {icon} presentation {size} {spray} />
 		</span>
 		{#if control}
@@ -81,7 +81,10 @@
 				<Button
 					{...sharedButtonProps}
 					aria-label={control.ariaLabel}
-					class={['semantic-control', control.class]}
+					class={[
+						'semantic-control pointer-events-auto !absolute !inset-0 !size-full',
+						control.class,
+					]}
 					href={control.href}
 					onclick={control.onclick}
 					rel={control.rel}
@@ -91,7 +94,10 @@
 				<Button
 					{...sharedButtonProps}
 					aria-label={control.ariaLabel}
-					class={['semantic-control', control.class]}
+					class={[
+						'semantic-control pointer-events-auto !absolute !inset-0 !size-full',
+						control.class,
+					]}
 					disabled={control.disabled}
 					onclick={control.onclick}
 					type={control.type}
@@ -103,7 +109,7 @@
 
 {#snippet inverseLayer()}
 	<span
-		class="visual-state"
+		class="visual-state outline-2 outline-transparent outline-offset--2 inline-flex [transition:transform_100ms_ease-out,outline-offset_100ms_ease-out] relative"
 		data-clip-aware-visual="inverse"
 		style:--clip-aware-focus-ring={buttonColors.focusRing}
 	>
@@ -122,28 +128,6 @@
 {@render compose({ base: baseLayer, inverse: inverseLayer })}
 
 <style>
-	.presentation-surface {
-		display: contents;
-	}
-
-	.visual-state {
-		display: inline-flex;
-		position: relative;
-		outline: 2px solid transparent;
-		outline-offset: -2px;
-		transition:
-			transform 100ms ease-out,
-			outline-offset 100ms ease-out;
-	}
-
-	.visual-state :global(.semantic-control) {
-		inset: 0;
-		height: 100%;
-		position: absolute;
-		width: 100%;
-		pointer-events: auto;
-	}
-
 	:global(
 		[data-clip-aware-button]:has(.semantic-control:hover:not(:disabled):not([aria-disabled='true']))
 			[data-button-surface]

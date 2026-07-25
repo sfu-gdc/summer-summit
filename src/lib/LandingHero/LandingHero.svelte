@@ -46,7 +46,7 @@
 </script>
 
 {#snippet composeContent(buttonLayers: ButtonLayers)}
-	<div class="content-layer" data-hero-content data-landing-layer="base">
+	<div class="content-layer inset-0 absolute" data-hero-content data-landing-layer="base">
 		<LandingHeroContent
 			layer="base"
 			{titleLines}
@@ -59,11 +59,10 @@
 	</div>
 	<div
 		aria-hidden="true"
-		class="content-layer inverse-content-layer"
+		class="content-layer inverse-content-layer pointer-events-none [clip-path:var(--puddle-clip)] inset-0 absolute"
 		data-hero-content-overlay
 		data-landing-layer="inverse"
 		inert
-		style:pointer-events="none"
 	>
 		<LandingHeroContent
 			layer="inverse"
@@ -79,7 +78,7 @@
 
 <div
 	class={[
-		'hero text-[var(--hero-text-color)] bg-[var(--hero-background-color)] hero-full-viewport',
+		'hero relative min-h-svh w-full overflow-hidden text-[var(--hero-text-color)] bg-[var(--hero-background-color)]',
 		className,
 	]}
 	data-hero
@@ -90,10 +89,11 @@
 	style:--hero-puddle-text-color={heroColors.inverseContent}
 	style:--hero-text-color={heroColors.content}
 >
-	<div class="hero-puddle-layer" data-hero-puddle-layer>
+	<div class="hero-puddle-layer inset-0 absolute" data-hero-puddle-layer>
 		<Puddle
 			{...puddleProfile}
 			color={heroColors.outline}
+			class="size-full"
 			data-clip-aware-button={cta ? true : undefined}
 			data-puddle-profile={puddleProfileName}
 		>
@@ -111,35 +111,3 @@
 		</Puddle>
 	</div>
 </div>
-
-<style>
-	.hero {
-		overflow: hidden;
-		position: relative;
-	}
-
-	.hero-full-viewport {
-		min-height: 100svh;
-		width: 100%;
-	}
-
-	.hero-puddle-layer {
-		inset: 0;
-		position: absolute;
-	}
-
-	.hero-puddle-layer > :global([data-puddle-host]) {
-		height: 100%;
-		width: 100%;
-	}
-
-	.content-layer {
-		inset: 0;
-		position: absolute;
-	}
-
-	.inverse-content-layer {
-		clip-path: var(--puddle-clip);
-		pointer-events: none;
-	}
-</style>

@@ -93,19 +93,19 @@
 	<div class="flex flex-wrap gap-8 items-start">
 		<div class="flex flex-col gap-3 items-center">
 			<Button {...args}>About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Default</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Default</span>
 		</div>
 		<div class="pseudo-hover-all flex flex-col gap-3 items-center">
 			<Button {...args}>About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Hover</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Hover</span>
 		</div>
 		<div class="pseudo-active-all flex flex-col gap-3 items-center">
 			<Button {...args}>About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Active</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Active</span>
 		</div>
 		<div class="pseudo-focus-visible-all flex flex-col gap-3 items-center">
 			<Button {...args}>About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase"
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase"
 				>Focus Visible</span
 			>
 		</div>
@@ -145,11 +145,11 @@
 	<div class="flex flex-wrap gap-8 items-start">
 		<div class="flex flex-col gap-3 items-center">
 			<Button {...args} variant="underline">About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Default</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Default</span>
 		</div>
 		<div class="pseudo-hover-all flex flex-col gap-3 items-center">
 			<Button {...args} variant="underline">About</Button>
-			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Hover</span>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Hover</span>
 		</div>
 	</div>
 {/snippet}
@@ -222,12 +222,10 @@
 
 		await expect(getComputedStyle(defaultButton).transform).toBe('none');
 		await expect(getComputedStyle(hoverButton).transform).toBe('none');
-		await expect(documentRules(activeButton, '.summer-summit-button:active')).toMatch(
-			/(?:scale|transform)[^;}]*0?\.98/,
+		await expect(documentRules(activeButton, ':active')).toMatch(/(?:scale|transform)[^;}]*0?\.98/);
+		await expect(documentRules(focusButton, ':focus-visible')).toMatch(
+			/border-radius[^;}]*(?:4px|0\.25rem|--radius-DEFAULT)/,
 		);
-		await expect(
-			documentRules(focusButton, '.summer-summit-button:focus-visible:not(:disabled)'),
-		).toMatch(/border-radius[^;}]*(?:4px|0\.25rem)/);
 	}}
 />
 

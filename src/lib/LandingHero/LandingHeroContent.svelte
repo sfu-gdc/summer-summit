@@ -57,7 +57,7 @@
 	</header>
 
 	<main
-		class="landing-main max-w-5xl place-self-center"
+		class="landing-main max-w-5xl [--landing-detail-gap:0.75rem] [--landing-slope-step:calc(1+var(--landing-detail-gap)/var(--landing-title-line-height))] [--landing-title-line-height:2.75rem] place-self-center relative lg:[--landing-title-line-height:4rem] md:[--landing-title-line-height:3.25rem] xl:[--landing-title-line-height:6.5rem]"
 		style:color={layer === 'base' ? 'var(--hero-main-text-color)' : undefined}
 	>
 		<div
@@ -98,33 +98,6 @@
 </div>
 
 <style>
-	.landing-main {
-		--landing-detail-gap: 0.75rem;
-		--landing-title-line-height: 2.75rem;
-		--landing-slope-step: calc(1 + var(--landing-detail-gap) / var(--landing-title-line-height));
-
-		position: relative;
-	}
-
-	/* These values mirror the responsive leading utilities that determine the triangle's slope. */
-	@media (min-width: 48rem) {
-		.landing-main {
-			--landing-title-line-height: 3.25rem;
-		}
-	}
-
-	@media (min-width: 64rem) {
-		.landing-main {
-			--landing-title-line-height: 4rem;
-		}
-	}
-
-	@media (min-width: 80rem) {
-		.landing-main {
-			--landing-title-line-height: 6.5rem;
-		}
-	}
-
 	[data-landing-content='base'] .landing-main {
 		anchor-scope: --hero-text-base-first, --hero-text-base-second;
 	}

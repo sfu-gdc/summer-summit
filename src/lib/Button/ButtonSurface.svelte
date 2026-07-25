@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
 
-	import { buttonColors, buttonColorValues, buttonSizes, fonts } from '$lib/tokens';
+	import { buttonColors, buttonColorValues, buttonSizes } from '$lib/tokens';
 
 	import SprayBorder from '../SprayBorder/SprayBorder.svelte';
 
@@ -45,9 +45,14 @@
 	aria-hidden={hidden ? 'true' : undefined}
 	data-button-surface={hidden ? 'overlay' : 'base'}
 	inert={hidden ? true : undefined}
-	class={['button-surface', { presentation }]}
+	class={[
+		'button-surface pointer-events-none flex whitespace-nowrap uppercase text-base font-semibold leading-6 tracking-normal [color:var(--button-surface-content)]',
+		'font-body',
+		presentation
+			? 'presentation relative inset-auto box-border inline-flex h-[var(--button-surface-height)] w-auto px-[var(--button-surface-padding)]'
+			: 'absolute inset-0',
+	]}
 	style:clip-path={clipPath}
-	style:--button-surface-font={fonts.body}
 	style:--button-surface-height={sizeValues.height}
 	style:--button-surface-padding={sizeValues.inlinePadding}
 	style:--button-surface-content={colors.content}
@@ -56,7 +61,10 @@
 	style:--button-surface-hover-content={colors.hoverContent}
 >
 	{#if presentation}
-		<span aria-hidden="true" class="button-surface-sizing">
+		<span
+			aria-hidden="true"
+			class="button-surface-sizing inline-flex gap-2 invisible items-center justify-center"
+		>
 			{@render icon?.()}
 			{@render children?.()}
 		</span>
@@ -67,10 +75,9 @@
 		color={colorValues.surface}
 		data-spray-radius={sprayOpts.radius}
 		data-spray-spread={sprayOpts.spread}
-		class=":uno: inline-flex h-full w-full items-center justify-center"
-		style="position: absolute; inset: 0; width: 100%; height: 100%;"
+		class=":uno: inline-flex size-full items-center inset-0 justify-center absolute"
 	>
-		<span class="button-surface-content">
+		<span class="button-surface-content inline-flex gap-2 size-full items-center justify-center">
 			{@render icon?.()}
 			{@render children?.()}
 		</span>
@@ -78,48 +85,6 @@
 </span>
 
 <style>
-	.button-surface {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		color: var(--button-surface-content);
-		font-family: var(--button-surface-font);
-		font-size: 1rem;
-		font-weight: 600;
-		line-height: 1.5rem;
-		letter-spacing: normal;
-		text-transform: uppercase;
-		white-space: nowrap;
-		pointer-events: none;
-	}
-
-	.button-surface-content,
-	.button-surface-sizing {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-	}
-
-	.button-surface-content {
-		width: 100%;
-		height: 100%;
-	}
-
-	.button-surface-sizing {
-		visibility: hidden;
-	}
-
-	.button-surface.presentation {
-		position: relative;
-		inset: auto;
-		display: inline-flex;
-		box-sizing: border-box;
-		width: auto;
-		height: var(--button-surface-height);
-		padding-inline: var(--button-surface-padding);
-	}
-
 	:global(.summer-summit-button:hover:not(:disabled)) .button-surface {
 		color: var(--button-surface-hover-content);
 	}

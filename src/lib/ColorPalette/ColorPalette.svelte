@@ -44,15 +44,18 @@
 	}
 </script>
 
-<figure class={['palette', className]}>
-	<figcaption>{label}</figcaption>
+<figure class={['[max-inline-size:100%]', className]}>
+	<figcaption class="text-sm tracking-[0.04em] font-700 mb-3 uppercase">{label}</figcaption>
 
 	{#if swatches.length > 0}
-		<ol aria-label={label}>
+		<ol
+			class="pb-2 gap-2 grid grid-cols-[repeat(11,minmax(5.5rem,1fr))] overflow-x-auto"
+			aria-label={label}
+		>
 			{#each swatches as swatch (swatch.key)}
-				<li>
+				<li class="gap-[0.3rem] grid">
 					<span
-						class="chip"
+						class="chip rounded-lg aspect-4/5 block"
 						style:--swatch={swatch.css}
 						style:--swatch-fallback={swatch.hex}
 						aria-label={`${String(swatch.stop)}: ${swatch.css}`}
@@ -63,12 +66,17 @@
 						gamut={swatch.gamut}
 						label={`${label} ${String(swatch.stop)}`}
 					/>
-					<span class="stop">
+					<span class="text-xs font-700 flex gap-1 items-baseline justify-between tabular-nums">
 						{swatch.stop}
-						<small class:gamut-wide={swatch.gamut !== 'srgb'}>{gamutLabels[swatch.gamut]}</small>
+						<small
+							class={[
+								'text-[0.5rem] font-500 tracking-[0.04em] uppercase',
+								{ 'gamut-wide': swatch.gamut !== 'srgb' },
+							]}>{gamutLabels[swatch.gamut]}</small
+						>
 					</span>
 					<button
-						class="copy"
+						class="copy text-[0.625rem] tracking-[0.03em] border-b cursor-pointer truncate uppercase [inline-size:fit-content] tabular-nums hover:text-inherit focus-visible:(outline-2 outline-current outline-offset-[0.125rem] rounded-[0.125rem])"
 						type="button"
 						onclick={() => copyColor(swatch.key, swatch.css)}
 						aria-live="polite"
@@ -84,7 +92,7 @@
 							Copy CSS
 						{/if}
 					</button>
-					<span class="channels">
+					<span class="channels text-[0.55rem] truncate tabular-nums">
 						L {swatch.color.l.toFixed(2)} · C {swatch.color.c.toFixed(3)}
 						{#if swatch.color.h !== undefined}· H {swatch.color.h.toFixed(1)}°{/if}
 					</span>
@@ -92,48 +100,14 @@
 			{/each}
 		</ol>
 	{:else}
-		<p class="error">No colors were provided.</p>
+		<p class="p-4 border border-current rounded-lg">No colors were provided.</p>
 	{/if}
 </figure>
 
 <style>
-	.palette {
-		box-sizing: border-box;
-		max-inline-size: 100%;
-		margin: 0;
-		color: inherit;
-		font-family: inherit;
-	}
-
-	figcaption {
-		margin-block-end: 0.75rem;
-		font-size: 0.875rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
-
-	ol {
-		display: grid;
-		grid-template-columns: repeat(11, minmax(5.5rem, 1fr));
-		gap: 0.5rem;
-		margin: 0;
-		padding: 0 0 0.5rem;
-		overflow-x: auto;
-		list-style: none;
-	}
-
-	li {
-		display: grid;
-		gap: 0.3rem;
-	}
-
 	.chip {
-		display: block;
-		aspect-ratio: 4 / 5;
 		background: var(--swatch-fallback);
 		border: 1px solid color-mix(in oklab, currentColor 16%, transparent);
-		border-radius: 0.5rem;
 		box-shadow: inset 0 0 0 1px color-mix(in oklab, white 12%, transparent);
 	}
 
@@ -143,22 +117,8 @@
 		}
 	}
 
-	.stop {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 0.25rem;
-		font-size: 0.75rem;
-		font-weight: 700;
-		font-variant-numeric: tabular-nums;
-	}
-
 	small {
 		color: color-mix(in oklab, currentColor 55%, transparent);
-		font-size: 0.5rem;
-		font-weight: 500;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
 	}
 
 	small.gamut-wide {
@@ -167,45 +127,6 @@
 
 	.copy,
 	.channels {
-		overflow: hidden;
 		color: color-mix(in oklab, currentColor 68%, transparent);
-		font-size: 0.625rem;
-		font-variant-numeric: tabular-nums;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.copy {
-		inline-size: fit-content;
-		padding: 0;
-		background: none;
-		border: 0;
-		border-block-end: 1px solid currentColor;
-		font: inherit;
-		font-size: 0.625rem;
-		letter-spacing: 0.03em;
-		text-transform: uppercase;
-		cursor: pointer;
-	}
-
-	.copy:hover {
-		color: inherit;
-	}
-
-	.copy:focus-visible {
-		border-radius: 0.125rem;
-		outline: 2px solid currentColor;
-		outline-offset: 0.125rem;
-	}
-
-	.channels {
-		font-size: 0.55rem;
-	}
-
-	.error {
-		margin: 0;
-		padding: 1rem;
-		border: 1px solid currentColor;
-		border-radius: 0.5rem;
 	}
 </style>

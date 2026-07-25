@@ -34,18 +34,9 @@
 </script>
 
 {#snippet template(args: Args)}
-	<div class="preview">
+	<div class="bg-[#050505] h-screen w-screen">
 		<ErodedCheckerboard {...args} />
 	</div>
 {/snippet}
 
 <Story name="Default" {template} />
-
-<style>
-	.preview {
-		box-sizing: border-box;
-		inline-size: 100vw;
-		block-size: 100vh;
-		background: #050505;
-	}
-</style>

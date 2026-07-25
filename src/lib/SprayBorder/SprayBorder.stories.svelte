@@ -68,7 +68,7 @@
 	<div class="p-12">
 		<SprayBorder
 			{...args}
-			class="text-white tracking-wider font-bold font-sans px-5 inline-flex h-14 uppercase items-center justify-center"
+			class="text-white tracking-wider font-body font-bold px-5 inline-flex h-14 uppercase items-center justify-center"
 			><span>Spray border</span></SprayBorder
 		>
 	</div>
@@ -78,7 +78,7 @@
 	<div class="p-12 gap-8 grid">
 		{#each comparisonSizes as size (size.label)}
 			<div class="gap-3 grid">
-				<p class="text-sm font-bold font-sans uppercase">{size.label}</p>
+				<p class="text-sm font-body font-bold uppercase">{size.label}</p>
 				<div class="flex flex-wrap gap-10">
 					{#each comparisonSeeds as seed (seed)}
 						<div class="gap-2 grid justify-items-center">
@@ -86,7 +86,7 @@
 								{...args}
 								{seed}
 								class={[
-									'text-white tracking-wider font-bold font-sans inline-flex uppercase items-center justify-center',
+									'text-white tracking-wider font-bold font-body inline-flex uppercase items-center justify-center',
 									size.class,
 								]}><span>FAQ</span></SprayBorder
 							>

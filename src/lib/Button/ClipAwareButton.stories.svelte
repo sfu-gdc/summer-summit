@@ -43,7 +43,6 @@
 	<div
 		class="grid pointer-events-none inset-0 place-items-center absolute"
 		data-story-button-layer="base"
-		style="display: grid; pointer-events: none; position: absolute; inset: 0; place-items: center;"
 	>
 		{@render layers.base()}
 	</div>
@@ -52,7 +51,6 @@
 		class="grid pointer-events-none inset-0 place-items-center absolute"
 		data-story-button-layer="inverse"
 		inert
-		style="display: grid; pointer-events: none; position: absolute; inset: 0; place-items: center;"
 	>
 		{@render layers.inverse()}
 	</div>
