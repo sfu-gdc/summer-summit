@@ -80,7 +80,7 @@
 				<span class="block">{titleLines[1]}</span>
 			</div>
 
-			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-4/6 md:w-2/3">
+			<div class="detail-grid mx-auto mt-3 w-full items-center lg:w-4/6 md:w-4/8">
 				<div class="detail-cta">
 					{@render content()}
 				</div>
@@ -122,7 +122,7 @@
 				<span class="block">{titleLines[1]}</span>
 			</div>
 
-			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-4/6 md:w-2/3">
+			<div class="detail-grid mx-auto mt-3 w-full items-center lg:w-4/6 md:w-4/8">
 				<p
 					class="text-base leading-none font-body font-semibold uppercase md:text-xl"
 					data-landing-date
@@ -149,7 +149,6 @@
 				clipPath="var(--puddle-clip)"
 				placement={ctaPlacement}
 				control={cta.href !== undefined ? { href: cta.href } : undefined}
-				size="large"
 			>
 				{cta.label}
 			</ClipAwareButton>
