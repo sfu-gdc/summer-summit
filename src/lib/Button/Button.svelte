@@ -8,9 +8,11 @@
 
 	import type SprayBorder from '../SprayBorder/SprayBorder.svelte';
 	import ButtonSurface from './ButtonSurface.svelte';
+	import UnderlineButtonSurface from './UnderlineButtonSurface.svelte';
 
 	export type ButtonAppearance = 'accent' | 'dark' | 'light';
 	export type ButtonSize = keyof typeof buttonSizes;
+	export type ButtonVariant = 'spray' | 'underline';
 	export interface ButtonOverlay {
 		appearance: ButtonAppearance;
 		clipPath: string;
@@ -23,6 +25,8 @@
 		icon?: Snippet | undefined;
 		/** Use the large size for prominent call-to-actions. */
 		size?: ButtonSize | undefined;
+		/** Sprayed box or animated dotted underline treatment. */
+		variant?: ButtonVariant | undefined;
 		/** Swap the solid fill for a WebGL spray-paint border. `true` for defaults, or tune it. */
 		spray?: boolean | ComponentProps<typeof SprayBorder> | undefined;
 		/** Optional alternate visual treatment clipped over the same semantic control. */
@@ -40,6 +44,7 @@
 		overlay,
 		spray,
 		style,
+		variant = 'spray',
 		visuals = true,
 		...restProps
 	}: Props = $props();
@@ -64,6 +69,7 @@
 <svelte:element
 	this={restProps.href != null ? 'a' : 'button'}
 	{...restProps as HTMLAttributes<HTMLElement>}
+	data-button-variant={variant}
 	style={buttonStyle}
 	class={[
 		':uno: summer-summit-button bg-transparent text-base outline-2 outline-transparent outline-offset--2 inline-flex gap-2 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center disabled:cursor-not-allowed focus-visible:not-disabled:outline-offset-3',
@@ -78,17 +84,31 @@
 		{@render icon?.()}
 	</span>
 	{#if visuals}
-		<ButtonSurface {appearance} {children} {icon} {size} {spray} />
+		{#if variant === 'underline'}
+			<UnderlineButtonSurface {appearance} {children} {icon} />
+		{:else}
+			<ButtonSurface {appearance} {children} {icon} {size} {spray} />
+		{/if}
 		{#if overlay}
-			<ButtonSurface
-				appearance={overlay.appearance}
-				{children}
-				clipPath={overlay.clipPath}
-				hidden
-				{icon}
-				{size}
-				{spray}
-			/>
+			{#if variant === 'underline'}
+				<UnderlineButtonSurface
+					appearance={overlay.appearance}
+					{children}
+					clipPath={overlay.clipPath}
+					hidden
+					{icon}
+				/>
+			{:else}
+				<ButtonSurface
+					appearance={overlay.appearance}
+					{children}
+					clipPath={overlay.clipPath}
+					hidden
+					{icon}
+					{size}
+					{spray}
+				/>
+			{/if}
 		{/if}
 	{/if}
 </svelte:element>
@@ -104,6 +124,11 @@
 		letter-spacing: normal;
 	}
 
+	:global(.summer-summit-button[data-button-variant='underline']) {
+		border: 0;
+		background: transparent;
+	}
+
 	.button-layout {
 		display: inline-flex;
 		gap: 0.5rem;
@@ -116,7 +141,7 @@
 		opacity: 0;
 	}
 
-	:global(.summer-summit-button:has([data-button-surface]):disabled) {
+	:global(.summer-summit-button[data-button-variant='spray']:has([data-button-surface]):disabled) {
 		color: var(--button-disabled-content);
 		background: var(--button-disabled-surface);
 	}

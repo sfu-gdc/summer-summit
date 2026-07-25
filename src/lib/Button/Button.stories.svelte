@@ -39,12 +39,14 @@
 			appearance: 'dark',
 			disabled: false,
 			size: 'default',
+			variant: 'spray',
 		},
 		argTypes: {
 			appearance: { control: 'inline-radio', options: ['accent', 'dark', 'light'] },
 			disabled: { control: 'boolean' },
 			size: { control: 'inline-radio', options: ['default', 'large'] },
 			spray: { control: 'boolean' },
+			variant: { control: 'inline-radio', options: ['spray', 'underline'] },
 		},
 		parameters: {
 			// bits-ui's ButtonRootProps leaks ~400 inherited HTML attributes into
@@ -53,6 +55,7 @@
 				include: [
 					'appearance',
 					'size',
+					'variant',
 					'icon',
 					'disabled',
 					'href',
@@ -67,6 +70,7 @@
 					include: [
 						'appearance',
 						'size',
+						'variant',
 						'icon',
 						'disabled',
 						'href',
@@ -134,6 +138,19 @@
 {#snippet secondaryAccent(args: Args)}
 	<div class="p-8 bg-brand-primary-100">
 		<Button {...args} appearance="accent" size="large">Join the jam</Button>
+	</div>
+{/snippet}
+
+{#snippet underline(args: Args)}
+	<div class="flex flex-wrap gap-8 items-start">
+		<div class="flex flex-col gap-3 items-center">
+			<Button {...args} variant="underline">About</Button>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Default</span>
+		</div>
+		<div class="pseudo-hover-all flex flex-col gap-3 items-center">
+			<Button {...args} variant="underline">About</Button>
+			<span class="text-xs text-brand-primary-500 tracking-wide font-sans uppercase">Hover</span>
+		</div>
 	</div>
 {/snippet}
 
@@ -244,6 +261,32 @@
 />
 
 <Story name="Secondary Accent" template={secondaryAccent} />
+
+<Story
+	name="Underline"
+	template={underline}
+	play={async ({ canvasElement }) => {
+		const [defaultButton, hoverButton] = within(canvasElement).getAllByRole('button', {
+			name: 'About',
+		}) as [HTMLElement, HTMLElement];
+		const defaultSurface = requiredElement(defaultButton, '[data-button-underline]');
+		const defaultDots = requiredElement(defaultSurface, '.underline-button-dots');
+		const defaultLine = requiredElement(defaultSurface, '.underline-button-line');
+		const hoverDots = requiredElement(hoverButton, '.underline-button-dots');
+		const hoverLine = requiredElement(hoverButton, '.underline-button-line');
+
+		await expect(defaultButton).toHaveAttribute('data-button-variant', 'underline');
+		await expect(getComputedStyle(defaultButton).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+		await expect(getComputedStyle(defaultButton).borderTopWidth).toBe('0px');
+		await expect(getComputedStyle(defaultDots).backgroundImage).toContain(
+			'repeating-linear-gradient',
+		);
+		await expect(getComputedStyle(defaultDots).opacity).toBe('1');
+		await expect(getComputedStyle(defaultLine).transform).not.toBe('none');
+		await expect(getComputedStyle(hoverDots).opacity).toBe('0');
+		await expect(getComputedStyle(hoverLine).transform).toBe('matrix(1, 0, 0, 1, 0, 0)');
+	}}
+/>
 
 <Story
 	name="Link"
