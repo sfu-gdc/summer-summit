@@ -76,6 +76,20 @@ export const brandColors = {
 	shade: paletteRecord(shadePalette, ({ stop }) => `var(--brand-shade-${stop})`),
 } as const;
 
+export const heroColorValues = {
+	background: brandColorValues.primary[100],
+	content: brandColorValues.shade[900],
+	outline: brandColorValues.shade[900],
+	inverseContent: brandColorValues.shade[50],
+} as const;
+
+export const heroColors = {
+	background: brandColors.primary[100],
+	content: brandColors.shade[900],
+	outline: brandColors.shade[900],
+	inverseContent: brandColors.shade[50],
+} as const;
+
 export const buttonColorValues = {
 	dark: {
 		surface: brandColorValues.shade[900],
