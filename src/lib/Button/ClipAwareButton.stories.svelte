@@ -7,35 +7,72 @@
 	import ClipAwareButton from './ClipAwareButton.svelte';
 
 	type Args = ComponentProps<typeof ClipAwareButton>;
+	interface Layers {
+		base: Snippet;
+		inverse: Snippet;
+	}
 
 	const { Story } = defineMeta({
 		title: 'Button/Clip Aware Button',
 		component: ClipAwareButton,
 		args: {
 			appearance: 'dark',
-			clipPath: 'inset(0 0 0 50%)',
 			control: { type: 'button' },
 			inverseAppearance: 'light',
 			size: 'large',
 		},
 	});
+
+	function bounds(element: Element) {
+		const { left, top, width, height } = element.getBoundingClientRect();
+		return { left, top, width, height };
+	}
+
+	async function expectMatchingBounds(first: Element, second: Element) {
+		const firstBounds = bounds(first);
+		const secondBounds = bounds(second);
+
+		await expect(secondBounds.left).toBeCloseTo(firstBounds.left);
+		await expect(secondBounds.top).toBeCloseTo(firstBounds.top);
+		await expect(secondBounds.width).toBeCloseTo(firstBounds.width);
+		await expect(secondBounds.height).toBeCloseTo(firstBounds.height);
+	}
 </script>
 
-{#snippet placement(content: Snippet)}
-	<div class="transform-translate-x--1/2 transform-translate-y--1/2 left-1/2 top-1/2 absolute">
-		{@render content()}
+{#snippet compose(layers: Layers)}
+	<div
+		class="grid pointer-events-none inset-0 place-items-center absolute"
+		data-story-button-layer="base"
+		style="display: grid; pointer-events: none; position: absolute; inset: 0; place-items: center;"
+	>
+		{@render layers.base()}
+	</div>
+	<div
+		aria-hidden="true"
+		class="grid pointer-events-none inset-0 place-items-center absolute"
+		data-story-button-layer="inverse"
+		inert
+		style="display: grid; pointer-events: none; position: absolute; inset: 0; place-items: center;"
+	>
+		{@render layers.inverse()}
 	</div>
 {/snippet}
 
 {#snippet interactive(args: Args)}
-	<div class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden">
-		<ClipAwareButton {...args} {placement}>Join the jam</ClipAwareButton>
+	<div
+		class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden"
+		data-clip-aware-button
+	>
+		<ClipAwareButton {...args} {compose}>Join the jam</ClipAwareButton>
 	</div>
 {/snippet}
 
 {#snippet presentation(args: Args)}
-	<div class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden">
-		<ClipAwareButton {...args} control={undefined} {placement}>Join the jam</ClipAwareButton>
+	<div
+		class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden"
+		data-clip-aware-button
+	>
+		<ClipAwareButton {...args} {compose} control={undefined}>Join the jam</ClipAwareButton>
 	</div>
 {/snippet}
 
@@ -48,29 +85,50 @@
 		await expect(host).not.toBeNull();
 		if (!host) return;
 
-		const layers = host.querySelectorAll<HTMLElement>(':scope > .layer');
-		const visualStates = host.querySelectorAll<HTMLElement>('[data-clip-aware-visual]');
+		const baseLayer = host.querySelector<HTMLElement>('[data-story-button-layer="base"]');
+		const inverseLayer = host.querySelector<HTMLElement>('[data-story-button-layer="inverse"]');
+		const baseVisual = host.querySelector<HTMLElement>('[data-clip-aware-visual="base"]');
+		const inverseVisual = host.querySelector<HTMLElement>('[data-clip-aware-visual="inverse"]');
 		const button = canvas.getByRole('button', { name: 'Join the jam' });
 		const surfaces = host.querySelectorAll<HTMLElement>('[data-button-surface]');
-		const inverseLayer = host.querySelector<HTMLElement>('.inverse-layer');
-		await expect(inverseLayer).not.toBeNull();
-		if (!inverseLayer) return;
+		const baseSurface = baseVisual?.querySelector<HTMLElement>('[data-button-surface]');
+		const inverseSurface = inverseVisual?.querySelector<HTMLElement>('[data-button-surface]');
 
-		await expect(layers).toHaveLength(3);
-		await expect(visualStates).toHaveLength(2);
+		await expect(baseLayer).not.toBeNull();
+		await expect(inverseLayer).not.toBeNull();
+		await expect(baseVisual).not.toBeNull();
+		await expect(inverseVisual).not.toBeNull();
+		await expect(baseSurface).not.toBeNull();
+		await expect(inverseSurface).not.toBeNull();
+		if (
+			!baseLayer ||
+			!inverseLayer ||
+			!baseVisual ||
+			!inverseVisual ||
+			!baseSurface ||
+			!inverseSurface
+		)
+			return;
+
+		await expect(host.querySelectorAll(':scope > .layer')).toHaveLength(0);
 		await expect(surfaces).toHaveLength(2);
 		await expect(canvas.getAllByRole('button', { name: 'Join the jam' })).toHaveLength(1);
+		await expect(canvas.queryByRole('link', { name: 'Join the jam' })).toBeNull();
+		await expect(baseVisual.closest('[data-story-button-layer]')).toBe(baseLayer);
+		await expect(inverseVisual.closest('[data-story-button-layer]')).toBe(inverseLayer);
+		await expect(button.closest('[data-story-button-layer]')).toBe(baseLayer);
 		await expect(inverseLayer).toHaveAttribute('aria-hidden', 'true');
 		await expect(inverseLayer).toHaveAttribute('inert');
+		await expect(inverseSurface).toHaveAttribute('aria-hidden', 'true');
+		await expect(inverseSurface).toHaveAttribute('inert');
+		await expect(getComputedStyle(baseLayer).clipPath).toBe('none');
+		await expect(getComputedStyle(inverseLayer).clipPath).toBe('none');
 		await expect(getComputedStyle(inverseLayer).pointerEvents).toBe('none');
-		await expect(getComputedStyle(inverseLayer).clipPath).toBe('inset(0px 0px 0px 50%)');
+		await expect(getComputedStyle(button).pointerEvents).toBe('auto');
+		await expect(host.style.getPropertyValue('--clip-aware-path')).toBe('');
 
-		const hostRect = host.getBoundingClientRect();
-		const inverseRect = inverseLayer.getBoundingClientRect();
-		await expect(inverseRect.left).toBeCloseTo(hostRect.left);
-		await expect(inverseRect.top).toBeCloseTo(hostRect.top);
-		await expect(inverseRect.width).toBeCloseTo(hostRect.width);
-		await expect(inverseRect.height).toBeCloseTo(hostRect.height);
+		await expectMatchingBounds(baseSurface, inverseSurface);
+		await expectMatchingBounds(baseSurface, button);
 
 		const idleColors = [...surfaces].map((surface) => getComputedStyle(surface).color);
 		host.classList.add('pseudo-hover-all');
@@ -80,8 +138,8 @@
 		host.classList.remove('pseudo-hover-all');
 
 		host.classList.add('pseudo-active-all');
-		for (const visualState of visualStates) {
-			await expect(getComputedStyle(visualState).transform).not.toBe('none');
+		for (const visual of [baseVisual, inverseVisual]) {
+			await expect(getComputedStyle(visual).transform).not.toBe('none');
 		}
 		host.classList.remove('pseudo-active-all');
 
@@ -102,12 +160,13 @@
 		await userEvent.tab();
 		await expect(button).toHaveFocus();
 		host.classList.add('pseudo-focus-visible-all');
-		for (const visualState of visualStates) {
-			await expect(getComputedStyle(visualState).outlineColor).not.toBe('rgba(0, 0, 0, 0)');
+		for (const visual of [baseVisual, inverseVisual]) {
+			await expect(getComputedStyle(visual).outlineColor).not.toBe('rgba(0, 0, 0, 0)');
 		}
 		host.classList.remove('pseudo-focus-visible-all');
 
 		button.toggleAttribute('disabled', true);
+		await expect(button).toBeDisabled();
 		for (const [index, surface] of [...surfaces].entries()) {
 			const style = getComputedStyle(surface);
 			await expect(style.color).not.toBe(idleColors[index]);
@@ -128,6 +187,29 @@
 		await expect(canvas.queryByRole('button', { name: 'Join the jam' })).not.toBeInTheDocument();
 		await expect(canvas.queryByRole('link', { name: 'Join the jam' })).not.toBeInTheDocument();
 		await expect(host.querySelectorAll('[data-clip-aware-visual]')).toHaveLength(2);
-		await expect(host.querySelector('.control-layer')).toBeNull();
+		await expect(host.querySelectorAll('[data-button-surface]')).toHaveLength(2);
+		await expect(host.querySelector('.semantic-control')).toBeNull();
+	}}
+/>
+
+<Story
+	name="Anchor"
+	template={interactive}
+	args={{ control: { href: '#join', rel: 'external', target: '_blank' } }}
+	play={async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const link = canvas.getByRole('link', { name: 'Join the jam' });
+		const host = canvasElement.querySelector<HTMLElement>('[data-clip-aware-button]');
+
+		await expect(host).not.toBeNull();
+		if (!host) return;
+
+		await expect(canvas.queryByRole('button', { name: 'Join the jam' })).toBeNull();
+		await expect(canvas.getAllByRole('link', { name: 'Join the jam' })).toHaveLength(1);
+		await expect(link).toHaveAttribute('href', '#join');
+		await expect(link).toHaveAttribute('rel', 'external');
+		await expect(link).toHaveAttribute('target', '_blank');
+		await expect(getComputedStyle(link).pointerEvents).toBe('auto');
+		await expect(host.querySelectorAll('[data-button-surface]')).toHaveLength(2);
 	}}
 />

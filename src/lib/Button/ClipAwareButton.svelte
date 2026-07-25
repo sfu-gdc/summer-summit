@@ -11,6 +11,11 @@
 	export type ClipAwareButtonAppearance = 'dark' | 'light';
 	export type ClipAwareButtonSize = keyof typeof buttonSizes;
 
+	export interface ClipAwareButtonLayers {
+		base: Snippet;
+		inverse: Snippet;
+	}
+
 	export interface ClipAwareButtonControl {
 		/** Render an anchor when present; otherwise render a button. */
 		href?: string | undefined;
@@ -24,34 +29,32 @@
 	}
 
 	export interface ClipAwareButtonProps {
+		/**
+		 * Places the paired presentations under one `[data-clip-aware-button]` ancestor.
+		 * The caller owns that state scope so composed layers can remain direct children.
+		 */
+		compose: Snippet<[ClipAwareButtonLayers]>;
 		/** Visual treatment outside the puddle. */
 		appearance?: ClipAwareButtonAppearance | undefined;
 		/** Visual treatment inside the puddle. */
 		inverseAppearance?: ClipAwareButtonAppearance | undefined;
-		/** The full-host puddle clip. */
-		clipPath: string;
-		/** Repeats the caller's normal layout around each visual and semantic rendering. */
-		placement: Snippet<[Snippet]>;
 		/** Native-control props. Omit this to render a non-interactive presentation. */
 		control?: ClipAwareButtonControl | undefined;
 		icon?: Snippet | undefined;
 		children?: Snippet | undefined;
 		size?: ClipAwareButtonSize | undefined;
 		spray?: boolean | ComponentProps<typeof SprayBorder> | undefined;
-		class?: ClassValue | undefined;
 	}
 
 	let {
+		compose,
 		appearance = 'dark',
 		inverseAppearance = 'light',
-		clipPath,
-		placement,
 		control,
 		icon,
 		children,
 		size = 'default',
 		spray,
-		class: className,
 	}: ClipAwareButtonProps = $props();
 
 	const sharedButtonProps = $derived({
@@ -64,14 +67,46 @@
 	});
 </script>
 
-{#snippet baseVisual()}
-	<span class="visual-state" data-clip-aware-visual="base">
-		<ButtonSurface {appearance} {children} {icon} presentation {size} {spray} />
+{#snippet baseLayer()}
+	<span
+		class="visual-state"
+		data-clip-aware-visual="base"
+		style:--clip-aware-focus-ring={buttonColors.focusRing}
+	>
+		<span class="presentation-surface" aria-hidden="true" inert>
+			<ButtonSurface {appearance} {children} {icon} presentation {size} {spray} />
+		</span>
+		{#if control}
+			{#if control.href != null}
+				<Button
+					{...sharedButtonProps}
+					aria-label={control.ariaLabel}
+					class={['semantic-control', control.class]}
+					href={control.href}
+					onclick={control.onclick}
+					rel={control.rel}
+					target={control.target}
+				/>
+			{:else}
+				<Button
+					{...sharedButtonProps}
+					aria-label={control.ariaLabel}
+					class={['semantic-control', control.class]}
+					disabled={control.disabled}
+					onclick={control.onclick}
+					type={control.type}
+				/>
+			{/if}
+		{/if}
 	</span>
 {/snippet}
 
-{#snippet inverseVisual()}
-	<span class="visual-state" data-clip-aware-visual="inverse">
+{#snippet inverseLayer()}
+	<span
+		class="visual-state"
+		data-clip-aware-visual="inverse"
+		style:--clip-aware-focus-ring={buttonColors.focusRing}
+	>
 		<ButtonSurface
 			appearance={inverseAppearance}
 			{children}
@@ -84,93 +119,29 @@
 	</span>
 {/snippet}
 
-{#snippet semanticControl()}
-	{#if control}
-		{#if control.href != null}
-			<Button
-				{...sharedButtonProps}
-				aria-label={control.ariaLabel}
-				class={['semantic-control', control.class]}
-				href={control.href}
-				onclick={control.onclick}
-				rel={control.rel}
-				target={control.target}
-			/>
-		{:else}
-			<Button
-				{...sharedButtonProps}
-				aria-label={control.ariaLabel}
-				class={['semantic-control', control.class]}
-				disabled={control.disabled}
-				onclick={control.onclick}
-				type={control.type}
-			/>
-		{/if}
-	{/if}
-{/snippet}
-
-<div
-	class={['clip-aware-button', className]}
-	data-clip-aware-button
-	style:--clip-aware-path={clipPath}
-	style:--clip-aware-focus-ring={buttonColors.focusRing}
->
-	<div class="layer base-layer" aria-hidden="true" inert>
-		{@render placement(baseVisual)}
-	</div>
-
-	<div class="layer inverse-layer" aria-hidden="true" inert>
-		{@render placement(inverseVisual)}
-	</div>
-
-	{#if control}
-		<div class="layer control-layer">
-			{@render placement(semanticControl)}
-		</div>
-	{/if}
-</div>
+{@render compose({ base: baseLayer, inverse: inverseLayer })}
 
 <style>
-	.clip-aware-button,
-	.layer {
-		position: absolute;
-		inset: 0;
-	}
-
-	.clip-aware-button {
-		z-index: 0;
-		isolation: isolate;
-		pointer-events: none;
-	}
-
-	.layer {
-		pointer-events: none;
-	}
-
-	.base-layer {
-		z-index: 0;
-	}
-
-	.inverse-layer {
-		z-index: 1;
-		clip-path: var(--clip-aware-path);
-	}
-
-	.control-layer {
-		z-index: 2;
-	}
-
-	.control-layer :global(.semantic-control) {
-		pointer-events: auto;
+	.presentation-surface {
+		display: contents;
 	}
 
 	.visual-state {
 		display: inline-flex;
+		position: relative;
 		outline: 2px solid transparent;
 		outline-offset: -2px;
 		transition:
 			transform 100ms ease-out,
 			outline-offset 100ms ease-out;
+	}
+
+	.visual-state :global(.semantic-control) {
+		inset: 0;
+		height: 100%;
+		position: absolute;
+		width: 100%;
+		pointer-events: auto;
 	}
 
 	:global(
@@ -206,7 +177,7 @@
 		background: var(--button-surface-disabled-surface);
 	}
 
-	.control-layer :global(.semantic-control:focus-visible) {
+	.visual-state :global(.semantic-control:focus-visible) {
 		outline-color: transparent;
 	}
 </style>

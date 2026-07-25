@@ -1,35 +1,24 @@
 <script module lang="ts">
-	export interface LandingHeroNavItem {
-		label: string;
-		href: string;
-	}
-
-	export interface LandingHeroProps {
-		titleLines: readonly [string, string];
-		dateLabel: string;
-		organizerLabel: string;
-		locationLabel: string;
-		navItems?: readonly LandingHeroNavItem[];
-		cta?:
-			| {
-					label: string;
-					href?: string;
-			  }
-			| undefined;
-		class?: string;
-	}
+	export type { LandingHeroNavItem, LandingHeroProps } from './types';
 </script>
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
 
-	import eventMark from '$lib/assets/event-mark.png';
-	import { buttonSizes } from '$lib/tokens';
+	import { heroColors } from '$lib/tokens';
 
 	import ClipAwareButton from '../Button/ClipAwareButton.svelte';
-	import Hero from '../Hero/Hero.svelte';
+	import ErodedCheckerboard from '../ErodedCheckerboard/ErodedCheckerboard.svelte';
+	import Puddle from '../Puddle/Puddle.svelte';
+	import LandingHeroContent from './LandingHeroContent.svelte';
 	import { LANDING_PUDDLE_PROFILES, type LandingPuddleProfileName } from './puddleProfiles';
+	import type { LandingHeroProps } from './types';
+
+	interface ButtonLayers {
+		base: Snippet;
+		inverse: Snippet;
+	}
 
 	let {
 		titleLines,
@@ -56,139 +45,100 @@
 	const puddleProfile = $derived(LANDING_PUDDLE_PROFILES[puddleProfileName]);
 </script>
 
-{#snippet ctaPlacement(content: Snippet)}
+{#snippet composeContent(buttonLayers: ButtonLayers)}
+	<div class="content-layer" data-hero-content data-landing-layer="base">
+		<LandingHeroContent
+			layer="base"
+			{titleLines}
+			{dateLabel}
+			{organizerLabel}
+			{locationLabel}
+			{navItems}
+			cta={cta ? buttonLayers.base : undefined}
+		/>
+	</div>
 	<div
-		class="landing-layout h-full pointer-events-none inset-0 absolute"
-		style:--landing-detail-height={buttonSizes.large.height}
+		aria-hidden="true"
+		class="content-layer inverse-content-layer"
+		data-hero-content-overlay
+		data-landing-layer="inverse"
+		inert
+		style:pointer-events="none"
 	>
-		<!-- Mirror the page chrome so this separately centered layer shares the date's axis. -->
-		<header aria-hidden="true" class="flex invisible items-start justify-between">
-			<div class="flex gap-2.5 items-center">
-				<img src={eventMark} alt="" width="745" height="745" class="size-6 md:size-8" />
-				<p class="text-xl leading-none font-header translate-y-0.5 md:text-2xl">
-					SUMMER GAME JAM 2026
-				</p>
-			</div>
-		</header>
-
-		<div class="central-content max-w-5xl w-full place-self-center">
-			<div
-				aria-hidden="true"
-				class="text-4xl leading-11 tracking-wide font-header text-center invisible lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26"
-			>
-				<span class="block">{titleLines[0]}</span>
-				<span class="block">{titleLines[1]}</span>
-			</div>
-
-			<div class="detail-grid mx-auto mt-3 w-full items-center lg:w-4/6 md:w-4/8">
-				<div class="detail-cta">
-					{@render content()}
-				</div>
-			</div>
-		</div>
-
-		<footer
-			aria-hidden="true"
-			class="text-base leading-none font-body font-semibold flex gap-4 invisible uppercase items-end justify-between md:text-xl"
-		>
-			<p>{organizerLabel}</p>
-			<p class="text-right">{locationLabel}</p>
-		</footer>
+		<LandingHeroContent
+			layer="inverse"
+			{titleLines}
+			{dateLabel}
+			{organizerLabel}
+			{locationLabel}
+			{navItems}
+			cta={cta ? buttonLayers.inverse : undefined}
+		/>
 	</div>
 {/snippet}
 
-<Hero fullViewport class={className} {...puddleProfile} data-puddle-profile={puddleProfileName}>
-	<div class="landing-layout h-full" style:--landing-detail-height={buttonSizes.large.height}>
-		<header class="flex items-start justify-between">
-			<div class="flex gap-2.5 items-center">
-				<img src={eventMark} alt="" width="745" height="745" class="size-6 md:size-8" />
-				<p class="text-xl leading-none font-header translate-y-0.5 md:text-2xl">
-					SUMMER GAME JAM 2026
-				</p>
-			</div>
-			<!-- TODO(next milestone): add navigation after mobile behavior and destinations are designed. -->
-			{#if navItems.length > 0}
-				<!-- Destinations are intentionally not rendered in this milestone. -->
-			{/if}
-		</header>
-
-		<main class="central-content max-w-5xl w-full place-self-center">
-			<div
-				aria-hidden="true"
-				class="text-4xl leading-11 tracking-wide font-header text-center lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26"
-				data-landing-title
-			>
-				<span class="block">{titleLines[0]}</span>
-				<span class="block">{titleLines[1]}</span>
-			</div>
-
-			<div class="detail-grid mx-auto mt-3 w-full items-center lg:w-4/6 md:w-4/8">
-				<p
-					class="text-base leading-none font-body font-semibold uppercase md:text-xl"
-					data-landing-date
-				>
-					{dateLabel}
-				</p>
-			</div>
-		</main>
-
-		<footer
-			class="text-base leading-none font-body font-semibold flex gap-4 uppercase items-end justify-between md:text-xl"
+<div
+	class={[
+		'hero text-[var(--hero-text-color)] bg-[var(--hero-background-color)] hero-full-viewport',
+		className,
+	]}
+	data-hero
+	data-landing-hero
+	style:--hero-background-color={heroColors.background}
+	style:--hero-outline-color={heroColors.outline}
+	style:--hero-puddle-text-color={heroColors.inverseContent}
+	style:--hero-text-color={heroColors.content}
+>
+	<div class="hero-puddle-layer" data-hero-puddle-layer>
+		<Puddle
+			{...puddleProfile}
+			color={heroColors.outline}
+			data-clip-aware-button={cta ? true : undefined}
+			data-puddle-profile={puddleProfileName}
 		>
-			<p>{organizerLabel}</p>
-			<p class="text-right">{locationLabel}</p>
-		</footer>
-	</div>
-
-	{#snippet controls()}
-		<h1 class="sr-only">{titleLines[0]} {titleLines[1]}</h1>
-		{#if cta}
+			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
 			<ClipAwareButton
 				appearance="dark"
+				compose={composeContent}
 				inverseAppearance="light"
-				clipPath="var(--puddle-clip)"
-				placement={ctaPlacement}
-				control={cta.href !== undefined ? { href: cta.href } : undefined}
+				control={cta?.href !== undefined ? { href: cta.href } : undefined}
 			>
-				{cta.label}
+				{#if cta}
+					{cta.label}
+				{/if}
 			</ClipAwareButton>
-		{/if}
-	{/snippet}
-</Hero>
+		</Puddle>
+	</div>
+</div>
 
 <style>
-	.landing-layout {
-		display: grid;
-		grid-template-rows: auto minmax(0, 1fr) auto;
+	.hero {
+		overflow: hidden;
+		position: relative;
+	}
+
+	.hero-full-viewport {
 		min-height: 100svh;
-		padding: 1rem;
 		width: 100%;
 	}
 
-	.central-content {
-		align-self: center;
+	.hero-puddle-layer {
+		inset: 0;
+		position: absolute;
 	}
 
-	.detail-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		height: var(--landing-detail-height);
+	.hero-puddle-layer > :global([data-puddle-host]) {
+		height: 100%;
+		width: 100%;
 	}
 
-	.detail-cta {
-		grid-column: 2;
-		justify-self: end;
+	.content-layer {
+		inset: 0;
+		position: absolute;
 	}
 
-	@media (min-width: 48rem) {
-		.landing-layout {
-			padding: 1.5rem;
-		}
-	}
-
-	@media (min-width: 64rem) {
-		.landing-layout {
-			padding: 2rem;
-		}
+	.inverse-content-layer {
+		clip-path: var(--puddle-clip);
+		pointer-events: none;
 	}
 </style>
