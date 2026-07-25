@@ -40,7 +40,7 @@
 	style:--landing-detail-height={buttonSizes.large.height}
 >
 	{#if layer === 'base'}
-		<h1 class="select-none sr-only">{titleLines[0]} {titleLines[1]}</h1>
+		<h1 class="select-none sr-only">{dateLabel} {titleLines[0]} {titleLines[1]}</h1>
 	{/if}
 
 	<header class="flex items-start justify-between">
@@ -57,28 +57,30 @@
 	</header>
 
 	<main
-		class="max-w-5xl w-full place-self-center"
+		class="landing-main max-w-5xl place-self-center"
 		style:color={layer === 'base' ? 'var(--hero-main-text-color)' : undefined}
 	>
 		<div
 			aria-hidden="true"
-			class="text-4xl leading-11 tracking-wide font-header text-center select-none lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26"
+			class={[
+				'text-4xl leading-11 tracking-wide font-header text-center lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26',
+				layer === 'inverse' && 'select-none',
+			]}
 			data-landing-title
 		>
-			<span class="block">{titleLines[0]}</span>
-			<span class="block">{titleLines[1]}</span>
-		</div>
-
-		<div
-			class="mx-auto mt-3 grid grid-cols-2 h-[var(--landing-detail-height)] w-full items-center lg:w-4/6 md:w-4/8"
-			data-landing-detail-grid
-		>
 			<p
-				class="text-base leading-none font-body font-semibold uppercase md:text-xl"
+				class="text-sm font-body font-semibold text-start w-full uppercase lg:text-xl md:text-base"
 				data-landing-date
 			>
 				{dateLabel}
 			</p>
+			<span class="landing-title-first inline-block">{titleLines[0]}</span><br />
+			<span class="landing-title-second inline-block">{titleLines[1]}</span>
+		</div>
+		<div
+			class="landing-detail mx-auto mt-3 flex h-[var(--landing-detail-height)] w-full justify-end"
+			data-landing-detail-grid
+		>
 			{#if cta}
 				<div class="col-start-2 justify-self-end">
 					{@render cta()}
@@ -94,3 +96,94 @@
 		<p class="text-right">{locationLabel}</p>
 	</footer>
 </div>
+
+<style>
+	.landing-main {
+		--landing-detail-gap: 0.75rem;
+		--landing-title-line-height: 2.75rem;
+		--landing-slope-step: calc(1 + var(--landing-detail-gap) / var(--landing-title-line-height));
+
+		position: relative;
+	}
+
+	/* These values mirror the responsive leading utilities that determine the triangle's slope. */
+	@media (min-width: 48rem) {
+		.landing-main {
+			--landing-title-line-height: 3.25rem;
+		}
+	}
+
+	@media (min-width: 64rem) {
+		.landing-main {
+			--landing-title-line-height: 4rem;
+		}
+	}
+
+	@media (min-width: 80rem) {
+		.landing-main {
+			--landing-title-line-height: 6.5rem;
+		}
+	}
+
+	[data-landing-content='base'] .landing-main {
+		anchor-scope: --hero-text-base-first, --hero-text-base-second;
+	}
+
+	[data-landing-content='base'] .landing-title-first {
+		anchor-name: --hero-text-base-first;
+	}
+
+	[data-landing-content='base'] .landing-title-second {
+		anchor-name: --hero-text-base-second;
+	}
+
+	[data-landing-content='inverse'] .landing-main {
+		anchor-scope: --hero-text-inverse-first, --hero-text-inverse-second;
+	}
+
+	[data-landing-content='inverse'] .landing-title-first {
+		anchor-name: --hero-text-inverse-first;
+	}
+
+	[data-landing-content='inverse'] .landing-title-second {
+		anchor-name: --hero-text-inverse-second;
+	}
+
+	@supports (left: anchor(--hero-text-base-first left)) and (width: calc(1px * (1px / 1px))) {
+		.landing-detail {
+			margin: 0;
+			position: absolute;
+			width: auto;
+		}
+
+		[data-landing-content='base'] .landing-detail {
+			left: calc(
+				anchor(--hero-text-base-second left) +
+					(anchor(--hero-text-base-second left) - anchor(--hero-text-base-first left)) *
+					var(--landing-slope-step)
+			);
+			position-anchor: --hero-text-base-second;
+			right: calc(
+				anchor(--hero-text-base-second right) +
+					(anchor(--hero-text-base-second right) - anchor(--hero-text-base-first right)) *
+					var(--landing-slope-step)
+			);
+			top: calc(anchor(--hero-text-base-second bottom) + var(--landing-detail-gap));
+		}
+
+		[data-landing-content='inverse'] .landing-detail {
+			left: calc(
+				anchor(--hero-text-inverse-second left) +
+					(anchor(--hero-text-inverse-second left) - anchor(--hero-text-inverse-first left)) *
+					var(--landing-slope-step)
+			);
+			position-anchor: --hero-text-inverse-second;
+			right: calc(
+				anchor(--hero-text-inverse-second right) +
+					(anchor(--hero-text-inverse-second right) - anchor(--hero-text-inverse-first right)) *
+					var(--landing-slope-step)
+			);
+			top: calc(anchor(--hero-text-inverse-second bottom) + var(--landing-detail-gap));
+		}
+	}
+</style>

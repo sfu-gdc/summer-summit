@@ -159,7 +159,7 @@
 		await expect(
 			canvas.getByRole('heading', {
 				level: 1,
-				name: 'SUMMER SUMMIT GAME JAM 2026',
+				name: 'SEPTEMBER 4–6 SUMMER GAME JAM 2026',
 			}),
 		).toBeInTheDocument();
 		await expect(canvas.queryByRole('navigation')).toBeNull();
@@ -170,7 +170,7 @@
 			Array.from(hiddenTitles).every((title) => title.closest('[aria-hidden="true"]') !== null),
 		).toBe(true);
 
-		for (const copy of ['SEPT 4 - 6', 'GAME DEV CLUB X IATSU 2026', 'SFU BURNABY CAMPUS']) {
+		for (const copy of ['SEPTEMBER 4–6', 'GAME DEV CLUB X IATSU 2026', 'SFU BURNABY CAMPUS']) {
 			const matches = canvas.getAllByText(copy, { exact: true });
 			const hiddenMatches = matches.filter(
 				(match) => match.closest('[aria-hidden="true"]') !== null,
