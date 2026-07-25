@@ -74,8 +74,8 @@
 		aria-hidden={visuals ? 'true' : undefined}
 		class={['button-layout', { semantic: !visuals }]}
 	>
-		{@render icon?.()}
 		{@render children?.()}
+		{@render icon?.()}
 	</span>
 	{#if visuals}
 		<ButtonSurface {appearance} {children} {icon} {size} {spray} />
