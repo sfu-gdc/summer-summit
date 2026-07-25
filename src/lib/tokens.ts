@@ -79,6 +79,7 @@ export const brandColors = {
 export const heroColorValues = {
 	background: brandColorValues.primary[100],
 	content: brandColorValues.shade[900],
+	mainContent: brandColorValues.secondary[600],
 	outline: brandColorValues.shade[900],
 	inverseContent: brandColorValues.shade[50],
 } as const;
@@ -86,11 +87,19 @@ export const heroColorValues = {
 export const heroColors = {
 	background: brandColors.primary[100],
 	content: brandColors.shade[900],
+	mainContent: brandColors.secondary[600],
 	outline: brandColors.shade[900],
 	inverseContent: brandColors.shade[50],
 } as const;
 
 export const buttonColorValues = {
+	accent: {
+		surface: brandColorValues.secondary[600],
+		content: brandColorValues.shade[50],
+		hoverContent: brandColorValues.primary[50],
+		disabledSurface: brandColorValues.shade[700],
+		disabledContent: brandColorValues.shade[400],
+	},
 	dark: {
 		surface: brandColorValues.shade[900],
 		content: brandColorValues.shade[50],
@@ -109,6 +118,13 @@ export const buttonColorValues = {
 } as const;
 
 export const buttonColors = {
+	accent: {
+		surface: brandColors.secondary[600],
+		content: brandColors.shade[50],
+		hoverContent: brandColors.primary[50],
+		disabledSurface: brandColors.shade[700],
+		disabledContent: brandColors.shade[400],
+	},
 	dark: {
 		surface: brandColors.shade[900],
 		content: brandColors.shade[50],

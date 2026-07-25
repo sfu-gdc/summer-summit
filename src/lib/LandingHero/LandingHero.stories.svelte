@@ -281,6 +281,16 @@
 />
 
 <Story
+	name="Secondary Accent"
+	args={{ ...LANDING_HERO_STORY_CASES.expanded.args, class: 'secondary-accent-preview' }}
+	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.expanded.viewport, isRotated: false } }}
+	play={async ({ canvasElement }) => {
+		await expectDestinationCta(canvasElement);
+		await expectNoHorizontalOverflow(canvasElement);
+	}}
+/>
+
+<Story
 	name="Without CTA"
 	args={LANDING_HERO_STORY_CASES.withoutCta.args}
 	globals={{
@@ -311,3 +321,9 @@
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
+
+<style>
+	:global(.secondary-accent-preview [data-hero-content-overlay]) {
+		clip-path: inset(0 0 0 100%) !important;
+	}
+</style>

@@ -8,7 +8,7 @@
 	import Button from './Button.svelte';
 	import ButtonSurface from './ButtonSurface.svelte';
 
-	export type ClipAwareButtonAppearance = 'dark' | 'light';
+	export type ClipAwareButtonAppearance = 'accent' | 'dark' | 'light';
 	export type ClipAwareButtonSize = keyof typeof buttonSizes;
 
 	export interface ClipAwareButtonLayers {

@@ -85,6 +85,7 @@
 	data-hero
 	data-landing-hero
 	style:--hero-background-color={heroColors.background}
+	style:--hero-main-text-color={heroColors.mainContent}
 	style:--hero-outline-color={heroColors.outline}
 	style:--hero-puddle-text-color={heroColors.inverseContent}
 	style:--hero-text-color={heroColors.content}
@@ -98,7 +99,7 @@
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
 			<ClipAwareButton
-				appearance="dark"
+				appearance="accent"
 				compose={composeContent}
 				inverseAppearance="light"
 				control={cta?.href !== undefined ? { href: cta.href } : undefined}

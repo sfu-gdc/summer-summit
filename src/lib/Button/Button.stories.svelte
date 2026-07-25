@@ -41,7 +41,7 @@
 			size: 'default',
 		},
 		argTypes: {
-			appearance: { control: 'inline-radio', options: ['dark', 'light'] },
+			appearance: { control: 'inline-radio', options: ['accent', 'dark', 'light'] },
 			disabled: { control: 'boolean' },
 			size: { control: 'inline-radio', options: ['default', 'large'] },
 			spray: { control: 'boolean' },
@@ -128,6 +128,12 @@
 {#snippet largeCta(args: Args)}
 	<div class="p-8 bg-brand-shade-900">
 		<Button {...args} appearance="light" size="large">Join the jam</Button>
+	</div>
+{/snippet}
+
+{#snippet secondaryAccent(args: Args)}
+	<div class="p-8 bg-brand-primary-100">
+		<Button {...args} appearance="accent" size="large">Join the jam</Button>
 	</div>
 {/snippet}
 
@@ -236,6 +242,8 @@
 		await expect(canvasRect.height).toBeCloseTo(buttonRect.height + 16);
 	}}
 />
+
+<Story name="Secondary Accent" template={secondaryAccent} />
 
 <Story
 	name="Link"

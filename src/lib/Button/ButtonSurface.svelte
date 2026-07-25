@@ -5,7 +5,7 @@
 
 	import SprayBorder from '../SprayBorder/SprayBorder.svelte';
 
-	type ButtonAppearance = 'dark' | 'light';
+	type ButtonAppearance = 'accent' | 'dark' | 'light';
 	type ButtonSize = keyof typeof buttonSizes;
 
 	interface Props {

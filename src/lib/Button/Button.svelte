@@ -9,7 +9,7 @@
 	import type SprayBorder from '../SprayBorder/SprayBorder.svelte';
 	import ButtonSurface from './ButtonSurface.svelte';
 
-	export type ButtonAppearance = 'dark' | 'light';
+	export type ButtonAppearance = 'accent' | 'dark' | 'light';
 	export type ButtonSize = keyof typeof buttonSizes;
 	export interface ButtonOverlay {
 		appearance: ButtonAppearance;
@@ -17,7 +17,7 @@
 	}
 
 	type Props = ButtonRootProps & {
-		/** Dark navigation treatment or the light, inverted call-to-action treatment. */
+		/** Accent, dark navigation, or light inverted treatment. */
 		appearance?: ButtonAppearance | undefined;
 		/** Optional icon rendered before the label. */
 		icon?: Snippet | undefined;
