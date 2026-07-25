@@ -71,7 +71,7 @@
 	data-button-variant={variant}
 	style={buttonStyle}
 	class={[
-		':uno: summer-summit-button relative isolate h-[var(--button-height)] bg-transparent px-[var(--button-inline-padding)] text-base font-semibold tracking-normal outline-2 outline-transparent outline-offset--2 inline-flex gap-2 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center active:[transform:scale(0.98)] disabled:cursor-not-allowed focus-visible:not-disabled:(rounded outline-offset-3 [outline-color:var(--button-focus-ring)])',
+		'summer-summit-button relative isolate h-[var(--button-height)] bg-transparent px-[var(--button-inline-padding)] text-base font-semibold tracking-normal outline-2 outline-transparent outline-offset--2 inline-flex gap-2 cursor-pointer select-none whitespace-nowrap uppercase transition-all duration-100 transition-ease-out items-center justify-center active:[transform:scale(0.98)] disabled:cursor-not-allowed focus-visible:not-disabled:(rounded outline-offset-3 [outline-color:var(--button-focus-ring)])',
 		'font-body',
 		variant === 'underline' && 'border-0',
 		variant === 'spray' &&
