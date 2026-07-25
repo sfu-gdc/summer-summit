@@ -11,8 +11,12 @@
 	import { renderSpray } from './sprayRenderer';
 
 	type Props = HTMLAttributes<HTMLElement> & {
-		/** Host element tag. `div` by default; use `button`/`a` to make the sprayed box itself interactive. */
-		as?: 'div' | 'button' | 'a' | undefined;
+		/**
+		 * Host element tag. `div` by default; use `button`/`a` to make the sprayed box itself
+		 * interactive. `span` keeps decorative surfaces valid inside buttons, which only permit
+		 * phrasing content.
+		 */
+		as?: 'div' | 'span' | 'button' | 'a' | undefined;
 		type?: HTMLButtonAttributes['type'] | undefined;
 		disabled?: HTMLButtonAttributes['disabled'] | undefined;
 		href?: HTMLAnchorAttributes['href'] | undefined;
