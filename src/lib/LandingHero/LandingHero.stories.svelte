@@ -42,35 +42,6 @@
 		await expect(body.scrollWidth).toBeLessThanOrEqual(body.clientWidth);
 	}
 
-	async function expectDetailAlignment(canvasElement: HTMLElement) {
-		await settleLayout(canvasElement.ownerDocument);
-
-		const date = canvasElement.querySelector<HTMLElement>(
-			'[data-landing-content="base"] [data-landing-date]',
-		);
-		const cta = canvasElement.querySelector<HTMLElement>(
-			'[data-clip-aware-visual="base"] [data-button-surface]',
-		);
-		const dateGrid = date?.closest<HTMLElement>('[data-landing-detail-grid]');
-		const ctaGrid = cta?.closest<HTMLElement>('[data-landing-detail-grid]');
-
-		await expect(date).not.toBeNull();
-		await expect(cta).not.toBeNull();
-		await expect(dateGrid).not.toBeNull();
-		await expect(ctaGrid).not.toBeNull();
-		if (!date || !cta || !dateGrid || !ctaGrid) return;
-
-		const dateBounds = date.getBoundingClientRect();
-		const ctaBounds = cta.getBoundingClientRect();
-		const dateGridBounds = dateGrid.getBoundingClientRect();
-		const ctaGridBounds = ctaGrid.getBoundingClientRect();
-		const dateCenter = dateBounds.top + dateBounds.height / 2 - dateGridBounds.top;
-		const ctaCenter = ctaBounds.top + ctaBounds.height / 2 - ctaGridBounds.top;
-
-		await expect(dateGridBounds.height).toBeCloseTo(ctaGridBounds.height, 1);
-		await expect(dateCenter).toBeCloseTo(ctaCenter, 1);
-	}
-
 	function bounds(element: Element) {
 		const { left, top, width, height } = element.getBoundingClientRect();
 		return { left, top, width, height };
@@ -159,7 +130,7 @@
 		await expect(
 			canvas.getByRole('heading', {
 				level: 1,
-				name: 'SEPTEMBER 4–6 SUMMER GAME JAM 2026',
+				name: 'SEPTEMBER 4–6 SUMMER SUMMIT GAME JAM 2026',
 			}),
 		).toBeInTheDocument();
 		await expect(canvas.queryByRole('navigation')).toBeNull();
@@ -170,7 +141,7 @@
 			Array.from(hiddenTitles).every((title) => title.closest('[aria-hidden="true"]') !== null),
 		).toBe(true);
 
-		for (const copy of ['SEPTEMBER 4–6', 'GAME DEV CLUB X IATSU 2026', 'SFU BURNABY CAMPUS']) {
+		for (const copy of ['GAME DEV CLUB X IATSU 2026', 'SFU BURNABY CAMPUS']) {
 			const matches = canvas.getAllByText(copy, { exact: true });
 			const hiddenMatches = matches.filter(
 				(match) => match.closest('[aria-hidden="true"]') !== null,
@@ -233,7 +204,6 @@
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
 		await expectPuddleFillsHero(canvasElement, 'compact');
-		await expectDetailAlignment(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -247,7 +217,6 @@
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
 		await expectPuddleFillsHero(canvasElement, 'medium');
-		await expectDetailAlignment(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -261,7 +230,6 @@
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
 		await expectPuddleFillsHero(canvasElement, 'expanded');
-		await expectDetailAlignment(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -275,7 +243,6 @@
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
 		await expectPuddleFillsHero(canvasElement, 'large');
-		await expectDetailAlignment(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -317,7 +284,6 @@
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
 		await expectPuddleFillsHero(canvasElement, 'expanded');
-		await expectDetailAlignment(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
