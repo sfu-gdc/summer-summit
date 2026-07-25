@@ -30,7 +30,7 @@
 		checkerSize = 8.72,
 		pixelSize = 1,
 		seed = 7,
-		opacity = 0.03,
+		opacity = 0.05,
 		maxErosion = 0.65,
 		falloff = 3.5,
 		class: className,

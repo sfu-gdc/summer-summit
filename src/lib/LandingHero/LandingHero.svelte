@@ -62,13 +62,13 @@
 		<div class="central-content max-w-5xl w-full place-self-center">
 			<div
 				aria-hidden="true"
-				class="text-4xl leading-11 tracking-wide font-header text-center invisible lg:text-6xl md:text-5xl lg:leading-16 md:leading-13"
+				class="text-4xl leading-11 tracking-wide font-header text-center invisible lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26"
 			>
 				<span class="block">{titleLines[0]}</span>
 				<span class="block">{titleLines[1]}</span>
 			</div>
 
-			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-1/2 md:w-2/3">
+			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-4/6 md:w-2/3">
 				<div class="detail-cta">
 					{@render content()}
 				</div>
@@ -95,14 +95,14 @@
 		<main class="central-content max-w-5xl w-full place-self-center">
 			<div
 				aria-hidden="true"
-				class="text-4xl leading-11 tracking-wide font-header text-center lg:text-6xl md:text-5xl lg:leading-16 md:leading-13"
+				class="text-4xl leading-11 tracking-wide font-header text-center lg:text-7xl md:text-5xl xl:text-8xl lg:leading-16 md:leading-13 xl:leading-26"
 				data-landing-title
 			>
 				<span class="block">{titleLines[0]}</span>
 				<span class="block">{titleLines[1]}</span>
 			</div>
 
-			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-1/2 md:w-2/3">
+			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-4/6 md:w-2/3">
 				<p class="text-base leading-none font-body font-semibold uppercase md:text-xl">
 					{dateLabel}
 				</p>
