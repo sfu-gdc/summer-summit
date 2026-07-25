@@ -25,6 +25,7 @@
 	import { MediaQuery } from 'svelte/reactivity';
 
 	import eventMark from '$lib/assets/event-mark.png';
+	import { buttonSizes } from '$lib/tokens';
 
 	import ClipAwareButton from '../Button/ClipAwareButton.svelte';
 	import Hero from '../Hero/Hero.svelte';
@@ -56,8 +57,19 @@
 </script>
 
 {#snippet ctaPlacement(content: Snippet)}
-	<div class="landing-layout h-full pointer-events-none inset-0 absolute">
-		<div aria-hidden="true"></div>
+	<div
+		class="landing-layout h-full pointer-events-none inset-0 absolute"
+		style:--landing-detail-height={buttonSizes.large.height}
+	>
+		<!-- Mirror the page chrome so this separately centered layer shares the date's axis. -->
+		<header aria-hidden="true" class="flex invisible items-start justify-between">
+			<div class="flex gap-2.5 items-center">
+				<img src={eventMark} alt="" width="745" height="745" class="size-6 md:size-8" />
+				<p class="text-xl leading-none font-header translate-y-0.5 md:text-2xl">
+					SUMMER GAME JAM 2026
+				</p>
+			</div>
+		</header>
 
 		<div class="central-content max-w-5xl w-full place-self-center">
 			<div
@@ -74,11 +86,19 @@
 				</div>
 			</div>
 		</div>
+
+		<footer
+			aria-hidden="true"
+			class="text-base leading-none font-body font-semibold flex gap-4 invisible uppercase items-end justify-between md:text-xl"
+		>
+			<p>{organizerLabel}</p>
+			<p class="text-right">{locationLabel}</p>
+		</footer>
 	</div>
 {/snippet}
 
 <Hero fullViewport class={className} {...puddleProfile} data-puddle-profile={puddleProfileName}>
-	<div class="landing-layout h-full">
+	<div class="landing-layout h-full" style:--landing-detail-height={buttonSizes.large.height}>
 		<header class="flex items-start justify-between">
 			<div class="flex gap-2.5 items-center">
 				<img src={eventMark} alt="" width="745" height="745" class="size-6 md:size-8" />
@@ -103,7 +123,10 @@
 			</div>
 
 			<div class="detail-grid mx-auto mt-6 w-full items-center md:mt-8 lg:w-4/6 md:w-2/3">
-				<p class="text-base leading-none font-body font-semibold uppercase md:text-xl">
+				<p
+					class="text-base leading-none font-body font-semibold uppercase md:text-xl"
+					data-landing-date
+				>
 					{dateLabel}
 				</p>
 			</div>
@@ -150,6 +173,7 @@
 	.detail-grid {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+		height: var(--landing-detail-height);
 	}
 
 	.detail-cta {
