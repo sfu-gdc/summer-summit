@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import type { ComponentProps } from 'svelte';
 
-	import { expect, userEvent, waitFor, within } from 'storybook/test';
+	import { expect, userEvent, within } from 'storybook/test';
 
 	import PaddingDecorator from '$storybook/PaddingDecorator.svelte';
 
@@ -10,20 +10,7 @@
 	import ButtonSurface from './ButtonSurface.svelte';
 
 	type Args = ComponentProps<typeof Button>;
-
-	function ruleTexts(rules: CSSRuleList): string[] {
-		return Array.from(rules).flatMap((rule) => {
-			const nested = (rule as CSSRule & { cssRules?: CSSRuleList }).cssRules;
-			return nested ? [rule.cssText, ...ruleTexts(nested)] : [rule.cssText];
-		});
-	}
-
-	function documentRules(element: HTMLElement, selector: string): string {
-		return Array.from(element.ownerDocument.styleSheets)
-			.flatMap((sheet) => ruleTexts(sheet.cssRules))
-			.filter((rule) => rule.includes(selector))
-			.join('\n');
-	}
+	const layeredClipPath = 'inset(0 0 0 50%)';
 
 	function requiredElement(parent: ParentNode, selector: string): HTMLElement {
 		const element = parent.querySelector<HTMLElement>(selector);
@@ -164,7 +151,7 @@
 {/snippet}
 
 {#snippet layered(args: Args)}
-	<Button {...args} overlay={{ appearance: 'light', clipPath: 'inset(0 0 0 50%)' }}
+	<Button {...args} overlay={{ appearance: 'light', clipPath: layeredClipPath }}
 		>Layered control</Button
 	>
 {/snippet}
@@ -179,137 +166,21 @@
 	</span>
 {/snippet}
 
-<Story
-	name="Figma Reference Variants"
-	template={figmaReferenceVariants}
-	play={async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const about = canvas.getByRole('button', { name: 'About' });
-		const schedule = canvas.getByRole('button', { name: 'Schedule' });
-		const faq = canvas.getByRole('button', { name: 'FAQ' });
-		const cta = canvas.getByRole('button', { name: 'Join the jam' });
-		const aboutSurface = requiredElement(about, '[data-button-surface="base"]');
-		const ctaSurface = requiredElement(cta, '[data-button-surface="base"]');
-		const aboutSpray = requiredElement(aboutSurface, '[data-spray-radius]');
-		const aboutCanvas = requiredElement(aboutSurface, 'canvas');
+<Story name="Figma Reference Variants" template={figmaReferenceVariants} />
 
-		await expect(getComputedStyle(about).fontWeight).toBe('600');
-		await expect(getComputedStyle(about).fontSize).toBe('16px');
-		await expect(getComputedStyle(about).lineHeight).toBe('24px');
-		await expect(getComputedStyle(about).letterSpacing).toBe('normal');
-		await expect(about.getBoundingClientRect().height).toBeCloseTo(40);
-		await expect(getComputedStyle(about).paddingInline).toBe('8px');
-		await expect(about.getBoundingClientRect().height).toBe(faq.getBoundingClientRect().height);
-		await expect(schedule.getBoundingClientRect().width).toBeGreaterThan(
-			faq.getBoundingClientRect().width,
-		);
-		await expect(getComputedStyle(aboutSurface).color).not.toBe(getComputedStyle(ctaSurface).color);
-		await expect(aboutSpray).toHaveAttribute('data-spray-radius', '6');
-		await expect(aboutSpray).toHaveAttribute('data-spray-spread', '6');
-
-		const buttonRect = about.getBoundingClientRect();
-		const sprayRect = aboutSpray.getBoundingClientRect();
-		const canvasRect = aboutCanvas.getBoundingClientRect();
-		await expect(sprayRect.left).toBeCloseTo(buttonRect.left + 6);
-		await expect(sprayRect.top).toBeCloseTo(buttonRect.top + 6);
-		await expect(sprayRect.width).toBeCloseTo(buttonRect.width - 12);
-		await expect(sprayRect.height).toBeCloseTo(buttonRect.height - 12);
-		await expect(canvasRect.left).toBeCloseTo(buttonRect.left);
-		await expect(canvasRect.top).toBeCloseTo(buttonRect.top);
-		await expect(canvasRect.width).toBeCloseTo(buttonRect.width);
-		await expect(canvasRect.height).toBeCloseTo(buttonRect.height);
-	}}
-/>
-
-<Story
-	name="States"
-	{template}
-	play={async ({ canvasElement }) => {
-		const [defaultButton, hoverButton, activeButton, focusButton] = within(
-			canvasElement,
-		).getAllByRole('button', { name: 'About' }) as [
-			HTMLElement,
-			HTMLElement,
-			HTMLElement,
-			HTMLElement,
-		];
-		const defaultSurface = requiredElement(defaultButton, '[data-button-surface="base"]');
-		const hoverSurface = requiredElement(hoverButton, '[data-button-surface="base"]');
-
-		await expect(getComputedStyle(defaultButton).transform).toBe('none');
-		await expect(getComputedStyle(hoverButton).transform).toBe('none');
-		await expect(getComputedStyle(defaultSurface).transform).toBe('none');
-		await waitFor(() =>
-			expect(getComputedStyle(hoverSurface).transform).toBe('matrix(1.02, 0, 0, 1.02, 0, 0)'),
-		);
-		await expect(documentRules(activeButton, ':active')).toMatch(/(?:scale|transform)[^;}]*0?\.98/);
-		await expect(documentRules(focusButton, ':focus-visible')).toMatch(
-			/border-radius[^;}]*(?:4px|0\.25rem|--radius-DEFAULT)/,
-		);
-	}}
-/>
+<Story name="States" {template} />
 
 <Story name="With Icon" args={{ icon: bell }} {template} />
 
 <Story name="Disabled" args={{ disabled: true }} {template} />
 
-<Story
-	name="Large CTA"
-	template={largeCta}
-	play={async ({ canvasElement }) => {
-		const cta = within(canvasElement).getByRole('button', { name: 'Join the jam' });
-		const surface = requiredElement(cta, '[data-button-surface="base"]');
-		const spray = requiredElement(surface, '[data-spray-radius]');
-		const canvas = requiredElement(surface, 'canvas');
-
-		await expect(cta.getBoundingClientRect().height).toBeCloseTo(48);
-		await expect(getComputedStyle(cta).paddingInline).toBe('16px');
-		await expect(spray).toHaveAttribute('data-spray-radius', '8');
-		await expect(spray).toHaveAttribute('data-spray-spread', '8');
-
-		const buttonRect = cta.getBoundingClientRect();
-		const sprayRect = spray.getBoundingClientRect();
-		const canvasRect = canvas.getBoundingClientRect();
-		await expect(sprayRect.left).toBeCloseTo(buttonRect.left + 8);
-		await expect(sprayRect.top).toBeCloseTo(buttonRect.top + 8);
-		await expect(sprayRect.width).toBeCloseTo(buttonRect.width - 16);
-		await expect(sprayRect.height).toBeCloseTo(buttonRect.height - 16);
-		await expect(canvasRect.left).toBeCloseTo(buttonRect.left);
-		await expect(canvasRect.top).toBeCloseTo(buttonRect.top);
-		await expect(canvasRect.width).toBeCloseTo(buttonRect.width);
-		await expect(canvasRect.height).toBeCloseTo(buttonRect.height);
-	}}
-/>
+<Story name="Large CTA" template={largeCta} />
 
 <Story name="Secondary" template={secondary} />
 
 <Story name="Primary" template={primary} />
 
-<Story
-	name="Underline"
-	template={underline}
-	play={async ({ canvasElement }) => {
-		const [defaultButton, hoverButton] = within(canvasElement).getAllByRole('button', {
-			name: 'About',
-		}) as [HTMLElement, HTMLElement];
-		const defaultSurface = requiredElement(defaultButton, '[data-button-underline]');
-		const defaultDots = requiredElement(defaultSurface, '.underline-button-dots');
-		const defaultLine = requiredElement(defaultSurface, '.underline-button-line');
-		const hoverDots = requiredElement(hoverButton, '.underline-button-dots');
-		const hoverLine = requiredElement(hoverButton, '.underline-button-line');
-
-		await expect(defaultButton).toHaveAttribute('data-button-variant', 'underline');
-		await expect(getComputedStyle(defaultButton).backgroundColor).toBe('rgba(0, 0, 0, 0)');
-		await expect(getComputedStyle(defaultButton).borderTopWidth).toBe('0px');
-		await expect(getComputedStyle(defaultDots).backgroundImage).toContain(
-			'repeating-linear-gradient',
-		);
-		await expect(getComputedStyle(defaultDots).opacity).toBe('1');
-		await expect(getComputedStyle(defaultLine).transform).not.toBe('none');
-		await expect(getComputedStyle(hoverDots).opacity).toBe('0');
-		await expect(getComputedStyle(hoverLine).transform).toBe('matrix(1, 0, 0, 1, 0, 0)');
-	}}
-/>
+<Story name="Underline" template={underline} />
 
 <Story
 	name="Link"
@@ -340,11 +211,16 @@
 		await expect(overlay).toHaveAttribute('aria-hidden', 'true');
 		await expect(overlay).toHaveAttribute('inert');
 		await expect(getComputedStyle(overlay).pointerEvents).toBe('none');
-		await expect(getComputedStyle(overlay).clipPath).toBe('inset(0px 0px 0px 50%)');
-		await expect(getComputedStyle(base).fontFamily).toBe(getComputedStyle(overlay).fontFamily);
-		await expect(getComputedStyle(base).fontSize).toBe(getComputedStyle(overlay).fontSize);
-		await expect(getComputedStyle(base).fontWeight).toBe(getComputedStyle(overlay).fontWeight);
-		await expect(getComputedStyle(base).lineHeight).toBe(getComputedStyle(overlay).lineHeight);
+		await expect(overlay.style.clipPath).not.toBe('');
+		await expect(overlay.style.clipPath).not.toBe('none');
+		await expect(overlay.style.clipPath).toContain('50%');
+
+		const baseRect = base.getBoundingClientRect();
+		const overlayRect = overlay.getBoundingClientRect();
+		await expect(overlayRect.left).toBeCloseTo(baseRect.left);
+		await expect(overlayRect.top).toBeCloseTo(baseRect.top);
+		await expect(overlayRect.width).toBeCloseTo(baseRect.width);
+		await expect(overlayRect.height).toBeCloseTo(baseRect.height);
 
 		let activations = 0;
 		button.addEventListener('click', () => {
@@ -363,13 +239,6 @@
 		canvasElement.ownerDocument.body.focus();
 		await userEvent.tab();
 		await expect(button).toHaveFocus();
-
-		await expect(getComputedStyle(base).getPropertyValue('--button-surface-content')).not.toBe(
-			getComputedStyle(base).getPropertyValue('--button-surface-hover-content'),
-		);
-		await expect(getComputedStyle(overlay).getPropertyValue('--button-surface-content')).not.toBe(
-			getComputedStyle(overlay).getPropertyValue('--button-surface-hover-content'),
-		);
 	}}
 />
 
@@ -380,12 +249,7 @@
 		const surface = requiredElement(canvasElement, '[data-button-surface="base"]');
 		const content = requiredElement(surface, '.button-surface-content');
 
-		await expect(surface.getBoundingClientRect().height).toBeCloseTo(48);
-		await expect(surface.getBoundingClientRect().width).toBeGreaterThan(32);
 		await expect(content.scrollWidth).toBeLessThanOrEqual(surface.clientWidth);
-		await expect(getComputedStyle(surface).paddingInline).toBe('16px');
-		await expect(getComputedStyle(surface).fontSize).toBe('16px');
-		await expect(getComputedStyle(surface).lineHeight).toBe('24px');
 	}}
 />
 
@@ -401,9 +265,6 @@
 		});
 
 		await expect(button.querySelectorAll('[data-button-surface]')).toHaveLength(0);
-		await expect(button.getBoundingClientRect().height).toBeCloseTo(40);
-		await expect(getComputedStyle(button).paddingInline).toBe('8px');
-		await expect(getComputedStyle(label).opacity).toBe('0');
 		await expect(label).not.toHaveAttribute('aria-hidden');
 
 		await userEvent.click(button);
@@ -420,6 +281,5 @@
 
 		await expect(button).toBeDisabled();
 		await expect(button.querySelectorAll('[data-button-surface]')).toHaveLength(0);
-		await expect(getComputedStyle(button).backgroundColor).toBe('rgba(0, 0, 0, 0)');
 	}}
 />

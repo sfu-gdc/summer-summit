@@ -2,7 +2,7 @@ import { inGamut, oklch, parse } from 'culori';
 import { describe, expect, it } from 'vitest';
 
 import { classifyGamut, createHueChromaMap } from './gamutMap';
-import { createColorPalette } from './palette';
+import { createColorPalette, standardColorStops } from './palette';
 
 describe('createColorPalette', () => {
 	const target = oklch('oklch(50% 0.2 180)');
@@ -15,9 +15,9 @@ describe('createColorPalette', () => {
 	});
 
 	it('uses the standard lightness stops', () => {
-		const expected = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05];
-		palette.forEach(({ color }, index) => {
-			expect(color.l).toBeCloseTo(expected[index] ?? 0);
+		expect(palette.map(({ stop }) => stop)).toEqual(standardColorStops);
+		palette.forEach(({ stop, color }) => {
+			expect(color.l).toBeCloseTo(1 - stop / 1000);
 		});
 	});
 

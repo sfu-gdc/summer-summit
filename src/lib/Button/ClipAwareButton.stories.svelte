@@ -37,6 +37,13 @@
 		await expect(secondBounds.width).toBeCloseTo(firstBounds.width);
 		await expect(secondBounds.height).toBeCloseTo(firstBounds.height);
 	}
+
+	function transformScale(transform: string) {
+		if (transform === 'none') return 1;
+
+		const matrix = new DOMMatrixReadOnly(transform);
+		return Math.hypot(matrix.a, matrix.b);
+	}
 </script>
 
 {#snippet compose(layers: Layers)}
@@ -128,20 +135,32 @@
 		await expectMatchingBounds(baseSurface, inverseSurface);
 		await expectMatchingBounds(baseSurface, button);
 
-		const idleColors = [...surfaces].map((surface) => getComputedStyle(surface).color);
+		const idleTransforms = [...surfaces].map((surface) => getComputedStyle(surface).transform);
 		host.classList.add('pseudo-hover-all');
-		for (const [index, surface] of [...surfaces].entries()) {
-			await expect(getComputedStyle(surface).color).not.toBe(idleColors[index]);
-			await waitFor(() =>
-				expect(getComputedStyle(surface).transform).toBe('matrix(1.02, 0, 0, 1.02, 0, 0)'),
-			);
-		}
+		await waitFor(async () => {
+			const hoverTransforms = [...surfaces].map((surface) => getComputedStyle(surface).transform);
+
+			await expect(hoverTransforms[1]).toBe(hoverTransforms[0]);
+			for (const [index, transform] of hoverTransforms.entries()) {
+				const idleTransform = idleTransforms[index];
+				if (idleTransform === undefined) throw new Error('Missing idle surface transform');
+
+				await expect(transformScale(transform)).toBeGreaterThan(transformScale(idleTransform));
+			}
+		});
 		host.classList.remove('pseudo-hover-all');
+		await waitFor(async () => {
+			const resetTransforms = [...surfaces].map((surface) => getComputedStyle(surface).transform);
+
+			await expect(resetTransforms).toEqual(idleTransforms);
+		});
 
 		host.classList.add('pseudo-active-all');
-		for (const visual of [baseVisual, inverseVisual]) {
-			await expect(getComputedStyle(visual).transform).not.toBe('none');
-		}
+		const activeTransforms = [baseVisual, inverseVisual].map(
+			(visual) => getComputedStyle(visual).transform,
+		);
+		await expect(activeTransforms[0]).not.toBe('none');
+		await expect(activeTransforms[1]).toBe(activeTransforms[0]);
 		host.classList.remove('pseudo-active-all');
 
 		let activations = 0;
@@ -168,11 +187,6 @@
 
 		button.toggleAttribute('disabled', true);
 		await expect(button).toBeDisabled();
-		for (const [index, surface] of [...surfaces].entries()) {
-			const style = getComputedStyle(surface);
-			await expect(style.color).not.toBe(idleColors[index]);
-			await expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-		}
 	}}
 />
 

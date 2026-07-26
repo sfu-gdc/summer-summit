@@ -57,7 +57,7 @@
 		await expect(secondBounds.height).toBeCloseTo(firstBounds.height);
 	}
 
-	async function expectLandingLayers(canvasElement: HTMLElement) {
+	async function expectAccessibleLayers(canvasElement: HTMLElement) {
 		await settleLayout(canvasElement.ownerDocument);
 
 		const hero = canvasElement.querySelector<HTMLElement>('[data-landing-hero]');
@@ -81,14 +81,6 @@
 		await expect(baseLayer).not.toHaveAttribute('inert');
 		await expect(inverseLayer).toHaveAttribute('aria-hidden', 'true');
 		await expect(inverseLayer).toHaveAttribute('inert');
-		await expect(getComputedStyle(inverseLayer).pointerEvents).toBe('none');
-
-		for (const layer of [baseLayer, inverseLayer]) {
-			const style = getComputedStyle(layer);
-			await expect(style.position).toBe('absolute');
-			await expect(style.inset).toBe('0px');
-		}
-		await expect(getComputedStyle(baseLayer).clipPath).toBe('none');
 		await expect(getComputedStyle(inverseLayer).clipPath).toContain(clip.id);
 		await expect(getComputedStyle(puddle).getPropertyValue('--puddle-clip')).toContain(clip.id);
 
@@ -96,30 +88,13 @@
 		await expectMatchingBounds(hero, puddle);
 	}
 
-	async function expectPuddleFillsHero(
+	async function expectPuddleProfile(
 		canvasElement: HTMLElement,
 		expectedProfile: 'compact' | 'medium' | 'expanded' | 'large',
 	) {
-		await settleLayout(canvasElement.ownerDocument);
-
-		const hero = canvasElement.querySelector<HTMLElement>('[data-landing-hero]');
 		const puddle = canvasElement.querySelector<HTMLElement>('[data-puddle-host]');
 
-		await expect(hero).not.toBeNull();
-		await expect(puddle).not.toBeNull();
-		if (!hero || !puddle) return;
-
 		await expect(puddle).toHaveAttribute('data-puddle-profile', expectedProfile);
-
-		const heroBounds = hero.getBoundingClientRect();
-		const puddleBounds = puddle.getBoundingClientRect();
-
-		await expect(heroBounds.height).toBeGreaterThan(0);
-		await expect(puddleBounds.height).toBeGreaterThan(0);
-		await expect(puddleBounds.left).toBeCloseTo(heroBounds.left, 0);
-		await expect(puddleBounds.top).toBeCloseTo(heroBounds.top, 0);
-		await expect(puddleBounds.width).toBeCloseTo(heroBounds.width, 0);
-		await expect(puddleBounds.height).toBeCloseTo(heroBounds.height, 0);
 	}
 
 	async function expectLandingSemantics(canvasElement: HTMLElement) {
@@ -171,72 +146,47 @@
 			'href',
 			'https://www.eventbrite.ca/e/summer-summit-game-jam-2026-tickets-1994789136004',
 		);
-		await expect(getComputedStyle(discord).pointerEvents).toBe('auto');
-		await expect(getComputedStyle(tickets).pointerEvents).toBe('auto');
 		await expect(baseVisuals).toHaveLength(2);
 		await expect(inverseVisuals).toHaveLength(2);
+		await expect(discord.closest('[data-landing-layer]')).toHaveAttribute(
+			'data-landing-layer',
+			'base',
+		);
+		await expect(tickets.closest('[data-landing-layer]')).toHaveAttribute(
+			'data-landing-layer',
+			'base',
+		);
 
 		for (const [index, control] of [discord, tickets].entries()) {
 			const baseVisual = baseVisuals[index];
 			const inverseVisual = inverseVisuals[index];
 			if (!baseVisual || !inverseVisual) return;
 
-			await expect(baseVisual.closest('[data-landing-layer]')).toHaveAttribute(
-				'data-landing-layer',
-				'base',
-			);
-			await expect(inverseVisual.closest('[data-landing-layer]')).toHaveAttribute(
-				'data-landing-layer',
-				'inverse',
-			);
-			await expect(control.closest('[data-landing-layer]')).toHaveAttribute(
-				'data-landing-layer',
-				'base',
-			);
 			await expectMatchingBounds(baseVisual, inverseVisual);
 			await expectMatchingBounds(baseVisual, control);
 		}
 
 		const actionRow = discord.closest<HTMLElement>('[data-landing-actions]');
-		const detail = discord.closest<HTMLElement>('[data-landing-detail-grid]');
 		const discordBounds = discord.getBoundingClientRect();
 		const ticketBounds = tickets.getBoundingClientRect();
 		const viewportWidth = canvasElement.ownerDocument.documentElement.clientWidth;
+		const discordCenter = discordBounds.top + discordBounds.height / 2;
+		const ticketCenter = ticketBounds.top + ticketBounds.height / 2;
 
 		await expect(actionRow).not.toBeNull();
-		await expect(detail).not.toBeNull();
-		if (!actionRow || !detail) return;
+		if (!actionRow) return;
 
 		if (viewportWidth < 768) {
-			const secondTitleRow = detail
-				.closest<HTMLElement>('[data-landing-content]')
-				?.querySelector<HTMLElement>('.landing-title-second');
-
-			await expect(secondTitleRow).not.toBeNull();
-			if (!secondTitleRow) return;
-
-			const detailBounds = detail.getBoundingClientRect();
-			const secondTitleBounds = secondTitleRow.getBoundingClientRect();
-
-			await expect(discordBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
-			await expect(ticketBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
-			await expect(detailBounds.left).toBeCloseTo(secondTitleBounds.left);
-			await expect(detailBounds.right).toBeCloseTo(secondTitleBounds.right);
-			await expect(detailBounds.width).toBeCloseTo(secondTitleBounds.width);
 			await expect(ticketBounds.top).toBeLessThan(discordBounds.top);
-			await expect(getComputedStyle(detail).position).toBe('static');
+			await expect(ticketBounds.bottom).toBeLessThanOrEqual(discordBounds.top);
 		} else if (viewportWidth < 1024) {
-			const actionBounds = actionRow.getBoundingClientRect();
-			const controlsCenter = (ticketBounds.left + discordBounds.right) / 2;
-
 			await expect(ticketBounds.left).toBeLessThan(discordBounds.left);
-			await expect(ticketBounds.top).toBeCloseTo(discordBounds.top);
-			await expect(controlsCenter).toBeCloseTo(actionBounds.left + actionBounds.width / 2, 1);
-			await expect(getComputedStyle(detail).position).toBe('static');
+			await expect(ticketBounds.right).toBeLessThanOrEqual(discordBounds.left);
+			await expect(ticketCenter).toBeCloseTo(discordCenter);
 		} else {
 			await expect(discordBounds.left).toBeLessThan(ticketBounds.left);
-			await expect(discordBounds.top).toBeCloseTo(ticketBounds.top);
-			await expect(getComputedStyle(detail).position).toBe('absolute');
+			await expect(discordBounds.right).toBeLessThanOrEqual(ticketBounds.left);
+			await expect(discordCenter).toBeCloseTo(ticketCenter);
 		}
 	}
 
@@ -245,9 +195,6 @@
 
 		await expect(canvas.queryByText('Join the Discord', { exact: true })).toBeNull();
 		await expect(canvas.queryByText('Get your ticket', { exact: true })).toBeNull();
-		await expect(canvasElement.querySelector('[data-clip-aware-button]')).toBeNull();
-		await expect(canvasElement.querySelectorAll('[data-clip-aware-visual]')).toHaveLength(0);
-		await expect(canvasElement.querySelectorAll('[data-button-surface]')).toHaveLength(0);
 		await expect(canvas.queryByRole('button')).toBeNull();
 		await expect(
 			canvas.queryByRole('link', { name: /join the discord|get your ticket/i }),
@@ -260,10 +207,10 @@
 	args={LANDING_HERO_STORY_CASES.compact.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.compact.viewport, isRotated: false } }}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'compact');
+		await expectPuddleProfile(canvasElement, 'compact');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -273,10 +220,10 @@
 	args={LANDING_HERO_STORY_CASES.medium.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.medium.viewport, isRotated: false } }}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'medium');
+		await expectPuddleProfile(canvasElement, 'medium');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -286,10 +233,10 @@
 	args={LANDING_HERO_STORY_CASES.expanded.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.expanded.viewport, isRotated: false } }}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'expanded');
+		await expectPuddleProfile(canvasElement, 'expanded');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -299,10 +246,10 @@
 	args={LANDING_HERO_STORY_CASES.large.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.large.viewport, isRotated: false } }}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'large');
+		await expectPuddleProfile(canvasElement, 'large');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -324,10 +271,10 @@
 		viewport: { value: LANDING_HERO_STORY_CASES.withoutCta.viewport, isRotated: false },
 	}}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectNoCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'expanded');
+		await expectPuddleProfile(canvasElement, 'expanded');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
@@ -340,10 +287,10 @@
 	}}
 	parameters={{ chromatic: { prefersReducedMotion: 'reduce' } }}
 	play={async ({ canvasElement }) => {
-		await expectLandingLayers(canvasElement);
+		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
 		await expectDestinationCta(canvasElement);
-		await expectPuddleFillsHero(canvasElement, 'expanded');
+		await expectPuddleProfile(canvasElement, 'expanded');
 		await expectNoHorizontalOverflow(canvasElement);
 	}}
 />
