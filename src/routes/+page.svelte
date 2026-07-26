@@ -16,5 +16,14 @@
 	organizerLabel="GAME DEV CLUB X IATSU 2026"
 	locationLabel="SFU BURNABY CAMPUS"
 	navItems={[]}
-	cta={{ label: 'JOIN THE JAM' }}
+	actions={{
+		discord: {
+			label: 'JOIN THE DISCORD',
+			href: 'https://discord.gg/jmZ8jmWHBx',
+		},
+		tickets: {
+			label: 'GET YOUR TICKET',
+			href: 'https://www.eventbrite.ca/e/summer-summit-game-jam-2026-tickets-1994789136004',
+		},
+	}}
 />

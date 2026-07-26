@@ -78,13 +78,11 @@
 			<span class="landing-title-second inline-block">{titleLines[1]}</span>
 		</div>
 		<div
-			class="landing-detail mx-auto mt-3 flex h-[var(--landing-detail-height)] w-full justify-end"
+			class="landing-detail mx-auto mt-3 flex h-auto min-h-[var(--landing-detail-height)] w-full justify-center md:h-[var(--landing-detail-height)] lg:justify-end"
 			data-landing-detail-grid
 		>
 			{#if cta}
-				<div class="col-start-2 justify-self-end">
-					{@render cta()}
-				</div>
+				{@render cta()}
 			{/if}
 		</div>
 	</main>
@@ -122,41 +120,43 @@
 		anchor-name: --hero-text-inverse-second;
 	}
 
-	@supports (left: anchor(--hero-text-base-first left)) and (width: calc(1px * (1px / 1px))) {
-		.landing-detail {
-			margin: 0;
-			position: absolute;
-			width: auto;
-		}
+	@media (width >= 64rem) {
+		@supports (left: anchor(--hero-text-base-first left)) and (width: calc(1px * (1px / 1px))) {
+			.landing-detail {
+				margin: 0;
+				position: absolute;
+				width: auto;
+			}
 
-		[data-landing-content='base'] .landing-detail {
-			left: calc(
-				anchor(--hero-text-base-second left) +
-					(anchor(--hero-text-base-second left) - anchor(--hero-text-base-first left)) *
-					var(--landing-slope-step)
-			);
-			position-anchor: --hero-text-base-second;
-			right: calc(
-				anchor(--hero-text-base-second right) +
-					(anchor(--hero-text-base-second right) - anchor(--hero-text-base-first right)) *
-					var(--landing-slope-step)
-			);
-			top: calc(anchor(--hero-text-base-second bottom) + var(--landing-detail-gap));
-		}
+			[data-landing-content='base'] .landing-detail {
+				left: calc(
+					anchor(--hero-text-base-second left) +
+						(anchor(--hero-text-base-second left) - anchor(--hero-text-base-first left)) *
+						var(--landing-slope-step)
+				);
+				position-anchor: --hero-text-base-second;
+				right: calc(
+					anchor(--hero-text-base-second right) +
+						(anchor(--hero-text-base-second right) - anchor(--hero-text-base-first right)) *
+						var(--landing-slope-step)
+				);
+				top: calc(anchor(--hero-text-base-second bottom) + var(--landing-detail-gap));
+			}
 
-		[data-landing-content='inverse'] .landing-detail {
-			left: calc(
-				anchor(--hero-text-inverse-second left) +
-					(anchor(--hero-text-inverse-second left) - anchor(--hero-text-inverse-first left)) *
-					var(--landing-slope-step)
-			);
-			position-anchor: --hero-text-inverse-second;
-			right: calc(
-				anchor(--hero-text-inverse-second right) +
-					(anchor(--hero-text-inverse-second right) - anchor(--hero-text-inverse-first right)) *
-					var(--landing-slope-step)
-			);
-			top: calc(anchor(--hero-text-inverse-second bottom) + var(--landing-detail-gap));
+			[data-landing-content='inverse'] .landing-detail {
+				left: calc(
+					anchor(--hero-text-inverse-second left) +
+						(anchor(--hero-text-inverse-second left) - anchor(--hero-text-inverse-first left)) *
+						var(--landing-slope-step)
+				);
+				position-anchor: --hero-text-inverse-second;
+				right: calc(
+					anchor(--hero-text-inverse-second right) +
+						(anchor(--hero-text-inverse-second right) - anchor(--hero-text-inverse-first right)) *
+						var(--landing-slope-step)
+				);
+				top: calc(anchor(--hero-text-inverse-second bottom) + var(--landing-detail-gap));
+			}
 		}
 	}
 </style>

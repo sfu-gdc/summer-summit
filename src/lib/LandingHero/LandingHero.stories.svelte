@@ -154,44 +154,91 @@
 
 	async function expectDestinationCta(canvasElement: HTMLElement) {
 		const canvas = within(canvasElement);
-		const cta = canvas.getByRole('link', { name: 'Join the jam' });
-		const baseVisual = canvasElement.querySelector<HTMLElement>(
+		const discord = canvas.getByRole('link', { name: 'Join the Discord' });
+		const tickets = canvas.getByRole('link', { name: 'Get your ticket' });
+		const baseVisuals = canvasElement.querySelectorAll<HTMLElement>(
 			'[data-clip-aware-visual="base"] [data-button-surface]',
 		);
-		const inverseVisual = canvasElement.querySelector<HTMLElement>(
+		const inverseVisuals = canvasElement.querySelectorAll<HTMLElement>(
 			'[data-clip-aware-visual="inverse"] [data-button-surface]',
 		);
 
-		await expect(canvas.queryByRole('button', { name: 'Join the jam' })).toBeNull();
-		await expect(cta).toHaveAttribute('href', '/join');
-		await expect(getComputedStyle(cta).pointerEvents).toBe('auto');
-		await expect(canvas.getAllByRole('link', { name: 'Join the jam' })).toHaveLength(1);
-		await expect(baseVisual).not.toBeNull();
-		await expect(inverseVisual).not.toBeNull();
-		if (!baseVisual || !inverseVisual) return;
+		await expect(
+			canvas.queryByRole('button', { name: /join the discord|get your ticket/i }),
+		).toBeNull();
+		await expect(discord).toHaveAttribute('href', 'https://discord.gg/jmZ8jmWHBx');
+		await expect(tickets).toHaveAttribute(
+			'href',
+			'https://www.eventbrite.ca/e/summer-summit-game-jam-2026-tickets-1994789136004',
+		);
+		await expect(getComputedStyle(discord).pointerEvents).toBe('auto');
+		await expect(getComputedStyle(tickets).pointerEvents).toBe('auto');
+		await expect(baseVisuals).toHaveLength(2);
+		await expect(inverseVisuals).toHaveLength(2);
 
-		await expect(baseVisual.closest('[data-landing-layer]')).toHaveAttribute(
-			'data-landing-layer',
-			'base',
-		);
-		await expect(inverseVisual.closest('[data-landing-layer]')).toHaveAttribute(
-			'data-landing-layer',
-			'inverse',
-		);
-		await expect(cta.closest('[data-landing-layer]')).toHaveAttribute('data-landing-layer', 'base');
-		await expectMatchingBounds(baseVisual, inverseVisual);
-		await expectMatchingBounds(baseVisual, cta);
+		for (const [index, control] of [discord, tickets].entries()) {
+			const baseVisual = baseVisuals[index];
+			const inverseVisual = inverseVisuals[index];
+			if (!baseVisual || !inverseVisual) return;
+
+			await expect(baseVisual.closest('[data-landing-layer]')).toHaveAttribute(
+				'data-landing-layer',
+				'base',
+			);
+			await expect(inverseVisual.closest('[data-landing-layer]')).toHaveAttribute(
+				'data-landing-layer',
+				'inverse',
+			);
+			await expect(control.closest('[data-landing-layer]')).toHaveAttribute(
+				'data-landing-layer',
+				'base',
+			);
+			await expectMatchingBounds(baseVisual, inverseVisual);
+			await expectMatchingBounds(baseVisual, control);
+		}
+
+		const actionRow = discord.closest<HTMLElement>('[data-landing-actions]');
+		const detail = discord.closest<HTMLElement>('[data-landing-detail-grid]');
+		const discordBounds = discord.getBoundingClientRect();
+		const ticketBounds = tickets.getBoundingClientRect();
+		const viewportWidth = canvasElement.ownerDocument.documentElement.clientWidth;
+
+		await expect(actionRow).not.toBeNull();
+		await expect(detail).not.toBeNull();
+		if (!actionRow || !detail) return;
+
+		if (viewportWidth < 768) {
+			await expect(discordBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
+			await expect(ticketBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
+			await expect(ticketBounds.top).toBeLessThan(discordBounds.top);
+			await expect(getComputedStyle(detail).position).toBe('static');
+		} else if (viewportWidth < 1024) {
+			const actionBounds = actionRow.getBoundingClientRect();
+			const controlsCenter = (ticketBounds.left + discordBounds.right) / 2;
+
+			await expect(ticketBounds.left).toBeLessThan(discordBounds.left);
+			await expect(ticketBounds.top).toBeCloseTo(discordBounds.top);
+			await expect(controlsCenter).toBeCloseTo(actionBounds.left + actionBounds.width / 2, 1);
+			await expect(getComputedStyle(detail).position).toBe('static');
+		} else {
+			await expect(discordBounds.left).toBeLessThan(ticketBounds.left);
+			await expect(discordBounds.top).toBeCloseTo(ticketBounds.top);
+			await expect(getComputedStyle(detail).position).toBe('absolute');
+		}
 	}
 
 	async function expectNoCta(canvasElement: HTMLElement) {
 		const canvas = within(canvasElement);
 
-		await expect(canvas.queryByText('Join the jam', { exact: true })).toBeNull();
+		await expect(canvas.queryByText('Join the Discord', { exact: true })).toBeNull();
+		await expect(canvas.queryByText('Get your ticket', { exact: true })).toBeNull();
 		await expect(canvasElement.querySelector('[data-clip-aware-button]')).toBeNull();
 		await expect(canvasElement.querySelectorAll('[data-clip-aware-visual]')).toHaveLength(0);
 		await expect(canvasElement.querySelectorAll('[data-button-surface]')).toHaveLength(0);
 		await expect(canvas.queryByRole('button')).toBeNull();
-		await expect(canvas.queryByRole('link', { name: 'Join the jam' })).toBeNull();
+		await expect(
+			canvas.queryByRole('link', { name: /join the discord|get your ticket/i }),
+		).toBeNull();
 	}
 </script>
 

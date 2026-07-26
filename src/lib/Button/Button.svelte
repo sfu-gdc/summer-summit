@@ -92,7 +92,7 @@
 	</span>
 	{#if visuals}
 		{#if variant === 'underline'}
-			<UnderlineButtonSurface {appearance} {children} {icon} />
+			<UnderlineButtonSurface {appearance} {children} {icon} {size} />
 		{:else}
 			<ButtonSurface {appearance} {children} {icon} {size} {spray} />
 		{/if}
@@ -104,6 +104,7 @@
 					clipPath={overlay.clipPath}
 					hidden
 					{icon}
+					{size}
 				/>
 			{:else}
 				<ButtonSurface

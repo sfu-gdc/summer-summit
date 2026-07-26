@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { buttonColors } from '$lib/tokens';
+	import { buttonColors, buttonSizes } from '$lib/tokens';
 
 	type ButtonAppearance = 'primary' | 'secondary' | 'dark' | 'light';
+	type ButtonSize = keyof typeof buttonSizes;
 
 	interface Props {
 		appearance: ButtonAppearance;
@@ -11,11 +12,22 @@
 		clipPath?: string | undefined;
 		hidden?: boolean | undefined;
 		icon?: Snippet | undefined;
+		presentation?: boolean | undefined;
+		size: ButtonSize;
 	}
 
-	let { appearance, children, clipPath, hidden = false, icon }: Props = $props();
+	let {
+		appearance,
+		children,
+		clipPath,
+		hidden = false,
+		icon,
+		presentation = false,
+		size,
+	}: Props = $props();
 
 	const colors = $derived(buttonColors[appearance]);
+	const sizeValues = $derived(buttonSizes[size]);
 </script>
 
 <span
@@ -23,8 +35,15 @@
 	data-button-surface={hidden ? 'overlay' : 'base'}
 	data-button-underline
 	inert={hidden ? true : undefined}
-	class="underline-button-surface text-base leading-6 tracking-normal font-body font-semibold flex pointer-events-none whitespace-nowrap uppercase transition-colors duration-100 ease-out [color:var(--underline-button-content)] items-center inset-0 justify-center absolute motion-reduce:duration-0"
+	class={[
+		'underline-button-surface text-base leading-6 tracking-normal font-body font-semibold pointer-events-none whitespace-nowrap uppercase transition-colors duration-100 ease-out [color:var(--underline-button-content)] items-center justify-center motion-reduce:duration-0',
+		presentation
+			? 'relative inset-auto box-border inline-flex h-[var(--underline-button-height)] w-auto px-[var(--underline-button-padding)]'
+			: 'flex inset-0 absolute',
+	]}
 	style:clip-path={clipPath}
+	style:--underline-button-height={sizeValues.height}
+	style:--underline-button-padding={sizeValues.inlinePadding}
 	style:--underline-button-content={colors.content}
 	style:--underline-button-disabled-content={colors.disabledContent}
 	style:--underline-button-hover-content={colors.hoverContent}

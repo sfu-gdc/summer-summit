@@ -11,7 +11,7 @@
 	import ClipAwareButton from '../Button/ClipAwareButton.svelte';
 	import ErodedCheckerboard from '../ErodedCheckerboard/ErodedCheckerboard.svelte';
 	import Puddle from '../Puddle/Puddle.svelte';
-	import LandingHeroContent from './LandingHeroContent.svelte';
+	import LandingHeroLayers from './LandingHeroLayers.svelte';
 	import { LANDING_PUDDLE_PROFILES, type LandingPuddleProfileName } from './puddleProfiles';
 	import type { LandingHeroProps } from './types';
 
@@ -26,7 +26,7 @@
 		organizerLabel,
 		locationLabel,
 		navItems = [],
-		cta,
+		actions,
 		class: className,
 	}: LandingHeroProps = $props();
 
@@ -45,35 +45,48 @@
 	const puddleProfile = $derived(LANDING_PUDDLE_PROFILES[puddleProfileName]);
 </script>
 
-{#snippet composeContent(buttonLayers: ButtonLayers)}
-	<div class="content-layer inset-0 absolute" data-hero-content data-landing-layer="base">
-		<LandingHeroContent
-			layer="base"
+{#snippet composeDiscord(discordLayers: ButtonLayers)}
+	{#snippet composeTickets(ticketLayers: ButtonLayers)}
+		{#snippet baseActions()}
+			<div
+				class="flex flex-col gap-2 w-full items-stretch justify-center md:flex-row md:gap-4 md:items-center lg:justify-end"
+				data-landing-actions
+			>
+				{@render discordLayers.base()}
+				{@render ticketLayers.base()}
+			</div>
+		{/snippet}
+
+		{#snippet inverseActions()}
+			<div
+				class="flex flex-col gap-2 w-full items-stretch justify-center md:flex-row md:gap-4 md:items-center lg:justify-end"
+				data-landing-actions
+			>
+				{@render discordLayers.inverse()}
+				{@render ticketLayers.inverse()}
+			</div>
+		{/snippet}
+
+		<LandingHeroLayers
 			{titleLines}
 			{dateLabel}
 			{organizerLabel}
 			{locationLabel}
 			{navItems}
-			cta={cta ? buttonLayers.base : undefined}
+			{baseActions}
+			{inverseActions}
 		/>
-	</div>
-	<div
-		aria-hidden="true"
-		class="content-layer inverse-content-layer pointer-events-none [clip-path:var(--puddle-clip)] inset-0 absolute"
-		data-hero-content-overlay
-		data-landing-layer="inverse"
-		inert
+	{/snippet}
+
+	<ClipAwareButton
+		appearance="secondary"
+		compose={composeTickets}
+		inverseAppearance="light"
+		control={actions ? { href: actions.tickets.href } : undefined}
 	>
-		<LandingHeroContent
-			layer="inverse"
-			{titleLines}
-			{dateLabel}
-			{organizerLabel}
-			{locationLabel}
-			{navItems}
-			cta={cta ? buttonLayers.inverse : undefined}
-		/>
-	</div>
+		{actions?.tickets.label}
+		<span aria-hidden="true" class="i-pixelarticons-arrow-right-box size-6"></span>
+	</ClipAwareButton>
 {/snippet}
 
 <div
@@ -94,20 +107,51 @@
 			{...puddleProfile}
 			color={heroColors.outline}
 			class="size-full"
-			data-clip-aware-button={cta ? true : undefined}
+			data-clip-aware-button={actions ? true : undefined}
 			data-puddle-profile={puddleProfileName}
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
-			<ClipAwareButton
-				appearance="secondary"
-				compose={composeContent}
-				inverseAppearance="light"
-				control={cta?.href !== undefined ? { href: cta.href } : undefined}
-			>
-				{#if cta}
-					{cta.label}
-				{/if}
-			</ClipAwareButton>
+			{#if actions}
+				<ClipAwareButton
+					appearance="dark"
+					compose={composeDiscord}
+					inverseAppearance="primary"
+					control={{ href: actions.discord.href }}
+					variant="underline"
+				>
+					{actions.discord.label}
+					<span aria-hidden="true" class="i-pixel-discord size-6"></span>
+				</ClipAwareButton>
+			{:else}
+				<LandingHeroLayers {titleLines} {dateLabel} {organizerLabel} {locationLabel} {navItems} />
+			{/if}
 		</Puddle>
 	</div>
 </div>
+
+<style>
+	[data-landing-actions] :global([data-clip-aware-variant='spray']) {
+		order: 1;
+	}
+
+	[data-landing-actions] :global([data-clip-aware-variant='underline']) {
+		order: 2;
+	}
+
+	@media (width < 32rem) {
+		[data-landing-actions] :global([data-clip-aware-visual]),
+		[data-landing-actions] :global([data-button-surface]) {
+			width: 100%;
+		}
+	}
+
+	@media (width >= 64rem) {
+		[data-landing-actions] :global([data-clip-aware-variant='underline']) {
+			order: 1;
+		}
+
+		[data-landing-actions] :global([data-clip-aware-variant='spray']) {
+			order: 2;
+		}
+	}
+</style>

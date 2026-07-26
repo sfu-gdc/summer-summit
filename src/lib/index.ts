@@ -8,6 +8,7 @@ export type {
 	ClipAwareButtonLayers,
 	ClipAwareButtonProps,
 	ClipAwareButtonSize,
+	ClipAwareButtonVariant,
 } from './Button/ClipAwareButton.svelte';
 export { default as ColorPalette } from './ColorPalette/ColorPalette.svelte';
 export type { ColorPaletteProps } from './ColorPalette/ColorPalette.svelte';

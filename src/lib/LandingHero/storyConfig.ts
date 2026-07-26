@@ -4,7 +4,12 @@ export interface LandingHeroStoryArgs {
 	readonly organizerLabel: string;
 	readonly locationLabel: string;
 	readonly navItems?: readonly { label: string; href: string }[];
-	readonly cta?: { label: string; href?: string } | undefined;
+	readonly actions?:
+		| {
+				discord: { label: string; href: string };
+				tickets: { label: string; href: string };
+		  }
+		| undefined;
 	readonly class?: string;
 }
 
@@ -14,7 +19,13 @@ export const LANDING_HERO_EVENT_ARGS = {
 	organizerLabel: 'GAME DEV CLUB X IATSU 2026',
 	locationLabel: 'SFU BURNABY CAMPUS',
 	navItems: [],
-	cta: { label: 'Join the jam', href: '/join' },
+	actions: {
+		discord: { label: 'Join the Discord', href: 'https://discord.gg/jmZ8jmWHBx' },
+		tickets: {
+			label: 'Get your ticket',
+			href: 'https://www.eventbrite.ca/e/summer-summit-game-jam-2026-tickets-1994789136004',
+		},
+	},
 } satisfies LandingHeroStoryArgs;
 
 export const LANDING_HERO_VIEWPORTS = {
@@ -78,7 +89,7 @@ export const LANDING_HERO_STORY_CASES = {
 		name: 'Without CTA',
 		screenshotName: 'without-cta',
 		viewport: 'expanded',
-		args: { ...LANDING_HERO_EVENT_ARGS, cta: undefined },
+		args: { ...LANDING_HERO_EVENT_ARGS, actions: undefined },
 	},
 	reducedMotion: {
 		name: 'Reduced Motion',
