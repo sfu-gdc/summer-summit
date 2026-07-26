@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import type { ComponentProps } from 'svelte';
 
-	import { expect, userEvent, within } from 'storybook/test';
+	import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 	import PaddingDecorator from '$storybook/PaddingDecorator.svelte';
 
@@ -233,9 +233,15 @@
 			HTMLElement,
 			HTMLElement,
 		];
+		const defaultSurface = requiredElement(defaultButton, '[data-button-surface="base"]');
+		const hoverSurface = requiredElement(hoverButton, '[data-button-surface="base"]');
 
 		await expect(getComputedStyle(defaultButton).transform).toBe('none');
 		await expect(getComputedStyle(hoverButton).transform).toBe('none');
+		await expect(getComputedStyle(defaultSurface).transform).toBe('none');
+		await waitFor(() =>
+			expect(getComputedStyle(hoverSurface).transform).toBe('matrix(1.02, 0, 0, 1.02, 0, 0)'),
+		);
 		await expect(documentRules(activeButton, ':active')).toMatch(/(?:scale|transform)[^;}]*0?\.98/);
 		await expect(documentRules(focusButton, ':focus-visible')).toMatch(
 			/border-radius[^;}]*(?:4px|0\.25rem|--radius-DEFAULT)/,

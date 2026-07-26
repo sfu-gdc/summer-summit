@@ -2,7 +2,7 @@
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import type { ComponentProps, Snippet } from 'svelte';
 
-	import { expect, userEvent, within } from 'storybook/test';
+	import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 	import ClipAwareButton from './ClipAwareButton.svelte';
 
@@ -132,6 +132,9 @@
 		host.classList.add('pseudo-hover-all');
 		for (const [index, surface] of [...surfaces].entries()) {
 			await expect(getComputedStyle(surface).color).not.toBe(idleColors[index]);
+			await waitFor(() =>
+				expect(getComputedStyle(surface).transform).toBe('matrix(1.02, 0, 0, 1.02, 0, 0)'),
+			);
 		}
 		host.classList.remove('pseudo-hover-all');
 

@@ -169,6 +169,23 @@
 
 	:global(
 		[data-clip-aware-button]:has(
+				.semantic-control[data-button-variant='spray']:hover:not(:disabled):not(
+						[aria-disabled='true']
+					)
+			)
+			[data-clip-aware-variant='spray']
+			[data-button-surface]
+	),
+	:global(
+		[data-clip-aware-button].pseudo-hover-all
+			[data-clip-aware-variant='spray']
+			[data-button-surface]
+	) {
+		transform: scale(1.01);
+	}
+
+	:global(
+		[data-clip-aware-button]:has(
 				.semantic-control[data-button-variant='spray']:active:not(:disabled):not(
 						[aria-disabled='true']
 					)

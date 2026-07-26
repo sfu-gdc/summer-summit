@@ -46,7 +46,7 @@
 	data-button-surface={hidden ? 'overlay' : 'base'}
 	inert={hidden ? true : undefined}
 	class={[
-		'button-surface pointer-events-none flex whitespace-nowrap uppercase text-base font-semibold leading-6 tracking-normal [color:var(--button-surface-content)]',
+		'button-surface pointer-events-none flex whitespace-nowrap uppercase text-base font-semibold leading-6 tracking-normal transition-transform duration-100 transition-ease-out [color:var(--button-surface-content)]',
 		'font-body',
 		presentation
 			? 'presentation relative inset-auto box-border inline-flex h-[var(--button-surface-height)] w-auto px-[var(--button-surface-padding)]'
@@ -88,6 +88,22 @@
 <style>
 	:global(.summer-summit-button:hover:not(:disabled)) .button-surface {
 		color: var(--button-surface-hover-content);
+	}
+
+	:global(
+			.summer-summit-button[data-button-variant='spray']:hover:not(:disabled):not(
+					[aria-disabled='true']
+				)
+		)
+		.button-surface,
+	:global(
+			.pseudo-hover-all
+				.summer-summit-button[data-button-variant='spray']:not(:disabled):not(
+					[aria-disabled='true']
+				)
+		)
+		.button-surface {
+		transform: scale(1.02);
 	}
 
 	:global(.summer-summit-button:disabled) .button-surface {
