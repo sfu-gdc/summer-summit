@@ -159,13 +159,13 @@ export const buttonColors = {
 export const buttonSizes = {
 	default: {
 		height: '2.5rem',
-		inlinePadding: '0.5rem',
+		inlinePadding: '1.0rem',
 		sprayRadius: 6,
 		spraySpread: 6,
 	},
 	large: {
 		height: '3rem',
-		inlinePadding: '1rem',
+		inlinePadding: '1.5rem',
 		sprayRadius: 8,
 		spraySpread: 8,
 	},

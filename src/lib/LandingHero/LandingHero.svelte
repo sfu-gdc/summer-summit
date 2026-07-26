@@ -83,6 +83,7 @@
 		compose={composeTickets}
 		inverseAppearance="light"
 		control={actions ? { href: actions.tickets.href } : undefined}
+		size="large"
 	>
 		{actions?.tickets.label}
 		<span aria-hidden="true" class="i-pixelarticons-arrow-right-box size-6"></span>
