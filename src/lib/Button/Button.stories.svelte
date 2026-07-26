@@ -151,7 +151,7 @@
 {/snippet}
 
 {#snippet underline(args: Args)}
-	<div class="flex flex-wrap gap-8 items-start">
+	<div class="p-8 bg-brand-shade-900 flex flex-wrap gap-8 items-start">
 		<div class="flex flex-col gap-3 items-center">
 			<Button {...args} variant="underline">About</Button>
 			<span class="text-xs text-brand-primary-500 tracking-wide font-body uppercase">Default</span>
