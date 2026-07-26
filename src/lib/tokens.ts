@@ -93,7 +93,14 @@ export const heroColors = {
 } as const;
 
 export const buttonColorValues = {
-	accent: {
+	primary: {
+		surface: brandColorValues.shade[900],
+		content: brandColorValues.primary[100],
+		hoverContent: brandColorValues.primary[50],
+		disabledSurface: brandColorValues.shade[300],
+		disabledContent: brandColorValues.shade[600],
+	},
+	secondary: {
 		surface: brandColorValues.secondary[600],
 		content: brandColorValues.shade[50],
 		hoverContent: brandColorValues.primary[50],
@@ -118,7 +125,14 @@ export const buttonColorValues = {
 } as const;
 
 export const buttonColors = {
-	accent: {
+	primary: {
+		surface: brandColors.shade[900],
+		content: brandColors.primary[100],
+		hoverContent: brandColors.primary[50],
+		disabledSurface: brandColors.shade[300],
+		disabledContent: brandColors.shade[600],
+	},
+	secondary: {
 		surface: brandColors.secondary[600],
 		content: brandColors.shade[50],
 		hoverContent: brandColors.primary[50],

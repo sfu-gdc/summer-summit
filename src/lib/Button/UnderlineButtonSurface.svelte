@@ -3,7 +3,7 @@
 
 	import { buttonColors } from '$lib/tokens';
 
-	type ButtonAppearance = 'accent' | 'dark' | 'light';
+	type ButtonAppearance = 'primary' | 'secondary' | 'dark' | 'light';
 
 	interface Props {
 		appearance: ButtonAppearance;

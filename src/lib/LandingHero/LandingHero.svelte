@@ -99,7 +99,7 @@
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
 			<ClipAwareButton
-				appearance="accent"
+				appearance="secondary"
 				compose={composeContent}
 				inverseAppearance="light"
 				control={cta?.href !== undefined ? { href: cta.href } : undefined}

@@ -10,7 +10,7 @@
 	import ButtonSurface from './ButtonSurface.svelte';
 	import UnderlineButtonSurface from './UnderlineButtonSurface.svelte';
 
-	export type ButtonAppearance = 'accent' | 'dark' | 'light';
+	export type ButtonAppearance = 'primary' | 'secondary' | 'dark' | 'light';
 	export type ButtonSize = keyof typeof buttonSizes;
 	export type ButtonVariant = 'spray' | 'underline';
 	export interface ButtonOverlay {
@@ -19,7 +19,7 @@
 	}
 
 	type Props = ButtonRootProps & {
-		/** Accent, dark navigation, or light inverted treatment. */
+		/** Primary, secondary, dark navigation, or light inverted treatment. */
 		appearance?: ButtonAppearance | undefined;
 		/** Optional icon rendered before the label. */
 		icon?: Snippet | undefined;

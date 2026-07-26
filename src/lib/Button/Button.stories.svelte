@@ -42,7 +42,10 @@
 			variant: 'spray',
 		},
 		argTypes: {
-			appearance: { control: 'inline-radio', options: ['accent', 'dark', 'light'] },
+			appearance: {
+				control: 'inline-radio',
+				options: ['primary', 'secondary', 'dark', 'light'],
+			},
 			disabled: { control: 'boolean' },
 			size: { control: 'inline-radio', options: ['default', 'large'] },
 			spray: { control: 'boolean' },
@@ -135,9 +138,15 @@
 	</div>
 {/snippet}
 
-{#snippet secondaryAccent(args: Args)}
+{#snippet primary(args: Args)}
+	<div class="p-8 bg-brand-shade-50">
+		<Button {...args} appearance="primary" size="large">Join the jam</Button>
+	</div>
+{/snippet}
+
+{#snippet secondary(args: Args)}
 	<div class="p-8 bg-brand-primary-100">
-		<Button {...args} appearance="accent" size="large">Join the jam</Button>
+		<Button {...args} appearance="secondary" size="large">Join the jam</Button>
 	</div>
 {/snippet}
 
@@ -258,7 +267,9 @@
 	}}
 />
 
-<Story name="Secondary Accent" template={secondaryAccent} />
+<Story name="Secondary" template={secondary} />
+
+<Story name="Primary" template={primary} />
 
 <Story
 	name="Underline"
