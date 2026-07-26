@@ -44,6 +44,8 @@
 		"@commitlint/types": "^21.2.0",
 		"@eslint/js": "^10.0.1",
 		"@iconify-json/mdi": "^1.2.3",
+		"@iconify-json/pixel": "^1.2.2",
+		"@iconify-json/pixelarticons": "^1.2.7",
 		"@storybook/addon-a11y": "^10.5.0",
 		"@storybook/addon-docs": "^10.5.0",
 		"@storybook/addon-svelte-csf": "^5.1.2",
