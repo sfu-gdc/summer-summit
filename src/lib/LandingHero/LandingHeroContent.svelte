@@ -120,6 +120,31 @@
 		anchor-name: --hero-text-inverse-second;
 	}
 
+	@media (width < 48rem) {
+		.landing-main {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		}
+
+		[data-landing-title] {
+			display: contents;
+		}
+
+		[data-landing-date],
+		.landing-title-first {
+			grid-column: 1 / -1;
+		}
+
+		.landing-title-second,
+		.landing-detail {
+			grid-column: 2;
+		}
+
+		[data-landing-title] br {
+			display: none;
+		}
+	}
+
 	@media (width >= 64rem) {
 		@supports (left: anchor(--hero-text-base-first left)) and (width: calc(1px * (1px / 1px))) {
 			.landing-detail {

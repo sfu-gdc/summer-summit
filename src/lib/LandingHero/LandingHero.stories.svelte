@@ -208,8 +208,21 @@
 		if (!actionRow || !detail) return;
 
 		if (viewportWidth < 768) {
+			const secondTitleRow = detail
+				.closest<HTMLElement>('[data-landing-content]')
+				?.querySelector<HTMLElement>('.landing-title-second');
+
+			await expect(secondTitleRow).not.toBeNull();
+			if (!secondTitleRow) return;
+
+			const detailBounds = detail.getBoundingClientRect();
+			const secondTitleBounds = secondTitleRow.getBoundingClientRect();
+
 			await expect(discordBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
 			await expect(ticketBounds.width).toBeCloseTo(actionRow.getBoundingClientRect().width);
+			await expect(detailBounds.left).toBeCloseTo(secondTitleBounds.left);
+			await expect(detailBounds.right).toBeCloseTo(secondTitleBounds.right);
+			await expect(detailBounds.width).toBeCloseTo(secondTitleBounds.width);
 			await expect(ticketBounds.top).toBeLessThan(discordBounds.top);
 			await expect(getComputedStyle(detail).position).toBe('static');
 		} else if (viewportWidth < 1024) {
