@@ -113,7 +113,7 @@
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
 			{#if actions}
 				<ClipAwareButton
-					appearance="dark"
+					appearance="light"
 					compose={composeDiscord}
 					inverseAppearance="primary"
 					control={{ href: actions.discord.href }}
