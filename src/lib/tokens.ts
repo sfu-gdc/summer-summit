@@ -117,7 +117,7 @@ export const buttonColorValues = {
 	light: {
 		surface: brandColorValues.shade[50],
 		content: brandColorValues.shade[900],
-		hoverContent: brandColorValues.secondary[700],
+		hoverContent: brandColorValues.secondary[500],
 		disabledSurface: brandColorValues.shade[300],
 		disabledContent: brandColorValues.shade[600],
 	},
@@ -149,7 +149,7 @@ export const buttonColors = {
 	light: {
 		surface: brandColors.shade[50],
 		content: brandColors.shade[900],
-		hoverContent: brandColors.secondary[700],
+		hoverContent: brandColors.secondary[500],
 		disabledSurface: brandColors.shade[300],
 		disabledContent: brandColors.shade[600],
 	},
