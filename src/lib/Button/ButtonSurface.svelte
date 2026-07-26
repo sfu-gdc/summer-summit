@@ -75,7 +75,8 @@
 		color={colorValues.surface}
 		data-spray-radius={sprayOpts.radius}
 		data-spray-spread={sprayOpts.spread}
-		class="inline-flex size-full items-center inset-0 justify-center !absolute"
+		class="inline-flex items-center inset-[var(--button-spray-spread)] justify-center !absolute"
+		style={`--button-spray-spread:${sprayOpts.spread}px`}
 	>
 		<span class="button-surface-content inline-flex gap-2 size-full items-center justify-center">
 			{@render icon?.()}

@@ -190,7 +190,7 @@
 		const cta = canvas.getByRole('button', { name: 'Join the jam' });
 		const aboutSurface = requiredElement(about, '[data-button-surface="base"]');
 		const ctaSurface = requiredElement(cta, '[data-button-surface="base"]');
-		const aboutSpray = aboutSurface.querySelector<HTMLElement>('[data-spray-radius]');
+		const aboutSpray = requiredElement(aboutSurface, '[data-spray-radius]');
 		const aboutCanvas = requiredElement(aboutSurface, 'canvas');
 
 		await expect(getComputedStyle(about).fontWeight).toBe('600');
@@ -208,11 +208,16 @@
 		await expect(aboutSpray).toHaveAttribute('data-spray-spread', '6');
 
 		const buttonRect = about.getBoundingClientRect();
+		const sprayRect = aboutSpray.getBoundingClientRect();
 		const canvasRect = aboutCanvas.getBoundingClientRect();
-		await expect(canvasRect.left).toBeCloseTo(buttonRect.left - 6);
-		await expect(canvasRect.top).toBeCloseTo(buttonRect.top - 6);
-		await expect(canvasRect.width).toBeCloseTo(buttonRect.width + 12);
-		await expect(canvasRect.height).toBeCloseTo(buttonRect.height + 12);
+		await expect(sprayRect.left).toBeCloseTo(buttonRect.left + 6);
+		await expect(sprayRect.top).toBeCloseTo(buttonRect.top + 6);
+		await expect(sprayRect.width).toBeCloseTo(buttonRect.width - 12);
+		await expect(sprayRect.height).toBeCloseTo(buttonRect.height - 12);
+		await expect(canvasRect.left).toBeCloseTo(buttonRect.left);
+		await expect(canvasRect.top).toBeCloseTo(buttonRect.top);
+		await expect(canvasRect.width).toBeCloseTo(buttonRect.width);
+		await expect(canvasRect.height).toBeCloseTo(buttonRect.height);
 	}}
 />
 
@@ -247,23 +252,26 @@
 	template={largeCta}
 	play={async ({ canvasElement }) => {
 		const cta = within(canvasElement).getByRole('button', { name: 'Join the jam' });
-		const surface = cta.querySelector<HTMLElement>('[data-button-surface="base"]');
-		const spray = surface?.querySelector<HTMLElement>('[data-spray-radius]');
-		const canvas = surface?.querySelector('canvas');
+		const surface = requiredElement(cta, '[data-button-surface="base"]');
+		const spray = requiredElement(surface, '[data-spray-radius]');
+		const canvas = requiredElement(surface, 'canvas');
 
 		await expect(cta.getBoundingClientRect().height).toBeCloseTo(48);
 		await expect(getComputedStyle(cta).paddingInline).toBe('16px');
 		await expect(spray).toHaveAttribute('data-spray-radius', '8');
 		await expect(spray).toHaveAttribute('data-spray-spread', '8');
-		await expect(canvas).not.toBeNull();
-		if (!canvas) return;
 
 		const buttonRect = cta.getBoundingClientRect();
+		const sprayRect = spray.getBoundingClientRect();
 		const canvasRect = canvas.getBoundingClientRect();
-		await expect(canvasRect.left).toBeCloseTo(buttonRect.left - 8);
-		await expect(canvasRect.top).toBeCloseTo(buttonRect.top - 8);
-		await expect(canvasRect.width).toBeCloseTo(buttonRect.width + 16);
-		await expect(canvasRect.height).toBeCloseTo(buttonRect.height + 16);
+		await expect(sprayRect.left).toBeCloseTo(buttonRect.left + 8);
+		await expect(sprayRect.top).toBeCloseTo(buttonRect.top + 8);
+		await expect(sprayRect.width).toBeCloseTo(buttonRect.width - 16);
+		await expect(sprayRect.height).toBeCloseTo(buttonRect.height - 16);
+		await expect(canvasRect.left).toBeCloseTo(buttonRect.left);
+		await expect(canvasRect.top).toBeCloseTo(buttonRect.top);
+		await expect(canvasRect.width).toBeCloseTo(buttonRect.width);
+		await expect(canvasRect.height).toBeCloseTo(buttonRect.height);
 	}}
 />
 
