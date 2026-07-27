@@ -17,7 +17,7 @@
 </script>
 
 <script lang="ts">
-	import eventMark from '$lib/assets/event-mark.png';
+	import eventMark from '$lib/assets/event-mark.png?enhanced';
 	import { buttonSizes } from '$lib/tokens';
 
 	let {
@@ -45,7 +45,7 @@
 
 	<header class="flex items-start justify-between">
 		<div class="flex gap-2.5 items-center">
-			<img src={eventMark} alt="" width="745" height="745" class="size-6 md:size-8" />
+			<enhanced:img src={eventMark} alt="" width="32" height="32" class="size-6 md:size-8" />
 			<p class="text-xl leading-none font-header translate-y-0.5 md:text-2xl">
 				SUMMER GAME JAM 2026
 			</p>
