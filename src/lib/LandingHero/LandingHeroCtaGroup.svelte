@@ -12,7 +12,7 @@
 </script>
 
 <div
-	class="flex flex-col gap-2 w-full items-stretch justify-center md:flex-row md:gap-4 md:items-center lg:justify-end"
+	class="flex flex-col gap-1 w-full items-stretch justify-center md:flex-row lg:gap-4 md:gap-2 md:items-center lg:justify-end"
 	data-landing-actions
 >
 	<ClipAwareButton

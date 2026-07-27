@@ -78,7 +78,7 @@
 			<span class="landing-title-second inline-block">{titleLines[1]}</span>
 		</div>
 		<div
-			class="landing-detail mx-auto mt-2 flex h-auto min-h-[var(--landing-detail-height)] w-full justify-center lg:mt-0 md:h-[var(--landing-detail-height)] lg:justify-end"
+			class="landing-detail mx-auto mt-1 flex h-auto min-h-[var(--landing-detail-height)] w-full justify-center lg:mt-0 md:h-[var(--landing-detail-height)] lg:justify-end"
 			data-landing-detail-grid
 		>
 			{#if actions}
