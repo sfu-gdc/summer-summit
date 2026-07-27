@@ -1,0 +1,171 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { enhancedImages } from '@sveltejs/enhanced-img';
+import { sveltekit } from '@sveltejs/kit/vite';
+import UnoCSS from 'unocss/vite';
+import Unfonts from 'unplugin-fonts/vite';
+import devtoolsJson from 'vite-plugin-devtools-json';
+import { playwright } from '@vitest/browser-playwright';
+import { defineConfig } from 'vitest/config';
+
+import svkitCfgFn from './svelte.config.ts';
+
+const dirname =
+	typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+
+// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
+export default defineConfig((env) => {
+	const svkitCfg = svkitCfgFn(env);
+
+	return {
+		plugins: [
+			devtoolsJson(),
+			UnoCSS(
+				env.command === 'serve'
+					? {
+							// UnoCSS doesn't pick up new classes automatically on HMR for some reason
+							content: {
+								filesystem: ['src/**/*.{svelte,mdx}'],
+							},
+						}
+					: undefined,
+			),
+			enhancedImages(),
+			sveltekit({
+				...Object.fromEntries(Object.entries(svkitCfg).filter(([key]) => key !== 'kit')),
+				...svkitCfg.kit,
+			}),
+			Unfonts({
+				inlineFontFace: true,
+				custom: {
+					preload: false,
+					display: 'swap',
+					families: [
+						{
+							name: 'PP Neue Montreal',
+							local: 'PP Neue Montreal',
+							src: './src/lib/assets/fonts/body/*.woff2',
+							fallback: {
+								category: 'sans-serif',
+							},
+							transform(font) {
+								const match = /^([A-Za-z]+)-(\d+)$/.exec(font.basename);
+								if (!match) return null;
+
+								const [, subfamily, weight] = match;
+								if (subfamily === undefined || weight === undefined) return null;
+
+								return {
+									...font,
+									weight: Number(weight),
+									style: subfamily.endsWith('Italic') ? 'italic' : 'normal',
+								};
+							},
+						},
+					],
+				},
+				fontsource: {
+					families: [
+						{
+							name: 'Redaction 35',
+							weights: [400, 700],
+							styles: ['normal'],
+						},
+						{
+							name: 'Redaction 50',
+							weights: [400, 700],
+							styles: ['normal'],
+						},
+					],
+				},
+			}),
+		],
+		define: {
+			// Allow vite to strip out tests in production
+			'import.meta.vitest': 'undefined',
+		},
+		test: {
+			includeSource: ['src/**/*.{js,ts}'],
+			expect: {
+				requireAssertions: true,
+			},
+			projects: [
+				{
+					extends: './vite.config.ts',
+					test: {
+						name: 'client',
+						browser: {
+							enabled: true,
+							provider: playwright(),
+							instances: [
+								{
+									browser: 'chromium',
+									headless: true,
+								},
+							],
+						},
+						include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+						exclude: ['src/lib/server/**'],
+					},
+				},
+				// Playwright's Windows WebKit port lacks OffscreenCanvas, so scope WebKit coverage to DOM/SVG clipping.
+				{
+					extends: './vite.config.ts',
+					test: {
+						name: 'webkit-puddle-clip',
+						sequence: { groupOrder: 1 },
+						browser: {
+							enabled: true,
+							provider: playwright(),
+							instances: [
+								{
+									browser: 'webkit',
+									headless: true,
+								},
+							],
+						},
+						include: ['src/lib/Puddle/tests/Puddle.clip.svelte.test.ts'],
+					},
+				},
+				{
+					extends: './vite.config.ts',
+					test: {
+						name: 'server',
+						environment: 'node',
+						include: ['src/**/*.{test,spec}.{js,ts}'],
+						exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+					},
+				},
+				{
+					extends: true,
+					plugins: [
+						// The plugin will run tests for the stories defined in your Storybook config
+						// See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+						storybookTest({
+							configDir: path.join(dirname, '.storybook'),
+						}),
+					],
+					test: {
+						name: 'storybook',
+						browser: {
+							enabled: true,
+							headless: true,
+							provider: playwright(),
+							// Vitest's default 63315 sits in Windows' ephemeral range, which
+							// Hyper-V/WinNat reserves in shifting blocks -> intermittent EACCES.
+							// Pin a fixed port below 49152 on IPv4. (vitest #9035)
+							api: { host: '127.0.0.1', port: 7357 },
+							instances: [
+								{
+									browser: 'chromium',
+								},
+							],
+						},
+					},
+				},
+			],
+		},
+	};
+});

@@ -1,0 +1,25 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "summer-summit",
+	"compatibility_date": "2026-06-16",
+	"compatibility_flags": ["nodejs_compat", "nodejs_als"],
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare",
+	},
+	"workers_dev": true,
+	"preview_urls": true,
+	"observability": {
+		"enabled": true,
+	},
+	"routes": [
+		{
+			"pattern": "summersummit.dev",
+			"custom_domain": true,
+		},
+	],
+	"build": {
+		"command": "pnpm run build",
+	},
+}
