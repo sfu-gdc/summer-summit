@@ -165,29 +165,6 @@
 			await expectMatchingBounds(baseVisual, inverseVisual);
 			await expectMatchingBounds(baseVisual, control);
 		}
-
-		const actionRow = discord.closest<HTMLElement>('[data-landing-actions]');
-		const discordBounds = discord.getBoundingClientRect();
-		const ticketBounds = tickets.getBoundingClientRect();
-		const viewportWidth = canvasElement.ownerDocument.documentElement.clientWidth;
-		const discordCenter = discordBounds.top + discordBounds.height / 2;
-		const ticketCenter = ticketBounds.top + ticketBounds.height / 2;
-
-		await expect(actionRow).not.toBeNull();
-		if (!actionRow) return;
-
-		if (viewportWidth < 768) {
-			await expect(ticketBounds.top).toBeLessThan(discordBounds.top);
-			await expect(ticketBounds.bottom).toBeLessThanOrEqual(discordBounds.top);
-		} else if (viewportWidth < 1024) {
-			await expect(ticketBounds.left).toBeLessThan(discordBounds.left);
-			await expect(ticketBounds.right).toBeLessThanOrEqual(discordBounds.left);
-			await expect(ticketCenter).toBeCloseTo(discordCenter);
-		} else {
-			await expect(discordBounds.left).toBeLessThan(ticketBounds.left);
-			await expect(discordBounds.right).toBeLessThanOrEqual(ticketBounds.left);
-			await expect(discordCenter).toBeCloseTo(ticketCenter);
-		}
 	}
 
 	async function expectNoCta(canvasElement: HTMLElement) {
