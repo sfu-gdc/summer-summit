@@ -14,9 +14,6 @@ import { presetBrandColors } from './src/lib/theme/presetBrandColors';
 import { brandColors, brandColorValues, fonts } from './src/lib/tokens';
 
 export default defineConfig({
-	content: {
-		filesystem: ['src/**/*.{svelte,mdx}'],
-	},
 	presets: [
 		presetWind4({
 			preflights: {
