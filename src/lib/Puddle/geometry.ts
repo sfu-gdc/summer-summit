@@ -10,6 +10,7 @@ export interface PuddleGeometry {
 	readonly height: number;
 	readonly cols: number;
 	readonly rows: number;
+	readonly cellSize: number;
 	readonly ready: boolean;
 	readonly viewBox: string;
 	readonly clipTransform: string;
@@ -42,6 +43,7 @@ export function resolvePuddleGeometry(
 		height: measuredHeight,
 		cols,
 		rows,
+		cellSize: cell,
 		ready: cols > 0 && rows > 0,
 		viewBox: `0 0 ${safeCols.toString()} ${safeRows.toString()}`,
 		clipTransform: `scale(${(1 / safeCols).toString()} ${(1 / safeRows).toString()})`,

@@ -84,6 +84,11 @@ export class Engine {
 		return this.resources.height().data;
 	}
 
+	flux(): { readonly fx: ArrayLike<number>; readonly fy: ArrayLike<number> } {
+		const { fx, fy } = this.resources.currentFlux();
+		return { fx, fy };
+	}
+
 	totalMass(): number {
 		return this.resources.stats().mass;
 	}
@@ -178,6 +183,14 @@ export class Engine {
 
 	reset(): void {
 		this.resources.reset(this.initialHeight);
+		this.rng = createRng(this.seed);
+		this.simClock = 0;
+		this.accumulatedTime = 0;
+		this.emittedUpTo = 0;
+	}
+
+	loadHeight(height: ArrayLike<number>): void {
+		this.resources.loadHeight(height);
 		this.rng = createRng(this.seed);
 		this.simClock = 0;
 		this.accumulatedTime = 0;

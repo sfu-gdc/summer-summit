@@ -117,6 +117,22 @@ export class Resources {
 		for (const { data } of this.scaleBuffers) data.fill(0);
 	}
 
+	loadHeight(height: ArrayLike<number>): void {
+		if (height.length !== this.grid.nx * this.grid.ny) {
+			throw new Error('Snapshot depth dimensions do not match the simulation grid');
+		}
+		this.currentBufferIndices.height = 0;
+		this.currentBufferIndices.flux = 0;
+		this.currentBufferIndices.scale = 0;
+		this.heightBuffers[0].data.set(height);
+		this.heightBuffers[1].data.fill(0);
+		for (const { fx, fy } of this.fluxBuffers) {
+			fx.fill(0);
+			fy.fill(0);
+		}
+		for (const { data } of this.scaleBuffers) data.fill(0);
+	}
+
 	private static selectBuffer<T>(buffers: BufferPair<T>, currentIndex: 0 | 1, side: BufferSide): T {
 		return buffers[side === 'current' ? currentIndex : currentIndex === 0 ? 1 : 0];
 	}
