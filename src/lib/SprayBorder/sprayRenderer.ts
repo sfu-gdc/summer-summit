@@ -39,7 +39,8 @@ const float MIN_EDGE_AA_PX           = 0.75; // floor on a dot's anti-aliased ri
 const float CORE_EDGE_INSET          = 2.5;  // core/band boundary pulled this far inside the SDF (css px in) edge
 const float FALLOFF_EXPONENT         = 6.0;  // how steeply dot-survival odds drop across the band
 const float CLUMP_SCALE_CSS_PX       = 10.0; // feature size of spray clumps along the edge
-const float CLUMP_AMP_CSS_PX         = 1.8;  // how far clumps push the rough solid edge in/out
+const float CORE_ROUGHNESS_AMP_CSS_PX = 0.5; // subtle variation in the solid silhouette
+const float SPRAY_CLUMP_AMP_CSS_PX    = 1.2; // stronger variation in fleck survival
 const float SOLID_RIM_CSS_PX         = 1.4;  // mean overshoot of the rough solid edge past the box edge
 const float EDGE_RECESS_CAP_CSS_PX   = 0.3;  // clumps bulge freely outward but barely recess inward
 const float SOLID_FADE_CSS_PX        = 0.75; // thin density floor sealing pinholes right at the rough edge
@@ -82,16 +83,15 @@ void main(){
   float distToCore = sdRoundedBox(pixel - boxCenter, uCoreHalfSize, uRadius); // <0 inside core
 
   float coreEdge = -CORE_EDGE_INSET * (uResolution.y / (uCoreHalfSize.y * 2.0 + uSpread * 2.0));
-  // The solid core's edge is not the clean SDF rect: clump noise pushes it in and
-  // out so the silhouette bulges organically, like paint pooling at the edge.
-  // The stipple dots then only have to fray this rough edge, not fill a band.
-  float edgeNoise = max(
-    (vnoise((pixel + seedShift) / (CLUMP_SCALE_CSS_PX * uDpr)) - 0.5) * 2.0 * CLUMP_AMP_CSS_PX * uDpr
+  // Keep the solid silhouette restrained while the surrounding flecks retain
+  // stronger clumping from the same noise field.
+  float coreEdgeNoise = max(
+    (vnoise((pixel + seedShift) / (CLUMP_SCALE_CSS_PX * uDpr)) - 0.5) * 2.0 * CORE_ROUGHNESS_AMP_CSS_PX * uDpr
       + SOLID_RIM_CSS_PX * uDpr,
     -EDGE_RECESS_CAP_CSS_PX * uDpr);
-  float roughDist = distToCore - edgeNoise;                            // 0 at the rough solid edge
-  if(roughDist <= coreEdge){ fragColor = vec4(uColor, 1.0); return; }  // rough solid core
-  if(distToCore >  uSpread) discard;                                   // beyond the band
+  float coreRoughDist = distToCore - coreEdgeNoise;                           // 0 at the rough solid edge
+  if(coreRoughDist <= coreEdge){ fragColor = vec4(uColor, 1.0); return; }      // rough solid core
+  if(distToCore > uSpread) discard;                                           // beyond the band
 
   // Stipple: lay a jittered grid over the band; each cell holds several
   // candidate round dots of a fixed small size. Each dot survives with a
@@ -115,17 +115,21 @@ void main(){
         float dotCore   = sdRoundedBox(dotPixel - boxCenter, uCoreHalfSize, uRadius);
         if(dotCore > uSpread) continue;
 
-        // Steep falloff measured from the ROUGH edge, so the fringe density tracks
-        // the bulging silhouette: dots pack against every bulge and recession alike,
-        // and thin out into stray specks toward the spread limit.
-        float dotNoise = max(
-          (vnoise((dotPixel + seedShift) / (CLUMP_SCALE_CSS_PX * uDpr)) - 0.5) * 2.0 * CLUMP_AMP_CSS_PX * uDpr
-            + SOLID_RIM_CSS_PX * uDpr,
+        float dotNoiseSample = (vnoise((dotPixel + seedShift) / (CLUMP_SCALE_CSS_PX * uDpr)) - 0.5) * 2.0;
+        float dotCoreEdgeNoise = max(
+          dotNoiseSample * CORE_ROUGHNESS_AMP_CSS_PX * uDpr + SOLID_RIM_CSS_PX * uDpr,
           -EDGE_RECESS_CAP_CSS_PX * uDpr);
-        float dotRough = dotCore - dotNoise;
+        float dotCoreRough = dotCore - dotCoreEdgeNoise;
         float maxDotRadius = (DOT_RADIUS_MIN_CSS_PX + DOT_RADIUS_JITTER_CSS_PX) * DOT_SCALE_NEAR * uDpr;
-        if(dotRough <= coreEdge - maxDotRadius) continue; // fully hidden under the solid
-        float bandPos  = clamp((dotRough - coreEdge) / (uSpread - coreEdge), 0.0, 1.0);
+        if(dotCoreRough <= coreEdge - maxDotRadius) continue; // fully hidden under the solid
+
+        // Survival follows stronger clumps than the solid edge, keeping the spray
+        // organic without transferring that waviness to the core silhouette.
+        float dotSprayEdgeNoise = max(
+          dotNoiseSample * SPRAY_CLUMP_AMP_CSS_PX * uDpr + SOLID_RIM_CSS_PX * uDpr,
+          -EDGE_RECESS_CAP_CSS_PX * uDpr);
+        float dotSprayRough = dotCore - dotSprayEdgeNoise;
+        float bandPos  = clamp((dotSprayRough - coreEdge) / (uSpread - coreEdge), 0.0, 1.0);
         float keepProb = pow(1.0 - bandPos, FALLOFF_EXPONENT) * uDensity * BASE_DENSITY;
         if(hash(id + SURVIVAL_DRAW_SALT) > keepProb) continue; // this dot didn't survive
 
@@ -143,7 +147,7 @@ void main(){
   // Density floor: the stipple alone tops out well below full coverage, which
   // would let the crisp silhouette of the rough core read through the fringe.
   // Ramp from full alpha at the rough edge so the gradient truly starts solid.
-  cover = max(cover, 1.0 - smoothstep(coreEdge, coreEdge + SOLID_FADE_CSS_PX * uDpr, roughDist));
+  cover = max(cover, 1.0 - smoothstep(coreEdge, coreEdge + SOLID_FADE_CSS_PX * uDpr, coreRoughDist));
 
   if(cover <= 0.0) discard;
   fragColor = vec4(uColor, cover);

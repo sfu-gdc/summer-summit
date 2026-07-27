@@ -30,7 +30,7 @@
 		checkerSize = 8.72,
 		pixelSize = 1,
 		seed = 7,
-		opacity = 0.03,
+		opacity = 0.05,
 		maxErosion = 0.65,
 		falloff = 3.5,
 		class: className,
@@ -65,7 +65,7 @@
 </script>
 
 <canvas
-	class={['block h-full w-full pointer-events-none', className]}
+	class={['size-full pointer-events-none', className]}
 	style:opacity={Math.min(Math.max(opacity, 0), 1)}
 	aria-hidden="true"
 	bind:clientWidth={width}

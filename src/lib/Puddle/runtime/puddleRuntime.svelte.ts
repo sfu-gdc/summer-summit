@@ -51,6 +51,7 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 	);
 	const sim = $derived.by(() => {
 		if (!browser || !geometry.ready) return null;
+		// TODO(next milestone): preserve sim state across prop updates before scroll-driving fluid level.
 		return createPuddleSimulation(geometry, options.getSimulationOptions());
 	});
 

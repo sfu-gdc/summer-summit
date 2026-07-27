@@ -146,11 +146,11 @@
 {#snippet template(args: Args)}
 	{@const terrain = renderTerrainDepth(args)}
 	<div
-		class="bg-[var(--story-background-color)] h-screen w-screen relative overflow-hidden"
+		class="bg-[var(--story-background-color)] size-screen relative overflow-hidden"
 		style:--story-background-color={args.backgroundColor}
 	>
 		<svg
-			class="h-full w-full block [shape-rendering:crispEdges]"
+			class="size-full [shape-rendering:crispEdges]"
 			viewBox={`0 0 ${terrain.columns.toString()} ${terrain.rows.toString()}`}
 			preserveAspectRatio="none"
 			data-terrain-depth

@@ -22,7 +22,16 @@ export default defineConfig((env) => {
 	return {
 		plugins: [
 			devtoolsJson(),
-			UnoCSS(),
+			UnoCSS(
+				env.command === 'serve'
+					? {
+							// UnoCSS doesn't pick up new classes automatically on HMR for some reason
+							content: {
+								filesystem: ['src/**/*.{svelte,mdx}'],
+							},
+						}
+					: undefined,
+			),
 			enhancedImages(),
 			sveltekit({
 				...Object.fromEntries(Object.entries(svkitCfg).filter(([key]) => key !== 'kit')),
