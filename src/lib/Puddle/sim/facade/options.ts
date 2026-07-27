@@ -1,5 +1,6 @@
 import type { IntegratorId } from '../integrators';
 import type { ParamOverrides } from '../params';
+import type { WorldTerrainOptions } from '../terrain';
 
 export interface WaterSimOptions extends ParamOverrides {
 	nx: number;
@@ -21,6 +22,8 @@ export interface WaterSimOptions extends ParamOverrides {
 	minDim?: number;
 	/** Grid dimension ceiling the nx/ny inputs are clamped to (guards against a giant grid). */
 	maxDim?: number;
+	/** Stable, centered CSS-pixel terrain domain used by portable snapshots. */
+	worldTerrain?: WorldTerrainOptions;
 }
 
 export const MIN_DIM = 4;

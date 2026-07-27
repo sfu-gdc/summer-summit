@@ -30,3 +30,4 @@ export {
 export { default as Puddle } from './Puddle/Puddle.svelte';
 export { requestDeviceGravityPermission, type DeviceGravityPermission } from './Puddle/device';
 export { default as SprayBorder } from './SprayBorder/SprayBorder.svelte';
+export { default as Head } from './Head.svelte';

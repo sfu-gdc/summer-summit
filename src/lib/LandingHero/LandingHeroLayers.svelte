@@ -6,6 +6,7 @@
 	import type { LandingHeroNavItem } from './types';
 
 	interface Props {
+		layer?: 'base' | 'inverse' | 'both';
 		titleLines: readonly [string, string];
 		dateLabel: string;
 		organizerLabel: string;
@@ -15,6 +16,7 @@
 	}
 
 	let {
+		layer = 'both',
 		titleLines,
 		dateLabel,
 		organizerLabel,
@@ -24,31 +26,35 @@
 	}: Props = $props();
 </script>
 
-<div class="content-layer inset-0 absolute" data-hero-content data-landing-layer="base">
-	<LandingHeroContent
-		layer="base"
-		{titleLines}
-		{dateLabel}
-		{organizerLabel}
-		{locationLabel}
-		{navItems}
-		{actions}
-	/>
-</div>
-<div
-	aria-hidden="true"
-	class="content-layer inverse-content-layer pointer-events-none [clip-path:var(--puddle-clip)] inset-0 absolute"
-	data-hero-content-overlay
-	data-landing-layer="inverse"
-	inert
->
-	<LandingHeroContent
-		layer="inverse"
-		{titleLines}
-		{dateLabel}
-		{organizerLabel}
-		{locationLabel}
-		{navItems}
-		{actions}
-	/>
-</div>
+{#if layer === 'base' || layer === 'both'}
+	<div class="content-layer inset-0 absolute" data-hero-content data-landing-layer="base">
+		<LandingHeroContent
+			layer="base"
+			{titleLines}
+			{dateLabel}
+			{organizerLabel}
+			{locationLabel}
+			{navItems}
+			{actions}
+		/>
+	</div>
+{/if}
+{#if layer === 'inverse' || layer === 'both'}
+	<div
+		aria-hidden="true"
+		class="content-layer inverse-content-layer pointer-events-none inset-0 absolute"
+		data-hero-content-overlay
+		data-landing-layer="inverse"
+		inert
+	>
+		<LandingHeroContent
+			layer="inverse"
+			{titleLines}
+			{dateLabel}
+			{organizerLabel}
+			{locationLabel}
+			{navItems}
+			{actions}
+		/>
+	</div>
+{/if}

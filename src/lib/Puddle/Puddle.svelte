@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { formatCss } from 'culori';
 
+	import { asset } from '$app/paths';
+
 	import { PUDDLE_DEFAULTS, type PuddleProps } from './config';
+	import { PUDDLE_SNAPSHOTS } from './generated/puddleSnapshots';
 	import { createPuddleRuntime } from './runtime/puddleRuntime.svelte';
 
 	const {
@@ -38,20 +41,28 @@
 		deviceGravity = PUDDLE_DEFAULTS.deviceGravity,
 		deviceTilt = PUDDLE_DEFAULTS.deviceTilt,
 		deviceEase = PUDDLE_DEFAULTS.deviceEase,
+		snapshot = 'default',
+		responsiveSnapshots = false,
+		clippedChildren,
 		class: className,
 		children,
 		...rest
 	}: PuddleProps = $props();
 
 	const cssColor = $derived(typeof color === 'string' ? color : formatCss(color));
+	const initialSnapshot = $derived(PUDDLE_SNAPSHOTS[snapshot]);
 
 	const instanceId = $props.id();
 	const shapeId = `${instanceId}-puddle-shape`;
 	const clipId = `${instanceId}-puddle-clip`;
-	// Full-host descendant overlays can reuse the silhouette with `clip-path: var(--puddle-clip)`.
 	const clipUrl = `url("#${clipId}")`;
+	const responsiveSnapshotNames = ['compact', 'medium', 'expanded', 'large'] as const;
+	const staticShapeId = (name: (typeof responsiveSnapshotNames)[number]) =>
+		`${instanceId}-puddle-static-${name}-shape`;
 
 	const runtime = createPuddleRuntime({
+		getInitialSnapshot: () => initialSnapshot,
+		getSnapshotUrl: () => asset(initialSnapshot.url),
 		getGeometryOptions: () => ({ cellSize, maxCells }),
 		getSimulationOptions: () => ({
 			seed,
@@ -100,11 +111,20 @@
 
 <div
 	bind:this={runtime.host}
-	class={['relative isolate', className]}
+	class={['relative isolate', { 'responsive-puddle': responsiveSnapshots }, className]}
 	{...rest}
 	data-puddle-host
+	data-puddle-live={runtime.live ? true : undefined}
 	style:--puddle-color={cssColor}
-	style:--puddle-clip={clipUrl}
+	style:--puddle-clip={runtime.live
+		? clipUrl
+		: responsiveSnapshots
+			? undefined
+			: PUDDLE_SNAPSHOTS[snapshot].clip}
+	style:--puddle-clip-compact={PUDDLE_SNAPSHOTS.compact.clip}
+	style:--puddle-clip-medium={PUDDLE_SNAPSHOTS.medium.clip}
+	style:--puddle-clip-expanded={PUDDLE_SNAPSHOTS.expanded.clip}
+	style:--puddle-clip-large={PUDDLE_SNAPSHOTS.large.clip}
 >
 	<div
 		class={[
@@ -115,23 +135,127 @@
 		aria-hidden="true"
 	></div>
 	<svg
-		class="h-full w-full block pointer-events-none [shape-rendering:crispEdges] inset-0 absolute -z-1"
+		x="0"
+		y="0"
+		width="100%"
+		height="100%"
+		class="puddle-live h-full w-full block pointer-events-none [shape-rendering:crispEdges] inset-0 absolute -z-1"
 		data-puddle-renderer
-		viewBox={runtime.viewBox}
-		preserveAspectRatio="none"
+		data-puddle-cols={runtime.cols}
+		data-puddle-rows={runtime.rows}
+		data-puddle-cell-size={runtime.cellSize}
 		aria-hidden="true"
 	>
 		<defs>
-			<clipPath id={clipId} clipPathUnits="objectBoundingBox">
-				<use href={`#${shapeId}`} transform={runtime.clipTransform}></use>
+			<path
+				id={shapeId}
+				d={runtime.path}
+				class="fill-[var(--puddle-color,#141414)]"
+				data-puddle-shape
+			></path>
+			<clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+				<path d={runtime.path} transform={runtime.clipTransform} data-puddle-clip-shape></path>
 			</clipPath>
 		</defs>
-		<path
-			bind:this={runtime.shape}
-			id={shapeId}
+		<use
+			href={`#${shapeId}`}
+			style:transform={runtime.centerTransform}
+			style:transform-box="view-box"
 			class="fill-[var(--puddle-color,#141414)]"
-			data-puddle-shape
-		></path>
+			data-puddle-visible-shape
+		></use>
 	</svg>
+	{#if responsiveSnapshots}
+		{#each responsiveSnapshotNames as name (name)}
+			{@const staticSnapshot = PUDDLE_SNAPSHOTS[name]}
+			{@const staticTransform = `translate(50%, 50%) translate(${((-staticSnapshot.nx * staticSnapshot.cellSize) / 2).toString()}px, ${((-staticSnapshot.ny * staticSnapshot.cellSize) / 2).toString()}px)`}
+			<svg
+				class={`puddle-static puddle-static-${name} h-full w-full pointer-events-none [shape-rendering:crispEdges] inset-0 absolute -z-1`}
+				data-puddle-static-profile={name}
+				aria-hidden="true"
+			>
+				<defs>
+					<path id={staticShapeId(name)} d={staticSnapshot.path}></path>
+				</defs>
+				<use
+					href={`#${staticShapeId(name)}`}
+					style:transform={staticTransform}
+					style:transform-box="view-box"
+					class="fill-[var(--puddle-color,#141414)]"
+					data-puddle-static-visible
+				></use>
+			</svg>
+		{/each}
+	{/if}
 	{@render children?.()}
+	{#if clippedChildren}
+		<div
+			class="puddle-clipped pointer-events-none [clip-path:var(--puddle-clip)] inset-0 absolute"
+			style:clip-path="var(--puddle-clip)"
+			data-puddle-clipped-content
+		>
+			{@render clippedChildren()}
+		</div>
+	{/if}
 </div>
+
+<style>
+	.responsive-puddle {
+		--puddle-clip: var(--puddle-clip-compact);
+	}
+
+	.puddle-static {
+		display: none;
+	}
+
+	.responsive-puddle:not([data-puddle-live]) .puddle-live,
+	.responsive-puddle[data-puddle-live] .puddle-static {
+		display: none;
+	}
+
+	.responsive-puddle:not([data-puddle-live]) .puddle-static-compact {
+		display: block;
+	}
+
+	@media (min-width: 48rem) {
+		.responsive-puddle {
+			--puddle-clip: var(--puddle-clip-medium);
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-compact {
+			display: none;
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-medium {
+			display: block;
+		}
+	}
+
+	@media (min-width: 64rem) {
+		.responsive-puddle {
+			--puddle-clip: var(--puddle-clip-expanded);
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-medium {
+			display: none;
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-expanded {
+			display: block;
+		}
+	}
+
+	@media (min-width: 96rem) {
+		.responsive-puddle {
+			--puddle-clip: var(--puddle-clip-large);
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-expanded {
+			display: none;
+		}
+
+		.responsive-puddle:not([data-puddle-live]) .puddle-static-large {
+			display: block;
+		}
+	}
+</style>

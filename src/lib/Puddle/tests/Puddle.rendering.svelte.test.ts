@@ -61,41 +61,77 @@ test('uses one canonical CSS color variable for the SVG and fallback', async () 
 	expect(host?.style.getPropertyValue('--puddle-color')).toBe('color(display-p3 1 0 0)');
 });
 
-test('reuses the responsive SVG shape as an inherited normalized clip', async () => {
+test('keeps the apparent cell size stable when the measured grid changes', async () => {
 	await render(Puddle, {
-		props: { animated: false, style: 'width:760px;height:420px;' },
+		props: { animated: false, cellSize: 19, style: 'width:380px;height:228px;' },
 	});
 	const host = document.querySelector<HTMLElement>('[data-puddle-host]');
 	const svg = document.querySelector<SVGSVGElement>('svg[data-puddle-renderer]');
 	const path = svg?.querySelector<SVGPathElement>('path[data-puddle-shape]');
-	const clip = svg?.querySelector<SVGClipPathElement>('clipPath');
-	const use = clip?.querySelector<SVGUseElement>('use');
 	expect(host).not.toBeNull();
 	expect(svg).not.toBeNull();
 	expect(path).not.toBeNull();
-	expect(clip).not.toBeNull();
-	expect(use).not.toBeNull();
-	if (!host || !svg || !path || !clip || !use) return;
+	if (!host || !svg || !path) return;
 
-	expect(svg.getAttribute('preserveAspectRatio')).toBe('none');
-	expect(clip.getAttribute('clipPathUnits')).toBe('objectBoundingBox');
-	expect(use.getAttribute('href')).toBe(`#${path.id}`);
-	expect(use.getAttribute('transform')).toBe(
-		`scale(${(1 / svg.viewBox.baseVal.width).toString()} ${(1 / svg.viewBox.baseVal.height).toString()})`,
+	await expect.poll(() => host.hasAttribute('data-puddle-live'), { timeout: 10_000 }).toBe(true);
+	const beforeRows = Number(svg.dataset['puddleRows']);
+	const beforeTransform = svg.querySelector<SVGUseElement>('[data-puddle-visible-shape]')?.style
+		.transform;
+	host.style.setProperty('height', '456px');
+
+	await expect
+		.poll(() => Number(svg.dataset['puddleRows']), { timeout: 10_000 })
+		.toBeGreaterThan(beforeRows);
+	expect(Number(svg.dataset['puddleCellSize'])).toBe(19);
+	expect(path.getAttribute('d')).toMatch(/v19h-/);
+	expect(svg.querySelector<SVGUseElement>('[data-puddle-visible-shape]')?.style.transform).not.toBe(
+		beforeTransform,
 	);
-	const clipValue = host.style.getPropertyValue('--puddle-clip');
-	expect(clipValue).toContain(`#${clip.id}`);
-	expect(getComputedStyle(path).getPropertyValue('--puddle-clip')).toContain(`#${clip.id}`);
+}, 20_000);
+
+test('clips every responsive snapshot in centered CSS-pixel space', async () => {
+	await render(Puddle, {
+		props: {
+			animated: false,
+			responsiveSnapshots: true,
+			style: 'width:400px;height:800px;',
+		},
+	});
+	const host = document.querySelector<HTMLElement>('[data-puddle-host]');
+	expect(host).not.toBeNull();
+	if (!host) return;
+	host.style.position = 'fixed';
+	host.style.inset = '0 auto auto 0';
+	const overlay = document.createElement('div');
+	overlay.style.cssText =
+		'position:absolute;inset:0;z-index:1000;pointer-events:auto;background:red;';
+	host.append(overlay);
+	const rect = host.getBoundingClientRect();
+
+	for (const name of ['compact', 'medium', 'expanded', 'large']) {
+		const svg = host.querySelector<SVGSVGElement>(`[data-puddle-static-profile="${name}"]`);
+		const visibleUse = svg?.querySelector<SVGUseElement>('[data-puddle-static-visible]');
+		expect(svg).not.toBeNull();
+		expect(visibleUse).not.toBeNull();
+		if (!svg || !visibleUse) continue;
+
+		expect(visibleUse.style.transform).toContain('translate(50%, 50%)');
+		const clipValue = host.style.getPropertyValue(`--puddle-clip-${name}`);
+		expect(clipValue).toMatch(/^shape\(/);
+		expect(CSS.supports('clip-path', clipValue)).toBe(true);
+		overlay.style.clipPath = clipValue;
+		expect(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)).toBe(
+			overlay,
+		);
+		expect(document.elementFromPoint(rect.left + 2, rect.top + 2)).not.toBe(overlay);
+	}
 });
 
-test('uses unique clip and shape IDs for each component instance', async () => {
+test('uses unique shape IDs for each component instance', async () => {
 	await render(Puddle, { props: { animated: false, style: 'width:80px;height:60px;' } });
 	await render(Puddle, { props: { animated: false, style: 'width:80px;height:60px;' } });
 
 	const paths = [...document.querySelectorAll<SVGPathElement>('path[data-puddle-shape]')];
-	const clips = [...document.querySelectorAll<SVGClipPathElement>('clipPath')];
 	expect(paths).toHaveLength(2);
-	expect(clips).toHaveLength(2);
 	expect(new Set(paths.map((path) => path.id)).size).toBe(2);
-	expect(new Set(clips.map((clip) => clip.id)).size).toBe(2);
 });

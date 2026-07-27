@@ -1,11 +1,25 @@
 import { expect, test, vi } from 'vitest';
 
-import { createPuddleRenderer, puddlePath } from './puddleRenderer';
+import { createPuddleRenderer, puddleClipShape, puddlePath } from './puddleRenderer';
 
 test('compacts adjacent wet cells into horizontal rectangular runs', () => {
 	expect(puddlePath([1, 1, 0, 1, 0, 0, 1, 1, 1, 0], 5, 2)).toBe(
 		'M0 0h2v1h-2zM3 0h1v1h-1zM1 1h3v1h-3z',
 	);
+});
+
+test('scales every run into stable CSS-pixel cells', () => {
+	expect(puddlePath([0, 1, 1, 0], 4, 1, 18)).toBe('M18 0h36v18h-36z');
+});
+
+test('centers CSS-pixel runs relative to the clip reference box', () => {
+	const clip = puddleClipShape([0, 1, 1, 0], 4, 1, 18);
+
+	expect(clip).toBe(
+		'shape(from calc(50% - 18px) calc(50% - 9px),hline by 36px,vline by 18px,hline by -36px,close)',
+	);
+	expect(CSS.supports('clip-path', clip)).toBe(true);
+	expect(puddleClipShape([0, 0], 2, 1, 18)).toBe('inset(50%)');
 });
 
 test('only updates the path when the binary mask or target changes', () => {

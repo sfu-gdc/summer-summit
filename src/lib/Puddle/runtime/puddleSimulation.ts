@@ -28,7 +28,7 @@ type PuddleSimulationProp =
 export type PuddleSimulationOptions = Required<Pick<PuddleProps, PuddleSimulationProp>>;
 
 export function createPuddleSimulation(
-	geometry: Pick<PuddleGeometry, 'width' | 'height' | 'cols' | 'rows'>,
+	geometry: Pick<PuddleGeometry, 'width' | 'height' | 'cols' | 'rows' | 'cellSize'>,
 	options: PuddleSimulationOptions,
 ): WaterSim {
 	return createWaterSim({
@@ -56,6 +56,12 @@ export function createPuddleSimulation(
 			intervalSec: options.rainInterval,
 			amount: options.rainAmount,
 			radius: options.rainRadius,
+		},
+		worldTerrain: {
+			cellSize: geometry.cellSize,
+			bowlWidth: options.bowlWidth,
+			bowlHeight: options.bowlHeight,
+			bowlRim: options.bowlRim,
 		},
 	});
 }

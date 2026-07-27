@@ -34,7 +34,7 @@ export function createWaterSimConfig(
 	};
 	const seed = finiteOrFallback(options.seed, 7);
 	const params = resolveParams({ ...SIM_DEFAULTS, ...options });
-	const terrain = makeTerrain(grid, params, seed);
+	const terrain = makeTerrain(grid, params, seed, options.worldTerrain);
 	const integrator = integrators[options.integrator ?? SIM_DEFAULTS.integrator];
 	const baseGravity =
 		(options.gravityDrift ?? SIM_DEFAULTS.gravityDrift)

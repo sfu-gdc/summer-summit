@@ -110,6 +110,25 @@ export default defineConfig((env) => {
 						exclude: ['src/lib/server/**'],
 					},
 				},
+				// Playwright's Windows WebKit port lacks OffscreenCanvas, so scope WebKit coverage to DOM/SVG clipping.
+				{
+					extends: './vite.config.ts',
+					test: {
+						name: 'webkit-puddle-clip',
+						sequence: { groupOrder: 1 },
+						browser: {
+							enabled: true,
+							provider: playwright(),
+							instances: [
+								{
+									browser: 'webkit',
+									headless: true,
+								},
+							],
+						},
+						include: ['src/lib/Puddle/tests/Puddle.clip.svelte.test.ts'],
+					},
+				},
 				{
 					extends: './vite.config.ts',
 					test: {

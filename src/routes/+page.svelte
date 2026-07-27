@@ -1,14 +1,8 @@
 <script lang="ts">
-	import { LandingHero } from '$lib';
+	import { LandingHero, Head } from '$lib';
 </script>
 
-<svelte:head>
-	<title>Summer Summit Game Jam 2026</title>
-	<meta
-		name="description"
-		content="Summer Summit Game Jam 2026 runs September 4–6 at SFU Burnaby Campus, presented by Game Dev Club and IATSU."
-	/>
-</svelte:head>
+<Head />
 
 <LandingHero
 	titleLines={['SUMMER SUMMIT', 'GAME JAM 2026']}

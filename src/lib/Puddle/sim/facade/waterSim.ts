@@ -30,6 +30,10 @@ export class WaterSim {
 		return this.engine.height();
 	}
 
+	get flux(): { readonly fx: ArrayLike<number>; readonly fy: ArrayLike<number> } {
+		return this.engine.flux();
+	}
+
 	/** Run substeps to bring poured water to rest (deterministic). */
 	settle(substeps = DEFAULT_SETTLE_SUBSTEPS): void {
 		this.engine.settle(nonnegativeIntegerOrZero(substeps));
@@ -76,6 +80,11 @@ export class WaterSim {
 
 	reset(): void {
 		this.engine.reset();
+	}
+
+	/** Replace depth while resetting flux and clocks; used for portable settled snapshots. */
+	loadHeight(height: ArrayLike<number>): void {
+		this.engine.loadHeight(height);
 	}
 }
 

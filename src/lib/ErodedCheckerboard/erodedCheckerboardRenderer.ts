@@ -199,7 +199,7 @@ export function createErodedCheckerboardRenderer(
 			internalFormat: gl.RGBA8,
 			type: gl.UNSIGNED_BYTE,
 			min: gl.LINEAR,
-			mag: gl.LINEAR,
+			mag: gl.NEAREST,
 			wrap: gl.CLAMP_TO_EDGE,
 		},
 	];
@@ -212,11 +212,10 @@ export function createErodedCheckerboardRenderer(
 			const outputScale = Math.max(options.devicePixelRatio, 1);
 			const resolutionWidth = Math.max(1, Math.round(options.width * outputScale));
 			const resolutionHeight = Math.max(1, Math.round(options.height * outputScale));
-			const desiredSourceScale = outputScale * 2;
 			const sourceScale = Math.max(
 				1,
 				Math.min(
-					desiredSourceScale,
+					outputScale,
 					maxTextureSize / Math.max(options.width, 1),
 					maxTextureSize / Math.max(options.height, 1),
 				),

@@ -3,6 +3,6 @@
 	"compilerOptions": {
 		"lib": ["DOM", "ESNext"],
 		"typeRoots": ["./@types", "./node_modules/@types", "./node_modules"],
-		"types": ["node", "unplugin-fonts/client", "vitest/importMeta"]
+		"types": ["node", "unplugin-fonts/client", "vitest/importMeta", "@sveltejs/enhanced-img"]
 	}
 }

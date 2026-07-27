@@ -7,6 +7,10 @@ import { nextFrame, paintedHalves } from './svg';
 async function waitForPaintedHalves(
 	path: SVGPathElement,
 ): Promise<{ left: number; right: number }> {
+	const host = path.closest<HTMLElement>('[data-puddle-host]');
+	for (let i = 0; i < 120 && !host?.hasAttribute('data-puddle-live'); i++) {
+		await nextFrame();
+	}
 	let halves = { left: 0, right: 0 };
 	for (let i = 0; i < 120; i++) {
 		halves = paintedHalves(path);
@@ -54,7 +58,7 @@ test('followCursor gently leans the puddle toward the pointer', async () => {
 		after = paintedHalves(path);
 	}
 	expect(after.right - after.left).toBeGreaterThan(target);
-});
+}, 30_000);
 
 test('deviceGravity sloshes the puddle using device rotation', async () => {
 	await render(Puddle, {
