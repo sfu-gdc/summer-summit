@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 
 	import LandingHeroContent from './LandingHeroContent.svelte';
+	import type { LandingHeroLayer } from './LandingHeroContent.svelte';
 	import type { LandingHeroNavItem } from './types';
 
 	interface Props {
@@ -10,8 +11,7 @@
 		organizerLabel: string;
 		locationLabel: string;
 		navItems?: readonly LandingHeroNavItem[];
-		baseActions?: Snippet | undefined;
-		inverseActions?: Snippet | undefined;
+		actions?: Snippet<[LandingHeroLayer]> | undefined;
 	}
 
 	let {
@@ -20,8 +20,7 @@
 		organizerLabel,
 		locationLabel,
 		navItems = [],
-		baseActions,
-		inverseActions,
+		actions,
 	}: Props = $props();
 </script>
 
@@ -33,7 +32,7 @@
 		{organizerLabel}
 		{locationLabel}
 		{navItems}
-		cta={baseActions}
+		{actions}
 	/>
 </div>
 <div
@@ -50,6 +49,6 @@
 		{organizerLabel}
 		{locationLabel}
 		{navItems}
-		cta={inverseActions}
+		{actions}
 	/>
 </div>

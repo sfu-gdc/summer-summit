@@ -10,13 +10,17 @@
 	import UnderlineButtonSurface from './UnderlineButtonSurface.svelte';
 
 	export type ClipAwareButtonAppearance = 'primary' | 'secondary' | 'dark' | 'light';
+	export type ClipAwareButtonLayer = 'base' | 'inverse';
 	export type ClipAwareButtonSize = keyof typeof buttonSizes;
 	export type ClipAwareButtonVariant = 'spray' | 'underline';
 
-	export interface ClipAwareButtonLayers {
+	interface ClipAwareButtonLayerSnippets {
 		base: Snippet;
 		inverse: Snippet;
 	}
+
+	/** @deprecated Use two `ClipAwareButton` instances with explicit `layer` props. */
+	export type ClipAwareButtonLayers = ClipAwareButtonLayerSnippets;
 
 	export interface ClipAwareButtonControl {
 		/** Render an anchor when present; otherwise render a button. */
@@ -30,17 +34,12 @@
 		class?: ClassValue | undefined;
 	}
 
-	export interface ClipAwareButtonProps {
-		/**
-		 * Places the paired presentations under one `[data-clip-aware-button]` ancestor.
-		 * The caller owns that state scope so composed layers can remain direct children.
-		 */
-		compose: Snippet<[ClipAwareButtonLayers]>;
+	interface ClipAwareButtonCommonProps {
 		/** Visual treatment outside the puddle. */
 		appearance?: ClipAwareButtonAppearance | undefined;
 		/** Visual treatment inside the puddle. */
 		inverseAppearance?: ClipAwareButtonAppearance | undefined;
-		/** Native-control props. Omit this to render a non-interactive presentation. */
+		/** Native-control props. Inverse layers never render a semantic control. */
 		control?: ClipAwareButtonControl | undefined;
 		icon?: Snippet | undefined;
 		children?: Snippet | undefined;
@@ -49,7 +48,25 @@
 		variant?: ClipAwareButtonVariant | undefined;
 	}
 
+	export type ClipAwareButtonProps = ClipAwareButtonCommonProps &
+		(
+			| {
+					/** Selects the single presentation rendered by this instance. */
+					layer: ClipAwareButtonLayer;
+					compose?: never;
+			  }
+			| {
+					/**
+					 * Places paired presentations under one caller-owned state scope.
+					 * Prefer explicit `base` and `inverse` instances for new compositions.
+					 */
+					compose: Snippet<[ClipAwareButtonLayerSnippets]>;
+					layer?: never;
+			  }
+		);
+
 	let {
+		layer,
 		compose,
 		appearance = 'dark',
 		inverseAppearance = 'light',
@@ -70,6 +87,9 @@
 		...(icon ? { icon } : {}),
 		...(spray !== undefined ? { spray } : {}),
 	});
+	const selectedLayer = $derived(
+		layer === 'base' ? baseLayer : layer === 'inverse' ? inverseLayer : undefined,
+	);
 </script>
 
 {#snippet baseLayer()}
@@ -86,7 +106,7 @@
 				<ButtonSurface {appearance} {children} {icon} presentation {size} {spray} />
 			{/if}
 		</span>
-		{#if control}
+		{#if control && layer !== 'inverse'}
 			{#if control.href != null}
 				<Button
 					{...sharedButtonProps}
@@ -147,7 +167,11 @@
 	</span>
 {/snippet}
 
-{@render compose({ base: baseLayer, inverse: inverseLayer })}
+{#if compose}
+	{@render compose({ base: baseLayer, inverse: inverseLayer })}
+{:else}
+	{@render selectedLayer?.()}
+{/if}
 
 <style>
 	:global(

@@ -1,16 +1,12 @@
 <script module lang="ts">
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import type { ComponentProps, Snippet } from 'svelte';
+	import type { ComponentProps } from 'svelte';
 
 	import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 	import ClipAwareButton from './ClipAwareButton.svelte';
 
-	type Args = ComponentProps<typeof ClipAwareButton>;
-	interface Layers {
-		base: Snippet;
-		inverse: Snippet;
-	}
+	type Args = Omit<ComponentProps<typeof ClipAwareButton>, 'compose' | 'layer'>;
 
 	const { Story } = defineMeta({
 		title: 'Button/Clip Aware Button',
@@ -19,6 +15,7 @@
 			appearance: 'dark',
 			control: { type: 'button' },
 			inverseAppearance: 'light',
+			layer: 'base',
 			size: 'large',
 		},
 	});
@@ -46,29 +43,25 @@
 	}
 </script>
 
-{#snippet compose(layers: Layers)}
-	<div
-		class="grid pointer-events-none inset-0 place-items-center absolute"
-		data-story-button-layer="base"
-	>
-		{@render layers.base()}
-	</div>
-	<div
-		aria-hidden="true"
-		class="grid pointer-events-none inset-0 place-items-center absolute"
-		data-story-button-layer="inverse"
-		inert
-	>
-		{@render layers.inverse()}
-	</div>
-{/snippet}
-
 {#snippet interactive(args: Args)}
 	<div
 		class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden"
 		data-clip-aware-button
 	>
-		<ClipAwareButton {...args} {compose}>Join the jam</ClipAwareButton>
+		<div
+			class="grid pointer-events-none inset-0 place-items-center absolute"
+			data-story-button-layer="base"
+		>
+			<ClipAwareButton {...args} layer="base">Join the jam</ClipAwareButton>
+		</div>
+		<div
+			aria-hidden="true"
+			class="grid pointer-events-none inset-0 place-items-center absolute"
+			data-story-button-layer="inverse"
+			inert
+		>
+			<ClipAwareButton {...args} control={undefined} layer="inverse">Join the jam</ClipAwareButton>
+		</div>
 	</div>
 {/snippet}
 
@@ -77,7 +70,20 @@
 		class="bg-brand-primary-100 h-72 max-w-full w-120 relative overflow-hidden"
 		data-clip-aware-button
 	>
-		<ClipAwareButton {...args} {compose} control={undefined}>Join the jam</ClipAwareButton>
+		<div
+			class="grid pointer-events-none inset-0 place-items-center absolute"
+			data-story-button-layer="base"
+		>
+			<ClipAwareButton {...args} control={undefined} layer="base">Join the jam</ClipAwareButton>
+		</div>
+		<div
+			aria-hidden="true"
+			class="grid pointer-events-none inset-0 place-items-center absolute"
+			data-story-button-layer="inverse"
+			inert
+		>
+			<ClipAwareButton {...args} control={undefined} layer="inverse">Join the jam</ClipAwareButton>
+		</div>
 	</div>
 {/snippet}
 

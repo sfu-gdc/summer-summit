@@ -12,7 +12,7 @@
 		organizerLabel: string;
 		locationLabel: string;
 		navItems?: readonly LandingHeroNavItem[];
-		cta?: Snippet | undefined;
+		actions?: Snippet<[LandingHeroLayer]> | undefined;
 	}
 </script>
 
@@ -27,7 +27,7 @@
 		organizerLabel,
 		locationLabel,
 		navItems = [],
-		cta,
+		actions,
 	}: LandingHeroContentProps = $props();
 </script>
 
@@ -81,8 +81,8 @@
 			class="landing-detail mx-auto mt-2 flex h-auto min-h-[var(--landing-detail-height)] w-full justify-center lg:mt-0 md:h-[var(--landing-detail-height)] lg:justify-end"
 			data-landing-detail-grid
 		>
-			{#if cta}
-				{@render cta()}
+			{#if actions}
+				{@render actions(layer)}
 			{/if}
 		</div>
 	</main>

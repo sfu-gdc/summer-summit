@@ -3,22 +3,17 @@
 </script>
 
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
 
 	import { heroColors } from '$lib/tokens';
 
-	import ClipAwareButton from '../Button/ClipAwareButton.svelte';
 	import ErodedCheckerboard from '../ErodedCheckerboard/ErodedCheckerboard.svelte';
 	import Puddle from '../Puddle/Puddle.svelte';
+	import type { LandingHeroLayer } from './LandingHeroContent.svelte';
+	import LandingHeroCtaGroup from './LandingHeroCtaGroup.svelte';
 	import LandingHeroLayers from './LandingHeroLayers.svelte';
 	import { LANDING_PUDDLE_PROFILES, type LandingPuddleProfileName } from './puddleProfiles';
 	import type { LandingHeroProps } from './types';
-
-	interface ButtonLayers {
-		base: Snippet;
-		inverse: Snippet;
-	}
 
 	let {
 		titleLines,
@@ -45,49 +40,10 @@
 	const puddleProfile = $derived(LANDING_PUDDLE_PROFILES[puddleProfileName]);
 </script>
 
-{#snippet composeDiscord(discordLayers: ButtonLayers)}
-	{#snippet composeTickets(ticketLayers: ButtonLayers)}
-		{#snippet baseActions()}
-			<div
-				class="flex flex-col gap-2 w-full items-stretch justify-center md:flex-row md:gap-4 md:items-center lg:justify-end"
-				data-landing-actions
-			>
-				{@render discordLayers.base()}
-				{@render ticketLayers.base()}
-			</div>
-		{/snippet}
-
-		{#snippet inverseActions()}
-			<div
-				class="flex flex-col gap-2 w-full items-stretch justify-center md:flex-row md:gap-4 md:items-center lg:justify-end"
-				data-landing-actions
-			>
-				{@render discordLayers.inverse()}
-				{@render ticketLayers.inverse()}
-			</div>
-		{/snippet}
-
-		<LandingHeroLayers
-			{titleLines}
-			{dateLabel}
-			{organizerLabel}
-			{locationLabel}
-			{navItems}
-			{baseActions}
-			{inverseActions}
-		/>
-	{/snippet}
-
-	<ClipAwareButton
-		appearance="secondary"
-		compose={composeTickets}
-		inverseAppearance="light"
-		control={actions ? { href: actions.tickets.href } : undefined}
-		size="large"
-	>
-		{actions?.tickets.label}
-		<span aria-hidden="true" class="i-pixelarticons-arrow-right-box size-6"></span>
-	</ClipAwareButton>
+{#snippet heroActions(layer: LandingHeroLayer)}
+	{#if actions}
+		<LandingHeroCtaGroup actionSet={actions} {layer} />
+	{/if}
 {/snippet}
 
 <div
@@ -112,47 +68,14 @@
 			data-puddle-profile={puddleProfileName}
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
-			{#if actions}
-				<ClipAwareButton
-					appearance="light"
-					compose={composeDiscord}
-					inverseAppearance="primary"
-					control={{ href: actions.discord.href }}
-					variant="underline"
-				>
-					{actions.discord.label}
-					<span aria-hidden="true" class="i-pixel-discord size-6"></span>
-				</ClipAwareButton>
-			{:else}
-				<LandingHeroLayers {titleLines} {dateLabel} {organizerLabel} {locationLabel} {navItems} />
-			{/if}
+			<LandingHeroLayers
+				{titleLines}
+				{dateLabel}
+				{organizerLabel}
+				{locationLabel}
+				{navItems}
+				actions={actions ? heroActions : undefined}
+			/>
 		</Puddle>
 	</div>
 </div>
-
-<style>
-	[data-landing-actions] :global([data-clip-aware-variant='spray']) {
-		order: 1;
-	}
-
-	[data-landing-actions] :global([data-clip-aware-variant='underline']) {
-		order: 2;
-	}
-
-	@media (width < 32rem) {
-		[data-landing-actions] :global([data-clip-aware-visual]),
-		[data-landing-actions] :global([data-button-surface]) {
-			width: 100%;
-		}
-	}
-
-	@media (width >= 64rem) {
-		[data-landing-actions] :global([data-clip-aware-variant='underline']) {
-			order: 1;
-		}
-
-		[data-landing-actions] :global([data-clip-aware-variant='spray']) {
-			order: 2;
-		}
-	}
-</style>

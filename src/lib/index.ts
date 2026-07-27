@@ -5,6 +5,7 @@ export { default as ClipAwareButton } from './Button/ClipAwareButton.svelte';
 export type {
 	ClipAwareButtonAppearance,
 	ClipAwareButtonControl,
+	ClipAwareButtonLayer,
 	ClipAwareButtonLayers,
 	ClipAwareButtonProps,
 	ClipAwareButtonSize,
