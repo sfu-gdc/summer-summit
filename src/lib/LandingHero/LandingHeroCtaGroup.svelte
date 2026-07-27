@@ -53,7 +53,7 @@
 		}
 	}
 
-	@media (width >= 64rem) {
+	@media (width >= 48rem) {
 		[data-landing-actions] :global([data-clip-aware-variant='underline']) {
 			order: 1;
 		}
