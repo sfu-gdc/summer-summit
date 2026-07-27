@@ -16,21 +16,27 @@ interface PuddleRun {
 function runsOf(path: SVGPathElement): PuddleRun[] {
 	const runs: PuddleRun[] = [];
 	const commands = path.getAttribute('d') ?? '';
-	const pattern = /M(\d+) (\d+)h(\d+)v1h-(\d+)z/g;
+	const pattern = /M([\d.]+) ([\d.]+)h([\d.]+)v([\d.]+)h-([\d.]+)z/g;
+	const cellSize = Number(path.ownerSVGElement?.dataset['puddleCellSize'] ?? 1);
 	for (const match of commands.matchAll(pattern)) {
-		const x = Number(match[1]);
-		const y = Number(match[2]);
-		const width = Number(match[3]);
-		if (width !== Number(match[4])) throw new Error('invalid puddle run');
+		const x = Number(match[1]) / cellSize;
+		const y = Number(match[2]) / cellSize;
+		const width = Number(match[3]) / cellSize;
+		if (Number(match[4]) !== cellSize || Number(match[5]) / cellSize !== width) {
+			throw new Error('invalid puddle run');
+		}
 		runs.push({ x, y, width });
 	}
 	return runs;
 }
 
 function gridSize(path: SVGPathElement): { nx: number; ny: number } {
-	const viewBox = path.ownerSVGElement?.viewBox.baseVal;
-	if (!viewBox) throw new Error('puddle path is not inside an SVG');
-	return { nx: viewBox.width, ny: viewBox.height };
+	const renderer = path.ownerSVGElement;
+	if (!renderer) throw new Error('puddle path is not inside an SVG');
+	return {
+		nx: Number(renderer.dataset['puddleCols']),
+		ny: Number(renderer.dataset['puddleRows']),
+	};
 }
 
 export function wetAt(path: SVGPathElement, fx: number, fy: number): boolean {

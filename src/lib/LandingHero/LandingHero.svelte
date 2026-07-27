@@ -46,6 +46,18 @@
 	{/if}
 {/snippet}
 
+{#snippet inverseHero()}
+	<LandingHeroLayers
+		layer="inverse"
+		{titleLines}
+		{dateLabel}
+		{organizerLabel}
+		{locationLabel}
+		{navItems}
+		actions={actions ? heroActions : undefined}
+	/>
+{/snippet}
+
 <div
 	class={[
 		'hero relative min-h-svh w-full overflow-hidden text-[var(--hero-text-color)] bg-[var(--hero-background-color)]',
@@ -66,9 +78,13 @@
 			class="size-full"
 			data-clip-aware-button={actions ? true : undefined}
 			data-puddle-profile={puddleProfileName}
+			snapshot={puddleProfileName}
+			responsiveSnapshots
+			clippedChildren={inverseHero}
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
 			<LandingHeroLayers
+				layer="base"
 				{titleLines}
 				{dateLabel}
 				{organizerLabel}

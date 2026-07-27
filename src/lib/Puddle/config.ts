@@ -6,6 +6,7 @@ import type { Color } from 'culori';
 import { brandColorValues } from '$lib/tokens';
 
 import type { IntegratorId } from './sim';
+import type { PuddleSnapshotName } from './snapshot/types';
 
 // Omit the deprecated HTML `color` attribute; intersecting with it would
 // collapse the prop type to `string` and reject culori Color objects.
@@ -77,6 +78,12 @@ export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	deviceTilt?: number;
 	/** Device-motion easing time-constant in seconds. */
 	deviceEase?: number;
+	/** Build-generated settled shape/state used before the live worker starts. */
+	snapshot?: PuddleSnapshotName;
+	/** Render CSS-selected landing snapshots until the measured worker shape is ready. */
+	responsiveSnapshots?: boolean;
+	/** Inert visual content clipped to the same local SVG path as the live puddle fill. */
+	clippedChildren?: Snippet;
 	children?: Snippet;
 };
 

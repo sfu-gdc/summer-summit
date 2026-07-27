@@ -31,6 +31,16 @@
 		});
 	}
 
+	async function settlePuddleLive(puddle: HTMLElement) {
+		for (let frame = 0; frame < 120 && !puddle.hasAttribute('data-puddle-live'); frame++) {
+			await new Promise<void>((resolve) => {
+				requestAnimationFrame(() => {
+					resolve();
+				});
+			});
+		}
+	}
+
 	async function expectNoHorizontalOverflow(canvasElement: HTMLElement) {
 		const document = canvasElement.ownerDocument;
 
@@ -62,27 +72,61 @@
 
 		const hero = canvasElement.querySelector<HTMLElement>('[data-landing-hero]');
 		const puddle = canvasElement.querySelector<HTMLElement>('[data-puddle-host]');
-		const clip = puddle?.querySelector<SVGClipPathElement>('clipPath');
+		if (puddle) await settlePuddleLive(puddle);
 		const baseLayer = canvasElement.querySelector<HTMLElement>('[data-landing-layer="base"]');
-		const inverseLayer = canvasElement.querySelector<HTMLElement>('[data-landing-layer="inverse"]');
+		const inverseLayers = canvasElement.querySelectorAll<HTMLElement>(
+			'[data-landing-layer="inverse"]',
+		);
+		const foreignObject = canvasElement.querySelector<SVGForeignObjectElement>(
+			'[data-puddle-clipped-foreign-object]',
+		);
+		const liveInverseLayer = foreignObject?.querySelector<HTMLElement>(
+			'[data-landing-layer="inverse"]',
+		);
+		const staticInverseLayer = canvasElement.querySelector<HTMLElement>(
+			'[data-puddle-static-clipped-content] [data-landing-layer="inverse"]',
+		);
+		const inverseLayer = puddle?.hasAttribute('data-puddle-live')
+			? liveInverseLayer
+			: staticInverseLayer;
+		const visibleUse = canvasElement.querySelector<SVGUseElement>('[data-puddle-visible-shape]');
+		const clipUse = canvasElement.querySelector<SVGUseElement>('[data-puddle-clip-shape]');
 		const content = canvasElement.querySelectorAll<HTMLElement>('[data-landing-content]');
 
 		await expect(hero).not.toBeNull();
 		await expect(puddle).not.toBeNull();
-		await expect(clip).not.toBeNull();
 		await expect(baseLayer).not.toBeNull();
+		await expect(foreignObject).not.toBeNull();
+		await expect(liveInverseLayer).not.toBeNull();
+		await expect(staticInverseLayer).not.toBeNull();
 		await expect(inverseLayer).not.toBeNull();
-		await expect(content).toHaveLength(2);
-		if (!hero || !puddle || !clip || !baseLayer || !inverseLayer) return;
+		await expect(inverseLayers).toHaveLength(2);
+		await expect(content).toHaveLength(1 + inverseLayers.length);
+		if (
+			!hero ||
+			!puddle ||
+			!baseLayer ||
+			!foreignObject ||
+			!inverseLayer ||
+			!visibleUse ||
+			!clipUse
+		)
+			return;
 
 		await expect(baseLayer.querySelectorAll('[data-landing-content="base"]')).toHaveLength(1);
 		await expect(inverseLayer.querySelectorAll('[data-landing-content="inverse"]')).toHaveLength(1);
 		await expect(baseLayer).not.toHaveAttribute('aria-hidden');
 		await expect(baseLayer).not.toHaveAttribute('inert');
-		await expect(inverseLayer).toHaveAttribute('aria-hidden', 'true');
-		await expect(inverseLayer).toHaveAttribute('inert');
-		await expect(getComputedStyle(inverseLayer).clipPath).toContain(clip.id);
-		await expect(getComputedStyle(puddle).getPropertyValue('--puddle-clip')).toContain(clip.id);
+		for (const layer of inverseLayers) {
+			await expect(layer).toHaveAttribute('aria-hidden', 'true');
+			await expect(layer).toHaveAttribute('inert');
+		}
+		const puddleClip = getComputedStyle(puddle).getPropertyValue('--puddle-clip').trim();
+		await expect(puddleClip).toMatch(/^shape\(/);
+		await expect(CSS.supports('clip-path', puddleClip)).toBe(true);
+		await expect(foreignObject.getAttribute('clip-path')).toMatch(/^url\("#.+-puddle-clip"\)$/);
+		await expect(clipUse.style.transform).toBe(visibleUse.style.transform);
+		await expect(clipUse.style.transformBox).toBe(visibleUse.style.transformBox);
 
 		await expectMatchingBounds(baseLayer, inverseLayer);
 		await expectMatchingBounds(hero, puddle);
@@ -111,7 +155,9 @@
 		await expect(canvas.queryByRole('navigation')).toBeNull();
 		await expect(canvas.queryByRole('button', { name: /about|schedule|faq/i })).toBeNull();
 		await expect(canvas.queryByRole('link', { name: /about|schedule|faq/i })).toBeNull();
-		await expect(hiddenTitles).toHaveLength(2);
+		await expect(hiddenTitles).toHaveLength(
+			1 + canvasElement.querySelectorAll('[data-landing-layer="inverse"]').length,
+		);
 		await expect(
 			Array.from(hiddenTitles).every((title) => title.closest('[aria-hidden="true"]') !== null),
 		).toBe(true);
@@ -131,11 +177,13 @@
 		const canvas = within(canvasElement);
 		const discord = canvas.getByRole('link', { name: 'Join the Discord' });
 		const tickets = canvas.getByRole('link', { name: 'Get your ticket' });
+		const puddle = canvasElement.querySelector<HTMLElement>('[data-puddle-host]');
+		if (puddle) await settlePuddleLive(puddle);
 		const baseVisuals = canvasElement.querySelectorAll<HTMLElement>(
 			'[data-clip-aware-visual="base"] [data-button-surface]',
 		);
 		const inverseVisuals = canvasElement.querySelectorAll<HTMLElement>(
-			'[data-clip-aware-visual="inverse"] [data-button-surface]',
+			'[data-puddle-clipped-foreign-object] [data-clip-aware-visual="inverse"] [data-button-surface]',
 		);
 
 		await expect(
@@ -273,7 +321,8 @@
 />
 
 <style>
-	:global(.secondary-accent-preview [data-hero-content-overlay]) {
-		clip-path: inset(0 0 0 100%) !important;
+	:global(.secondary-accent-preview [data-puddle-static-clipped-content]),
+	:global(.secondary-accent-preview [data-puddle-overlay-renderer]) {
+		visibility: hidden !important;
 	}
 </style>
