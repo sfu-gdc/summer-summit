@@ -38,6 +38,7 @@ const config: ConfigFn = ({ mode }) => {
 			alias: {
 				$storybook: '.storybook/*',
 			},
+			inlineStyleThreshold: 10000,
 			typescript: {
 				config(tsconfig: TsConfigJson) {
 					// exclude tooling from app `tsconfig.json`
