@@ -21,10 +21,12 @@ test('SSR contains the generated no-JS silhouette in centered CSS-pixel space', 
 test('SSR wires clipped content to the same local SVG shape as the puddle fill', () => {
 	const { body } = render(PuddleClipFixture);
 
-	expect(body).toContain('data-puddle-clipped-foreign-object');
+	expect(body).toContain('data-puddle-clipped-content');
 	expect(body).toContain('data-puddle-clipped-probe');
+	expect(body).not.toContain('<foreignObject');
 	expect(body).toMatch(/<clipPath id="([^"]+-puddle-clip)" clipPathUnits="userSpaceOnUse">/);
-	expect(body).toMatch(/<foreignObject[^>]*clip-path="url\(&quot;#[^"]+-puddle-clip&quot;\)"/);
+	expect(body).toMatch(/<path d="[^"]+" transform="translate\([^"]+\)" data-puddle-clip-shape/);
+	expect(body).toContain('clip-path: var(--puddle-clip)');
 });
 
 test('SSR includes CSS-breakpoint snapshot and clip variants for the landing puddle', () => {

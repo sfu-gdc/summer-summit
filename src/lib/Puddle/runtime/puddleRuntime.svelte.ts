@@ -31,6 +31,7 @@ export interface PuddleRuntime {
 	readonly live: boolean;
 	readonly path: string;
 	readonly centerTransform: string;
+	readonly clipTransform: string;
 	readonly cols: number;
 	readonly rows: number;
 	readonly cellSize: number;
@@ -226,6 +227,13 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		},
 		get centerTransform() {
 			return `translate(50%, 50%) translate(${((-renderedCols * renderedCellSize) / 2).toString()}px, ${((-renderedRows * renderedCellSize) / 2).toString()}px)`;
+		},
+		get clipTransform() {
+			const width = Math.max(geometry.width, 1);
+			const height = Math.max(geometry.height, 1);
+			const x = (width - renderedCols * renderedCellSize) / 2;
+			const y = (height - renderedRows * renderedCellSize) / 2;
+			return `translate(${x.toString()} ${y.toString()})`;
 		},
 		get cols() {
 			return renderedCols;

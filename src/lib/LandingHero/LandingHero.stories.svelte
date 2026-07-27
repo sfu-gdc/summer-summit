@@ -77,39 +77,31 @@
 		const inverseLayers = canvasElement.querySelectorAll<HTMLElement>(
 			'[data-landing-layer="inverse"]',
 		);
-		const foreignObject = canvasElement.querySelector<SVGForeignObjectElement>(
-			'[data-puddle-clipped-foreign-object]',
+		const clippedContent = canvasElement.querySelector<HTMLElement>(
+			'[data-puddle-clipped-content]',
 		);
-		const liveInverseLayer = foreignObject?.querySelector<HTMLElement>(
+		const inverseLayer = clippedContent?.querySelector<HTMLElement>(
 			'[data-landing-layer="inverse"]',
 		);
-		const staticInverseLayer = canvasElement.querySelector<HTMLElement>(
-			'[data-puddle-static-clipped-content] [data-landing-layer="inverse"]',
-		);
-		const inverseLayer = puddle?.hasAttribute('data-puddle-live')
-			? liveInverseLayer
-			: staticInverseLayer;
 		const visibleUse = canvasElement.querySelector<SVGUseElement>('[data-puddle-visible-shape]');
-		const clipUse = canvasElement.querySelector<SVGUseElement>('[data-puddle-clip-shape]');
+		const clipPath = canvasElement.querySelector<SVGPathElement>('[data-puddle-clip-shape]');
 		const content = canvasElement.querySelectorAll<HTMLElement>('[data-landing-content]');
 
 		await expect(hero).not.toBeNull();
 		await expect(puddle).not.toBeNull();
 		await expect(baseLayer).not.toBeNull();
-		await expect(foreignObject).not.toBeNull();
-		await expect(liveInverseLayer).not.toBeNull();
-		await expect(staticInverseLayer).not.toBeNull();
+		await expect(clippedContent).not.toBeNull();
 		await expect(inverseLayer).not.toBeNull();
-		await expect(inverseLayers).toHaveLength(2);
+		await expect(inverseLayers).toHaveLength(1);
 		await expect(content).toHaveLength(1 + inverseLayers.length);
 		if (
 			!hero ||
 			!puddle ||
 			!baseLayer ||
-			!foreignObject ||
+			!clippedContent ||
 			!inverseLayer ||
 			!visibleUse ||
-			!clipUse
+			!clipPath
 		)
 			return;
 
@@ -122,11 +114,13 @@
 			await expect(layer).toHaveAttribute('inert');
 		}
 		const puddleClip = getComputedStyle(puddle).getPropertyValue('--puddle-clip').trim();
-		await expect(puddleClip).toMatch(/^shape\(/);
+		await expect(puddleClip).toMatch(/^url\("#.+-puddle-clip"\)$/);
 		await expect(CSS.supports('clip-path', puddleClip)).toBe(true);
-		await expect(foreignObject.getAttribute('clip-path')).toMatch(/^url\("#.+-puddle-clip"\)$/);
-		await expect(clipUse.style.transform).toBe(visibleUse.style.transform);
-		await expect(clipUse.style.transformBox).toBe(visibleUse.style.transformBox);
+		await expect(getComputedStyle(clippedContent).clipPath).toBe(puddleClip);
+		const visiblePath = canvasElement.querySelector<SVGPathElement>('[data-puddle-shape]');
+		await expect(visiblePath).not.toBeNull();
+		await expect(clipPath.getAttribute('d')).toBe(visiblePath?.getAttribute('d'));
+		await expect(clipPath.getAttribute('transform')).toMatch(/^translate\(/);
 
 		await expectMatchingBounds(baseLayer, inverseLayer);
 		await expectMatchingBounds(hero, puddle);
@@ -183,7 +177,7 @@
 			'[data-clip-aware-visual="base"] [data-button-surface]',
 		);
 		const inverseVisuals = canvasElement.querySelectorAll<HTMLElement>(
-			'[data-puddle-clipped-foreign-object] [data-clip-aware-visual="inverse"] [data-button-surface]',
+			'[data-puddle-clipped-content] [data-clip-aware-visual="inverse"] [data-button-surface]',
 		);
 
 		await expect(
@@ -321,8 +315,7 @@
 />
 
 <style>
-	:global(.secondary-accent-preview [data-puddle-static-clipped-content]),
-	:global(.secondary-accent-preview [data-puddle-overlay-renderer]) {
+	:global(.secondary-accent-preview [data-puddle-clipped-content]) {
 		visibility: hidden !important;
 	}
 </style>

@@ -54,7 +54,6 @@
 
 	const instanceId = $props.id();
 	const shapeId = `${instanceId}-puddle-shape`;
-	const overlayShapeId = `${instanceId}-puddle-overlay-shape`;
 	const clipId = `${instanceId}-puddle-clip`;
 	const clipUrl = `url("#${clipId}")`;
 	const responsiveSnapshotNames = ['compact', 'medium', 'expanded', 'large'] as const;
@@ -117,7 +116,11 @@
 	data-puddle-host
 	data-puddle-live={runtime.live ? true : undefined}
 	style:--puddle-color={cssColor}
-	style:--puddle-clip={responsiveSnapshots ? undefined : PUDDLE_SNAPSHOTS[snapshot].clip}
+	style:--puddle-clip={runtime.live
+		? clipUrl
+		: responsiveSnapshots
+			? undefined
+			: PUDDLE_SNAPSHOTS[snapshot].clip}
 	style:--puddle-clip-compact={PUDDLE_SNAPSHOTS.compact.clip}
 	style:--puddle-clip-medium={PUDDLE_SNAPSHOTS.medium.clip}
 	style:--puddle-clip-expanded={PUDDLE_SNAPSHOTS.expanded.clip}
@@ -150,6 +153,9 @@
 				class="fill-[var(--puddle-color,#141414)]"
 				data-puddle-shape
 			></path>
+			<clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+				<path d={runtime.path} transform={runtime.clipTransform} data-puddle-clip-shape></path>
+			</clipPath>
 		</defs>
 		<use
 			href={`#${shapeId}`}
@@ -182,53 +188,14 @@
 		{/each}
 	{/if}
 	{@render children?.()}
-	{#if responsiveSnapshots && clippedChildren}
+	{#if clippedChildren}
 		<div
-			class="puddle-static-clipped pointer-events-none inset-0 absolute"
+			class="puddle-clipped pointer-events-none [clip-path:var(--puddle-clip)] inset-0 absolute"
 			style:clip-path="var(--puddle-clip)"
-			data-puddle-static-clipped-content
+			data-puddle-clipped-content
 		>
 			{@render clippedChildren()}
 		</div>
-	{/if}
-	{#if clippedChildren}
-		<svg
-			x="0"
-			y="0"
-			width="100%"
-			height="100%"
-			class="puddle-live h-full w-full block pointer-events-none inset-0 absolute"
-			data-puddle-overlay-renderer
-			aria-hidden="true"
-		>
-			<defs>
-				<path id={overlayShapeId} d={runtime.path} data-puddle-overlay-shape></path>
-				<clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-					<use
-						href={`#${overlayShapeId}`}
-						style:transform={runtime.centerTransform}
-						style:transform-box="view-box"
-						data-puddle-clip-shape
-					></use>
-				</clipPath>
-			</defs>
-			<foreignObject
-				x="0"
-				y="0"
-				width="100%"
-				height="100%"
-				clip-path={clipUrl}
-				data-puddle-clipped-foreign-object
-			>
-				<div
-					xmlns="http://www.w3.org/1999/xhtml"
-					class="size-full pointer-events-none relative"
-					style="width:100%;height:100%;"
-				>
-					{@render clippedChildren()}
-				</div>
-			</foreignObject>
-		</svg>
 	{/if}
 </div>
 
@@ -242,8 +209,7 @@
 	}
 
 	.responsive-puddle:not([data-puddle-live]) .puddle-live,
-	.responsive-puddle[data-puddle-live] .puddle-static,
-	.responsive-puddle[data-puddle-live] .puddle-static-clipped {
+	.responsive-puddle[data-puddle-live] .puddle-static {
 		display: none;
 	}
 
