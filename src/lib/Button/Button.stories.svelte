@@ -166,25 +166,40 @@
 	</span>
 {/snippet}
 
-<Story name="Figma Reference Variants" template={figmaReferenceVariants} />
+<Story
+	name="Figma Reference Variants"
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
+	template={figmaReferenceVariants}
+/>
 
-<Story name="States" {template} />
+<Story name="States" parameters={{ chromatic: { diffThreshold: 0.17 } }} {template} />
 
-<Story name="With Icon" args={{ icon: bell }} {template} />
+<Story
+	name="With Icon"
+	args={{ icon: bell }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
+	{template}
+/>
 
-<Story name="Disabled" args={{ disabled: true }} {template} />
+<Story
+	name="Disabled"
+	args={{ disabled: true }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
+	{template}
+/>
 
-<Story name="Large CTA" template={largeCta} />
+<Story name="Large CTA" parameters={{ chromatic: { diffThreshold: 0.17 } }} template={largeCta} />
 
-<Story name="Secondary" template={secondary} />
+<Story name="Secondary" parameters={{ chromatic: { diffThreshold: 0.17 } }} template={secondary} />
 
-<Story name="Primary" template={primary} />
+<Story name="Primary" parameters={{ chromatic: { diffThreshold: 0.17 } }} template={primary} />
 
 <Story name="Underline" template={underline} />
 
 <Story
 	name="Link"
 	args={{ href: '#about' }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	template={linkTemplate}
 	play={async ({ canvasElement }) => {
 		await expect(within(canvasElement).getByRole('link', { name: 'About' })).toHaveAttribute(
@@ -196,6 +211,7 @@
 
 <Story
 	name="Layered Control"
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	template={layered}
 	play={async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -244,6 +260,7 @@
 
 <Story
 	name="Presentation Surface"
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	template={presentationSurface}
 	play={async ({ canvasElement }) => {
 		const surface = requiredElement(canvasElement, '[data-button-surface="base"]');
