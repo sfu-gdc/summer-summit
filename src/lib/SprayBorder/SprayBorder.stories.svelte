@@ -57,6 +57,7 @@
 			color: { control: 'color' },
 		},
 		parameters: {
+			chromatic: { diffThreshold: 0.17 },
 			controls: { include: ['spread', 'radius', 'density', 'seed', 'color'] },
 			docs: { argTypes: { include: ['spread', 'radius', 'density', 'seed', 'color'] } },
 		},

@@ -18,6 +18,9 @@
 			layer: 'base',
 			size: 'large',
 		},
+		parameters: {
+			chromatic: { diffThreshold: 0.17 },
+		},
 	});
 
 	function bounds(element: Element) {

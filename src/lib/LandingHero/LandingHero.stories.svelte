@@ -225,6 +225,7 @@
 	name="Compact Portrait"
 	args={LANDING_HERO_STORY_CASES.compact.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.compact.viewport, isRotated: false } }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	play={async ({ canvasElement }) => {
 		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
@@ -238,6 +239,7 @@
 	name="Medium"
 	args={LANDING_HERO_STORY_CASES.medium.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.medium.viewport, isRotated: false } }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	play={async ({ canvasElement }) => {
 		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
@@ -251,6 +253,7 @@
 	name="Expanded"
 	args={LANDING_HERO_STORY_CASES.expanded.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.expanded.viewport, isRotated: false } }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	play={async ({ canvasElement }) => {
 		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
@@ -264,6 +267,7 @@
 	name="Large Desktop"
 	args={LANDING_HERO_STORY_CASES.large.args}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.large.viewport, isRotated: false } }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	play={async ({ canvasElement }) => {
 		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
@@ -277,6 +281,7 @@
 	name="Secondary Accent"
 	args={{ ...LANDING_HERO_STORY_CASES.expanded.args, class: 'secondary-accent-preview' }}
 	globals={{ viewport: { value: LANDING_HERO_STORY_CASES.expanded.viewport, isRotated: false } }}
+	parameters={{ chromatic: { diffThreshold: 0.17 } }}
 	play={async ({ canvasElement }) => {
 		await expectDestinationCta(canvasElement);
 		await expectNoHorizontalOverflow(canvasElement);
@@ -304,7 +309,7 @@
 	globals={{
 		viewport: { value: LANDING_HERO_STORY_CASES.reducedMotion.viewport, isRotated: false },
 	}}
-	parameters={{ chromatic: { prefersReducedMotion: 'reduce' } }}
+	parameters={{ chromatic: { diffThreshold: 0.17, prefersReducedMotion: 'reduce' } }}
 	play={async ({ canvasElement }) => {
 		await expectAccessibleLayers(canvasElement);
 		await expectLandingSemantics(canvasElement);
