@@ -1,9 +1,6 @@
 export interface LandingHeroStoryArgs {
 	readonly titleLines: readonly [string, string];
 	readonly dateLabel: string;
-	readonly organizerLabel: string;
-	readonly locationLabel: string;
-	readonly navItems?: readonly { label: string; href: string }[];
 	readonly actions?:
 		| {
 				discord: { label: string; href: string };
@@ -16,9 +13,6 @@ export interface LandingHeroStoryArgs {
 export const LANDING_HERO_EVENT_ARGS = {
 	titleLines: ['SUMMER SUMMIT', 'GAME JAM 2026'],
 	dateLabel: 'SEPTEMBER 4–6',
-	organizerLabel: 'GAME DEV CLUB X IATSU 2026',
-	locationLabel: 'SFU BURNABY CAMPUS',
-	navItems: [],
 	actions: {
 		discord: { label: 'Join the Discord', href: 'https://discord.gg/jmZ8jmWHBx' },
 		tickets: {

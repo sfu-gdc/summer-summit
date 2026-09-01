@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { LandingHero, Head } from '$lib';
+	import { usePageTransition } from '$lib/PageTransition/pageTransition.svelte';
+
+	const pageTransition = usePageTransition();
 </script>
 
 <Head />
@@ -7,9 +10,7 @@
 <LandingHero
 	titleLines={['SUMMER SUMMIT', 'GAME JAM 2026']}
 	dateLabel="SEPTEMBER 4–6"
-	organizerLabel="GAME DEV CLUB X IATSU 2026"
-	locationLabel="SFU BURNABY CAMPUS"
-	navItems={[]}
+	onPuddleTransitionTarget={pageTransition?.registerHomeTarget}
 	actions={{
 		discord: {
 			label: 'JOIN THE DISCORD',

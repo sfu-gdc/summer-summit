@@ -155,16 +155,6 @@
 		await expect(
 			Array.from(hiddenTitles).every((title) => title.closest('[aria-hidden="true"]') !== null),
 		).toBe(true);
-
-		for (const copy of ['GAME DEV CLUB X IATSU 2026', 'SFU BURNABY CAMPUS']) {
-			const matches = canvas.getAllByText(copy, { exact: true });
-			const hiddenMatches = matches.filter(
-				(match) => match.closest('[aria-hidden="true"]') !== null,
-			);
-
-			await expect(matches.filter((match) => !hiddenMatches.includes(match))).toHaveLength(1);
-			await expect(hiddenMatches).toHaveLength(matches.length - 1);
-		}
 	}
 
 	async function expectDestinationCta(canvasElement: HTMLElement) {

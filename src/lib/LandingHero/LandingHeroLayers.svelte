@@ -3,40 +3,20 @@
 
 	import LandingHeroContent from './LandingHeroContent.svelte';
 	import type { LandingHeroLayer } from './LandingHeroContent.svelte';
-	import type { LandingHeroNavItem } from './types';
 
 	interface Props {
 		layer?: 'base' | 'inverse' | 'both';
 		titleLines: readonly [string, string];
 		dateLabel: string;
-		organizerLabel: string;
-		locationLabel: string;
-		navItems?: readonly LandingHeroNavItem[];
 		actions?: Snippet<[LandingHeroLayer]> | undefined;
 	}
 
-	let {
-		layer = 'both',
-		titleLines,
-		dateLabel,
-		organizerLabel,
-		locationLabel,
-		navItems = [],
-		actions,
-	}: Props = $props();
+	let { layer = 'both', titleLines, dateLabel, actions }: Props = $props();
 </script>
 
 {#if layer === 'base' || layer === 'both'}
 	<div class="content-layer inset-0 absolute" data-hero-content data-landing-layer="base">
-		<LandingHeroContent
-			layer="base"
-			{titleLines}
-			{dateLabel}
-			{organizerLabel}
-			{locationLabel}
-			{navItems}
-			{actions}
-		/>
+		<LandingHeroContent layer="base" {titleLines} {dateLabel} {actions} />
 	</div>
 {/if}
 {#if layer === 'inverse' || layer === 'both'}
@@ -47,14 +27,6 @@
 		data-landing-layer="inverse"
 		inert
 	>
-		<LandingHeroContent
-			layer="inverse"
-			{titleLines}
-			{dateLabel}
-			{organizerLabel}
-			{locationLabel}
-			{navItems}
-			{actions}
-		/>
+		<LandingHeroContent layer="inverse" {titleLines} {dateLabel} {actions} />
 	</div>
 {/if}

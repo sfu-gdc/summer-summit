@@ -1,5 +1,5 @@
 <script module lang="ts">
-	export type { LandingHeroNavItem, LandingHeroProps } from './types';
+	export type { LandingHeroProps } from './types';
 </script>
 
 <script lang="ts">
@@ -18,10 +18,8 @@
 	let {
 		titleLines,
 		dateLabel,
-		organizerLabel,
-		locationLabel,
-		navItems = [],
 		actions,
+		onPuddleTransitionTarget,
 		class: className,
 	}: LandingHeroProps = $props();
 
@@ -51,9 +49,6 @@
 		layer="inverse"
 		{titleLines}
 		{dateLabel}
-		{organizerLabel}
-		{locationLabel}
-		{navItems}
 		actions={actions ? heroActions : undefined}
 	/>
 {/snippet}
@@ -80,6 +75,7 @@
 			data-puddle-profile={puddleProfileName}
 			snapshot={puddleProfileName}
 			responsiveSnapshots
+			onTransitionTarget={onPuddleTransitionTarget}
 			clippedChildren={inverseHero}
 		>
 			<ErodedCheckerboard class="h-full w-full inset-0 absolute" />
@@ -87,9 +83,6 @@
 				layer="base"
 				{titleLines}
 				{dateLabel}
-				{organizerLabel}
-				{locationLabel}
-				{navItems}
 				actions={actions ? heroActions : undefined}
 			/>
 		</Puddle>

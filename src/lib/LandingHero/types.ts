@@ -1,7 +1,4 @@
-export interface LandingHeroNavItem {
-	label: string;
-	href: string;
-}
+import type { PuddleProps } from '../Puddle/config';
 
 export interface LandingHeroAction {
 	label: string;
@@ -16,9 +13,7 @@ export interface LandingHeroActions {
 export interface LandingHeroProps {
 	titleLines: readonly [string, string];
 	dateLabel: string;
-	organizerLabel: string;
-	locationLabel: string;
-	navItems?: readonly LandingHeroNavItem[];
 	actions?: LandingHeroActions | undefined;
+	onPuddleTransitionTarget?: PuddleProps['onTransitionTarget'];
 	class?: string;
 }
