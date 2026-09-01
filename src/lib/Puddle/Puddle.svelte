@@ -12,6 +12,7 @@
 		cellSize = PUDDLE_DEFAULTS.cellSize,
 		threshold = PUDDLE_DEFAULTS.threshold,
 		level = PUDDLE_DEFAULTS.level,
+		transitionLevel = PUDDLE_DEFAULTS.transitionLevel,
 		seed = PUDDLE_DEFAULTS.seed,
 		noiseAmp = PUDDLE_DEFAULTS.noiseAmp,
 		bowlWidth = PUDDLE_DEFAULTS.bowlWidth,
@@ -43,6 +44,7 @@
 		deviceEase = PUDDLE_DEFAULTS.deviceEase,
 		snapshot = 'default',
 		responsiveSnapshots = false,
+		onTransitionTarget,
 		clippedChildren,
 		class: className,
 		children,
@@ -96,6 +98,16 @@
 		getDeviceGravity: () => deviceGravity,
 		getDeviceTilt: () => deviceTilt,
 		getDeviceEase: () => deviceEase,
+	});
+
+	$effect(() => {
+		onTransitionTarget?.({
+			path: runtime.path,
+			cols: runtime.cols,
+			rows: runtime.rows,
+			cellSize: runtime.cellSize,
+			prepareExpansion: () => runtime.expandForTransition(transitionLevel),
+		});
 	});
 </script>
 

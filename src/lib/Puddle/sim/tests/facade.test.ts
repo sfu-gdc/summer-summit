@@ -26,6 +26,32 @@ describe('createWaterSim — invariants', () => {
 		expect(minimumOf(sim.height)).toBeGreaterThanOrEqual(0);
 	});
 
+	it('raises the fluid field when filled to a higher surface level', () => {
+		const sim = createWaterSim({ nx: 40, ny: 24, seed: 5, level: 0.2 });
+		const initialMass = sim.totalMass();
+		const initialHeight = Float32Array.from(sim.height);
+
+		sim.fill(0.8);
+
+		expect(sim.totalMass()).toBeGreaterThan(initialMass);
+		expect(
+			Array.from(sim.height).every(
+				(height, index) => height >= (initialHeight[index] ?? Number.POSITIVE_INFINITY),
+			),
+		).toBe(true);
+		expect(minimumOf(sim.height)).toBeGreaterThanOrEqual(0);
+		expect(allFinite(sim.height)).toBe(true);
+	});
+
+	it('clamps excessive transition fill levels to the simulation range', () => {
+		const sim = createWaterSim({ nx: 40, ny: 24, seed: 5, level: 0.2 });
+
+		sim.fill(Number.MAX_VALUE);
+
+		expect(allFinite(sim.height)).toBe(true);
+		expect(Number.isFinite(sim.totalMass())).toBe(true);
+	});
+
 	it('stays finite and bounded under rain with a mass cap', () => {
 		const sim = createWaterSim({ nx: 40, ny: 24, seed: 9, rain: true });
 		sim.settle();

@@ -10,7 +10,7 @@ function createDepthPath(nx: number, ny: number, cellSize: number, threshold: nu
 	const mask = new Uint8Array(nx * ny);
 	let initialized = false;
 	let path = '';
-	return (height: ArrayLike<number>): string | null => {
+	return (height: ArrayLike<number>, force = false): string | null => {
 		let changed = !initialized;
 		for (let index = 0; index < mask.length; index++) {
 			const column = index % nx;
@@ -23,7 +23,7 @@ function createDepthPath(nx: number, ny: number, cellSize: number, threshold: nu
 			}
 		}
 		initialized = true;
-		if (!changed) return null;
+		if (!changed) return force ? path : null;
 		path = puddlePath(mask, nx, ny, cellSize);
 		return path;
 	};
@@ -66,6 +66,6 @@ export async function initializePuddleWorkerState(
 		cellSize: geometry.cellSize,
 		massCap,
 		snapshotLoaded,
-		path: () => renderPath(sim.height),
+		path: (force = false) => renderPath(sim.height, force),
 	};
 }

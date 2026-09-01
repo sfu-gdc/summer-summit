@@ -9,6 +9,16 @@ import type { PuddleSnapshotAsset } from '../snapshot/types';
 import type { PuddleWorkerInput, PuddleWorkerOutput } from '../worker/protocol';
 import type { PuddleSimulationOptions } from './puddleSimulation';
 
+const TRANSITION_EXPANSION_DURATION = 100;
+const TRANSITION_EXPANSION_TIMEOUT = 250;
+
+export interface PuddleRuntimeFrame {
+	readonly path: string;
+	readonly cols: number;
+	readonly rows: number;
+	readonly cellSize: number;
+}
+
 export interface PuddleRuntimeOptions {
 	readonly getInitialSnapshot: () => PuddleSnapshotAsset;
 	readonly getSnapshotUrl: () => string;
@@ -42,6 +52,7 @@ export interface PuddleRuntime {
 	readonly clearPointer: () => void;
 	readonly onDeviceMotion: (event: DeviceMotionEvent) => void;
 	readonly onVisibilityChange: () => void;
+	readonly expandForTransition: (level: number) => Promise<PuddleRuntimeFrame | null>;
 }
 
 export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntime {
@@ -65,8 +76,24 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 	let pendingDimensions: { cols: number; rows: number; cellSize: number } | null = null;
 	let applyFrame = 0;
 	let generation = 0;
+	let transitionRequestId = 0;
+	let transitionRequest: {
+		readonly id: number;
+		readonly resolve: (frame: PuddleRuntimeFrame | null) => void;
+		readonly timeout: ReturnType<typeof setTimeout>;
+	} | null = null;
 
 	const post = (message: PuddleWorkerInput): void => worker?.postMessage(message);
+	const finishTransitionRequest = (requestId: number, frame: PuddleRuntimeFrame | null): void => {
+		const request = transitionRequest;
+		if (request?.id !== requestId) return;
+		clearTimeout(request.timeout);
+		transitionRequest = null;
+		request.resolve(frame);
+	};
+	const clearTransitionRequests = (): void => {
+		if (transitionRequest) finishTransitionRequest(transitionRequest.id, null);
+	};
 	const updateActive = (): void => {
 		post({ type: 'active', active: visible && !document.hidden });
 	};
@@ -124,6 +151,25 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		}
 		updateActive();
 	};
+	const expandForTransition = (level: number): Promise<PuddleRuntimeFrame | null> => {
+		if (reducedMotion.current || !worker || !live || !Number.isFinite(level)) {
+			return Promise.resolve(null);
+		}
+		clearTransitionRequests();
+		const requestId = ++transitionRequestId;
+		return new Promise((resolve) => {
+			const timeout = setTimeout(() => {
+				finishTransitionRequest(requestId, null);
+			}, TRANSITION_EXPANSION_TIMEOUT);
+			transitionRequest = { id: requestId, resolve, timeout };
+			post({
+				type: 'transition-expand',
+				requestId,
+				level,
+				durationMs: TRANSITION_EXPANSION_DURATION,
+			});
+		});
+	};
 
 	$effect(() => {
 		if (!host || !geometry.ready) return;
@@ -139,13 +185,13 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		const cursorEase = options.getCursorEase();
 		const deviceEase = options.getDeviceEase();
 		const currentGeneration = ++generation;
+		live = false;
 		if (snapshot !== activeSnapshot) {
 			activeSnapshot = snapshot;
 			renderedPath = snapshot.path;
 			renderedCols = snapshot.nx;
 			renderedRows = snapshot.ny;
 			renderedCellSize = snapshot.cellSize;
-			live = false;
 		}
 		// Vite statically extracts a worker only from this native URL expression.
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity
@@ -175,6 +221,16 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 				});
 			} else if (message.type === 'path') {
 				queuePath(message.path);
+			} else if (message.type === 'transition-expanded') {
+				queuePath(message.path);
+				requestAnimationFrame(() => {
+					finishTransitionRequest(message.requestId, {
+						path: message.path,
+						cols: renderedCols,
+						rows: renderedRows,
+						cellSize: renderedCellSize,
+					});
+				});
 			}
 		};
 		nextWorker.postMessage({
@@ -206,6 +262,7 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 			applyFrame = 0;
 			pendingPath = null;
 			pendingDimensions = null;
+			clearTransitionRequests();
 		};
 	});
 
@@ -257,5 +314,6 @@ export function createPuddleRuntime(options: PuddleRuntimeOptions): PuddleRuntim
 		clearPointer,
 		onDeviceMotion,
 		onVisibilityChange,
+		expandForTransition,
 	};
 }

@@ -59,6 +59,14 @@ export class WaterSim {
 		});
 	}
 
+	fill(level: number): void {
+		if (!Number.isFinite(level)) return;
+		this.engine.emit({
+			kind: 'fill',
+			level: worldUnits(Math.min(paramSchema.level.max, Math.max(0, level))),
+		});
+	}
+
 	/**
 	 * In-plane gravity tilt added on top of the configured driver (pointer /
 	 * device-orientation interaction). Same sign convention as the `tiltX`/`tiltY`

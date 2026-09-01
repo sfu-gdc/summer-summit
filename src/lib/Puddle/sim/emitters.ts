@@ -42,8 +42,8 @@ export function applyCommand(resources: Resources, command: SourceCommand): void
 		case 'fill': {
 			const terrain = resources.terrain().data;
 			resources.applyToHeight((heightData) => {
-				transformInPlace(heightData, (_, dataIndex) =>
-					Math.max(0, command.level - (terrain[dataIndex] ?? 0)),
+				transformInPlace(heightData, (height, dataIndex) =>
+					Math.max(height, Math.max(0, command.level - (terrain[dataIndex] ?? 0))),
 				);
 			});
 			return;

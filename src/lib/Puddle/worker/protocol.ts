@@ -21,6 +21,12 @@ export interface PuddleWorkerInitMessage {
 export type PuddleWorkerInput =
 	| PuddleWorkerInitMessage
 	| { readonly type: 'active'; readonly active: boolean }
+	| {
+			readonly type: 'transition-expand';
+			readonly requestId: number;
+			readonly level: number;
+			readonly durationMs: number;
+	  }
 	| { readonly type: 'pointer'; readonly x: number; readonly y: number }
 	| { readonly type: 'clear-pointer' }
 	| { readonly type: 'device-tilt'; readonly x: number; readonly y: number }
@@ -38,6 +44,12 @@ export type PuddleWorkerOutput =
 	| {
 			readonly type: 'path';
 			readonly generation: number;
+			readonly path: string;
+	  }
+	| {
+			readonly type: 'transition-expanded';
+			readonly generation: number;
+			readonly requestId: number;
 			readonly path: string;
 	  }
 	| { readonly type: 'error'; readonly generation: number; readonly message: string };

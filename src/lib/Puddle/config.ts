@@ -8,6 +8,18 @@ import { brandColorValues } from '$lib/tokens';
 import type { IntegratorId } from './sim';
 import type { PuddleSnapshotName } from './snapshot/types';
 
+export interface PuddleTransitionFrame {
+	readonly path: string;
+	readonly cols: number;
+	readonly rows: number;
+	readonly cellSize: number;
+}
+
+export interface PuddleTransitionTarget extends PuddleTransitionFrame {
+	/** Briefly spreads the live fluid before the persistent fixed-cell flood takes over. */
+	readonly prepareExpansion?: (() => Promise<PuddleTransitionFrame | null>) | undefined;
+}
+
 // Omit the deprecated HTML `color` attribute; intersecting with it would
 // collapse the prop type to `string` and reject culori Color objects.
 /** Descendants inherit `--puddle-clip`; full-host overlays can use it as their `clip-path`. */
@@ -20,6 +32,8 @@ export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	threshold?: number;
 	/** Resting water level; higher fills more of the bowl (bigger puddle). */
 	level?: number;
+	/** Water level used for the short live-fluid prelude to a page transition. */
+	transitionLevel?: number;
 	/** Terrain seed; changes the organic edge shape. */
 	seed?: number;
 	/** Low-frequency edge roughness. */
@@ -84,6 +98,8 @@ export type PuddleProps = Omit<HTMLAttributes<HTMLDivElement>, 'color'> & {
 	responsiveSnapshots?: boolean;
 	/** Inert visual content clipped to the same local SVG path as the live puddle fill. */
 	clippedChildren?: Snippet;
+	/** Reports the current fixed-cell shape for a persistent page-transition overlay. */
+	onTransitionTarget?: ((target: PuddleTransitionTarget) => void) | undefined;
 	children?: Snippet;
 };
 
@@ -92,6 +108,7 @@ type PuddleDefaultKey =
 	| 'cellSize'
 	| 'threshold'
 	| 'level'
+	| 'transitionLevel'
 	| 'seed'
 	| 'noiseAmp'
 	| 'bowlWidth'
@@ -128,6 +145,7 @@ export const PUDDLE_DEFAULTS = {
 	cellSize: 28,
 	threshold: 0.035,
 	level: 0.42,
+	transitionLevel: 0.8,
 	seed: 7,
 	noiseAmp: 0.48,
 	bowlWidth: 820,
